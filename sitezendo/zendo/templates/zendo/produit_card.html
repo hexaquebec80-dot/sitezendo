@@ -1,0 +1,1315 @@
+<style>
+    /* =========================================================
+       CARTE PRODUIT — ZENDO AFRIQUE
+       VERSION CORRIGÉE
+       ========================================================= */
+
+    .product-card {
+        position: relative;
+        display: flex;
+        width: 100%;
+        min-width: 0;
+        height: 100%;
+        flex-direction: column;
+        overflow: hidden;
+
+        background: #ffffff;
+
+        border: 1px solid #e9e1da;
+        border-radius: 20px;
+
+        box-shadow:
+            0 8px 28px rgba(45, 28, 23, 0.07),
+            0 2px 6px rgba(45, 28, 23, 0.04);
+
+        animation: productCardEntrance 0.5s ease both;
+
+        transition:
+            transform 0.3s ease,
+            box-shadow 0.3s ease,
+            border-color 0.3s ease;
+    }
+
+
+    .product-card:hover {
+        transform: translateY(-6px);
+
+        border-color: rgba(216, 166, 46, 0.55);
+
+        box-shadow:
+            0 22px 50px rgba(45, 28, 23, 0.14),
+            0 5px 15px rgba(45, 28, 23, 0.07);
+    }
+
+
+    /* =========================================================
+       IMAGE PRODUIT
+       ========================================================= */
+
+    .product-image-container {
+        position: relative;
+
+        width: 100%;
+
+        aspect-ratio: 1 / 1.06;
+
+        overflow: hidden;
+
+        background: #f3f0ec;
+    }
+
+
+    .product-image-container > a {
+        position: absolute;
+
+        inset: 0;
+
+        display: block;
+
+        width: 100%;
+        height: 100%;
+
+        overflow: hidden;
+    }
+
+
+    .product-image {
+        position: absolute;
+
+        top: 50%;
+        left: 50%;
+
+        display: block;
+
+        width: 100%;
+        height: 100%;
+
+        object-fit: cover;
+        object-position: center center;
+
+        transform:
+            translate(-50%, -50%)
+            scale(1.055);
+
+        transition:
+            transform 0.6s ease,
+            filter 0.35s ease;
+    }
+
+
+    .product-card:hover .product-image {
+        transform:
+            translate(-50%, -50%)
+            scale(1.10);
+
+        filter:
+            saturate(1.04)
+            contrast(1.015);
+    }
+
+
+    /* Dégradé très discret */
+
+    .product-image-container::after {
+        content: "";
+
+        position: absolute;
+
+        z-index: 2;
+
+        left: 0;
+        right: 0;
+        bottom: 0;
+
+        height: 14%;
+
+        pointer-events: none;
+
+        background:
+            linear-gradient(
+                to top,
+                rgba(35, 20, 18, 0.07),
+                transparent
+            );
+    }
+
+
+    /* =========================================================
+       IMAGE ABSENTE
+       ========================================================= */
+
+    .product-placeholder {
+        position: absolute;
+
+        inset: 0;
+
+        display: flex;
+
+        width: 100%;
+        height: 100%;
+
+        flex-direction: column;
+
+        align-items: center;
+        justify-content: center;
+
+        gap: 13px;
+
+        color: #642624;
+
+        background:
+            radial-gradient(
+                circle at 75% 20%,
+                rgba(216, 166, 46, 0.18),
+                transparent 34%
+            ),
+            linear-gradient(
+                145deg,
+                #faf8f5,
+                #eee6dc
+            );
+    }
+
+
+    .product-placeholder i {
+        font-size: 3rem;
+    }
+
+
+    .product-placeholder span {
+        font-size: 0.75rem;
+
+        font-weight: 900;
+
+        letter-spacing: 0.14em;
+
+        text-transform: uppercase;
+    }
+
+
+    /* =========================================================
+       BADGES
+       ========================================================= */
+
+    .product-badges {
+        position: absolute;
+
+        z-index: 5;
+
+        top: 12px;
+        left: 12px;
+
+        display: flex;
+
+        max-width: calc(100% - 65px);
+
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 6px;
+
+        pointer-events: none;
+    }
+
+
+    .sale-badge,
+    .custom-badge {
+        display: inline-flex;
+
+        min-height: 26px;
+
+        padding: 5px 10px;
+
+        align-items: center;
+        justify-content: center;
+
+        border-radius: 7px;
+
+        font-size: 0.61rem;
+
+        font-weight: 900;
+
+        letter-spacing: 0.05em;
+
+        text-transform: uppercase;
+
+        box-shadow:
+            0 5px 15px rgba(31, 19, 15, 0.12);
+    }
+
+
+    .sale-badge {
+        color: #ffffff;
+
+        background:
+            linear-gradient(
+                135deg,
+                #642624,
+                #8c3833
+            );
+    }
+
+
+    .custom-badge {
+        color: #2c2109;
+
+        background:
+            linear-gradient(
+                135deg,
+                #f0cb64,
+                #d8a62e
+            );
+    }
+
+
+    /* =========================================================
+       FAVORI
+       SANS ROND DEVANT L'IMAGE
+       ========================================================= */
+
+    .favorite-form {
+        margin: 0;
+        padding: 0;
+    }
+
+
+    .favorite-button {
+        position: absolute;
+
+        z-index: 7;
+
+        top: 14px;
+        right: 14px;
+
+        display: flex;
+
+        width: auto;
+        height: auto;
+
+        padding: 0;
+
+        align-items: center;
+        justify-content: center;
+
+        color: #ffffff;
+
+        background: transparent;
+
+        border: none;
+
+        border-radius: 0;
+
+        box-shadow: none;
+
+        text-decoration: none;
+
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+
+        filter:
+            drop-shadow(
+                0 2px 5px rgba(0, 0, 0, 0.48)
+            );
+
+        transition:
+            color 0.25s ease,
+            transform 0.25s ease,
+            filter 0.25s ease;
+    }
+
+
+    .favorite-button i {
+        font-size: 1.35rem;
+
+        transition:
+            transform 0.25s ease;
+    }
+
+
+    .favorite-button:hover {
+        color: #f0c858;
+
+        background: transparent;
+
+        box-shadow: none;
+
+        transform: scale(1.14);
+
+        filter:
+            drop-shadow(
+                0 3px 6px rgba(0, 0, 0, 0.45)
+            );
+    }
+
+
+    .favorite-button:hover i {
+        transform: scale(1.06);
+    }
+
+
+    .favorite-button.active {
+        color: #f0525f;
+    }
+
+
+    .favorite-button.active:hover {
+        color: #f0c858;
+    }
+
+
+    /* =========================================================
+       CONTENU PRODUIT
+       ========================================================= */
+
+    .product-card-content {
+        display: flex;
+
+        min-width: 0;
+
+        flex: 1;
+
+        flex-direction: column;
+
+        padding: 17px 18px 18px;
+    }
+
+
+    /* =========================================================
+       CATÉGORIE
+       ========================================================= */
+
+    .product-category {
+        align-self: flex-start;
+
+        color: #a97612;
+
+        font-size: 0.65rem;
+
+        font-weight: 900;
+
+        letter-spacing: 0.10em;
+
+        text-decoration: none;
+
+        text-transform: uppercase;
+
+        transition:
+            color 0.2s ease;
+    }
+
+
+    .product-category:hover {
+        color: #642624;
+    }
+
+
+    /* =========================================================
+       NOM PRODUIT
+       ========================================================= */
+
+    .product-card h3 {
+        margin: 6px 0 6px;
+
+        font-family:
+            "DM Sans",
+            Arial,
+            sans-serif;
+
+        font-size: 1.03rem;
+
+        font-weight: 850;
+
+        line-height: 1.32;
+    }
+
+
+    .product-card h3 a {
+        display: -webkit-box;
+
+        overflow: hidden;
+
+        color: #26211f;
+
+        text-decoration: none;
+
+        -webkit-box-orient: vertical;
+
+        -webkit-line-clamp: 2;
+
+        transition:
+            color 0.2s ease;
+    }
+
+
+    .product-card h3 a:hover {
+        color: #642624;
+    }
+
+
+    /* =========================================================
+       DESCRIPTION
+       ========================================================= */
+
+    .product-description {
+        display: -webkit-box;
+
+        min-height: 38px;
+
+        margin: 0;
+
+        overflow: hidden;
+
+        color: #756e69;
+
+        font-size: 0.80rem;
+
+        line-height: 1.48;
+
+        -webkit-box-orient: vertical;
+
+        -webkit-line-clamp: 2;
+    }
+
+
+    /* =========================================================
+       NOTE + J'AIME
+       ========================================================= */
+
+    .product-social-proof {
+        display: flex;
+
+        align-items: center;
+
+        flex-wrap: wrap;
+
+        gap: 7px;
+
+        margin-top: 11px;
+    }
+
+
+    .product-rating,
+    .product-likes {
+        display: inline-flex;
+
+        min-height: 31px;
+
+        align-items: center;
+
+        gap: 5px;
+
+        padding: 6px 9px;
+
+        border-radius: 8px;
+
+        font-size: 0.68rem;
+
+        font-weight: 800;
+
+        white-space: nowrap;
+
+        transition:
+            transform 0.2s ease,
+            box-shadow 0.2s ease;
+    }
+
+
+    /* NOTE */
+
+    .product-rating {
+        color: #72500a;
+
+        background:
+            linear-gradient(
+                135deg,
+                #fff9e9,
+                #fff3d1
+            );
+
+        border:
+            1px solid #efdda4;
+    }
+
+
+    .product-stars-list {
+        display: inline-flex;
+        align-items: center;
+        gap: 2px;
+    }
+
+
+    .product-stars-list i {
+        color: #d8d4cf;
+        font-size: 0.70rem;
+    }
+
+
+    .product-stars-list i.active {
+        color: #d8a62e;
+    }
+
+
+    .product-rating strong {
+        color: #5d4107;
+
+        font-size: 0.74rem;
+    }
+
+
+    .rating-count {
+        color: #8c817b;
+
+        font-weight: 600;
+    }
+
+
+    /* J'AIME */
+
+    .product-likes {
+        color: #642624;
+
+        background:
+            linear-gradient(
+                135deg,
+                #fff6f6,
+                #fbecec
+            );
+
+        border:
+            1px solid #efd6d5;
+    }
+
+
+    .product-likes i {
+        color: #b63a43;
+
+        animation:
+            heartPulse 2.5s infinite;
+    }
+
+
+    .product-likes strong {
+        font-size: 0.74rem;
+    }
+
+
+    .product-rating:hover,
+    .product-likes:hover {
+        transform:
+            translateY(-1px);
+
+        box-shadow:
+            0 6px 15px rgba(48, 29, 23, 0.09);
+    }
+
+
+    /* =========================================================
+       FOOTER
+       ========================================================= */
+
+    .product-card-footer {
+        display: flex;
+
+        margin-top: auto;
+
+        padding-top: 13px;
+
+        align-items: flex-end;
+
+        justify-content: space-between;
+
+        gap: 12px;
+
+        border-top:
+            1px solid #eee7e1;
+    }
+
+
+    /* =========================================================
+       PRIX
+       ========================================================= */
+
+    .product-price {
+        display: flex;
+
+        min-width: 0;
+
+        flex-direction: column;
+
+        gap: 2px;
+    }
+
+
+    .product-price strong {
+        color: #642624;
+
+        font-size: 1.15rem;
+
+        font-weight: 900;
+
+        line-height: 1.2;
+    }
+
+
+    .product-price del {
+        color: #99918c;
+
+        font-size: 0.76rem;
+    }
+
+
+    /* =========================================================
+       BOUTON VOIR PRODUIT
+       ========================================================= */
+
+    .view-product-button {
+        display: grid;
+
+        width: 40px;
+        height: 40px;
+
+        flex-shrink: 0;
+
+        place-items: center;
+
+        color: #ffffff;
+
+        background:
+            linear-gradient(
+                135deg,
+                #642624,
+                #83342f
+            );
+
+        border-radius: 10px;
+
+        box-shadow:
+            0 7px 18px rgba(100, 38, 36, 0.22);
+
+        text-decoration: none;
+
+        transition:
+            color 0.25s ease,
+            background 0.25s ease,
+            transform 0.25s ease,
+            box-shadow 0.25s ease;
+    }
+
+
+    .view-product-button:hover {
+        color: #2b200a;
+
+        background:
+            linear-gradient(
+                135deg,
+                #efc85c,
+                #d8a62e
+            );
+
+        transform:
+            translateY(-2px);
+
+        box-shadow:
+            0 10px 22px rgba(216, 166, 46, 0.30);
+    }
+
+
+    /* =========================================================
+       ANIMATIONS
+       ========================================================= */
+
+    @keyframes productCardEntrance {
+
+        from {
+            opacity: 0;
+
+            transform:
+                translateY(15px);
+        }
+
+        to {
+            opacity: 1;
+
+            transform:
+                translateY(0);
+        }
+
+    }
+
+
+    @keyframes heartPulse {
+
+        0%,
+        88%,
+        100% {
+            transform:
+                scale(1);
+        }
+
+        92% {
+            transform:
+                scale(1.14);
+        }
+
+        96% {
+            transform:
+                scale(0.97);
+        }
+
+    }
+
+
+    /* =========================================================
+       TABLETTE
+       ========================================================= */
+
+    @media (max-width: 900px) {
+
+        .product-image-container {
+            aspect-ratio:
+                1 / 1.08;
+        }
+
+
+        .product-card-content {
+            padding:
+                15px;
+        }
+
+
+        .product-card h3 {
+            font-size:
+                0.97rem;
+        }
+
+    }
+
+
+    /* =========================================================
+       MOBILE
+       ========================================================= */
+
+    @media (max-width: 700px) {
+
+        .product-card {
+            border-radius:
+                16px;
+        }
+
+
+        .product-image-container {
+            aspect-ratio:
+                1 / 1.02;
+        }
+
+
+        .product-image {
+            transform:
+                translate(-50%, -50%)
+                scale(1.07);
+        }
+
+
+        .product-card:hover .product-image {
+            transform:
+                translate(-50%, -50%)
+                scale(1.10);
+        }
+
+
+        .product-card-content {
+            padding:
+                13px;
+        }
+
+
+        .product-card h3 {
+            margin:
+                5px 0;
+
+            font-size:
+                0.92rem;
+        }
+
+
+        .product-description {
+            display:
+                none;
+        }
+
+
+        .product-social-proof {
+            margin-top:
+                8px;
+
+            gap:
+                5px;
+        }
+
+
+        .product-rating,
+        .product-likes {
+            min-height:
+                28px;
+
+            padding:
+                5px 7px;
+
+            font-size:
+                0.61rem;
+
+            border-radius:
+                7px;
+        }
+
+
+        /* CŒUR SANS ROND SUR MOBILE */
+
+        .favorite-button {
+            top:
+                11px;
+
+            right:
+                11px;
+
+            width:
+                auto;
+
+            height:
+                auto;
+
+            padding:
+                0;
+
+            background:
+                transparent;
+
+            border:
+                none;
+
+            border-radius:
+                0;
+
+            box-shadow:
+                none;
+        }
+
+
+        .favorite-button i {
+            font-size:
+                1.18rem;
+        }
+
+
+        .product-badges {
+            top:
+                9px;
+
+            left:
+                9px;
+        }
+
+
+        .sale-badge,
+        .custom-badge {
+            min-height:
+                24px;
+
+            padding:
+                4px 7px;
+
+            font-size:
+                0.54rem;
+
+            border-radius:
+                6px;
+        }
+
+
+        .product-card-footer {
+            padding-top:
+                10px;
+        }
+
+
+        .product-price strong {
+            font-size:
+                1rem;
+        }
+
+
+        .view-product-button {
+            width:
+                36px;
+
+            height:
+                36px;
+
+            border-radius:
+                9px;
+        }
+
+    }
+
+
+    /* =========================================================
+       PETIT MOBILE
+       ========================================================= */
+
+    @media (max-width: 430px) {
+
+        .product-image-container {
+            aspect-ratio:
+                1 / 1;
+        }
+
+
+        .product-card-content {
+            padding:
+                12px;
+        }
+
+
+        .product-social-proof {
+            flex-direction:
+                row;
+
+            flex-wrap:
+                wrap;
+        }
+
+
+        .rating-count {
+            display:
+                none;
+        }
+
+    }
+
+
+    /* =========================================================
+       ACCESSIBILITÉ
+       ========================================================= */
+
+    @media (prefers-reduced-motion: reduce) {
+
+        .product-card,
+        .product-likes i {
+            animation:
+                none;
+        }
+
+
+        .product-image,
+        .product-card,
+        .favorite-button,
+        .view-product-button {
+            transition:
+                none;
+        }
+
+    }
+</style>
+
+
+<!-- =========================================================
+     CARTE PRODUIT
+     ========================================================= -->
+
+<article class="product-card">
+
+
+    <!-- =====================================================
+         IMAGE PRODUIT
+         ===================================================== -->
+
+    <div class="product-image-container">
+
+
+        <a href="{{ produit.get_absolute_url }}">
+
+            {% with image=produit.images.first %}
+
+                {% if image %}
+
+                    <img
+                        src="{{ image.image.url }}"
+                        alt="{{ image.texte_alt|default:produit.nom }}"
+                        class="product-image"
+                        loading="lazy"
+                    >
+
+                {% else %}
+
+                    <div class="product-placeholder">
+
+                        <i class="fa-solid fa-shirt"></i>
+
+                        <span>
+                            Zendo Afrique
+                        </span>
+
+                    </div>
+
+                {% endif %}
+
+            {% endwith %}
+
+        </a>
+
+
+        <!-- =================================================
+             BADGES
+             ================================================= -->
+
+        <div class="product-badges">
+
+            {% if produit.prix_promotionnel %}
+
+                <span class="sale-badge">
+
+                    Promotion
+
+                </span>
+
+            {% endif %}
+
+
+            {% if produit.personnalisable %}
+
+                <span class="custom-badge">
+
+                    Personnalisable
+
+                </span>
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- =================================================
+             FAVORI SANS ROND
+             ================================================= -->
+
+        {% if user.is_authenticated %}
+
+            <form
+                method="post"
+                action="{% url 'zendo:favori_basculer' produit.pk %}"
+                class="favorite-form"
+            >
+                {% csrf_token %}
+
+                <button
+                    type="submit"
+                    class="favorite-button{% if produit.est_favori %} active{% endif %}"
+                    title="{% if produit.est_favori %}Retirer des favoris{% else %}Ajouter aux favoris{% endif %}"
+                    aria-label="{% if produit.est_favori %}Retirer {{ produit.nom }} des favoris{% else %}Ajouter {{ produit.nom }} aux favoris{% endif %}"
+                >
+                    <i
+                        class="{% if produit.est_favori %}fa-solid{% else %}fa-regular{% endif %} fa-heart"
+                    ></i>
+                </button>
+            </form>
+
+        {% else %}
+
+            <a
+                href="{% url 'zendo:connexion' %}?next={{ request.get_full_path|urlencode }}"
+                class="favorite-button"
+                title="Connectez-vous pour ajouter aux favoris"
+                aria-label="Se connecter pour aimer {{ produit.nom }}"
+            >
+                <i class="fa-regular fa-heart"></i>
+            </a>
+
+        {% endif %}
+
+
+    </div>
+
+
+    <!-- =====================================================
+         CONTENU PRODUIT
+         ===================================================== -->
+
+    <div class="product-card-content">
+
+
+        <!-- CATÉGORIE -->
+
+        {% if produit.categorie %}
+
+            <a
+                href="{% url 'zendo:categorie' produit.categorie.slug %}"
+                class="product-category"
+            >
+
+                {{ produit.categorie.nom }}
+
+            </a>
+
+        {% endif %}
+
+
+        <!-- NOM PRODUIT -->
+
+        <h3>
+
+            <a href="{{ produit.get_absolute_url }}">
+
+                {{ produit.nom }}
+
+            </a>
+
+        </h3>
+
+
+        <!-- DESCRIPTION -->
+
+        {% if produit.description_courte %}
+
+            <p class="product-description">
+
+                {{ produit.description_courte|truncatechars:80 }}
+
+            </p>
+
+        {% else %}
+
+            <p class="product-description">
+
+                Découvrez ce produit de la collection Zendo Afrique.
+
+            </p>
+
+        {% endif %}
+
+
+        <!-- =================================================
+             NOTE + J'AIME
+             ================================================= -->
+
+        <div class="product-social-proof">
+
+
+            <!-- NOTE / AVIS RÉELS -->
+
+            <a
+                href="{{ produit.get_absolute_url }}#avis-clients"
+                class="product-rating"
+                title="Voir les avis clients"
+                style="text-decoration: none;"
+            >
+
+                <span
+                    class="product-stars-list"
+                    aria-label="Note moyenne {{ produit.note_moyenne|default_if_none:'0'|floatformat:1 }} sur 5"
+                >
+                    <i class="fa-solid fa-star{% if produit.note_moyenne >= 1 %} active{% endif %}"></i>
+                    <i class="fa-solid fa-star{% if produit.note_moyenne >= 2 %} active{% endif %}"></i>
+                    <i class="fa-solid fa-star{% if produit.note_moyenne >= 3 %} active{% endif %}"></i>
+                    <i class="fa-solid fa-star{% if produit.note_moyenne >= 4 %} active{% endif %}"></i>
+                    <i class="fa-solid fa-star{% if produit.note_moyenne >= 5 %} active{% endif %}"></i>
+                </span>
+
+                {% if produit.nombre_avis > 0 %}
+
+                    <strong>
+                        {{ produit.note_moyenne|floatformat:1 }}
+                    </strong>
+
+                    <span class="rating-count">
+                        ({{ produit.nombre_avis }} avis)
+                    </span>
+
+                {% else %}
+
+                    <span class="rating-count">
+                        0 avis
+                    </span>
+
+                {% endif %}
+
+            </a>
+
+
+            <!-- J'AIME RÉEL -->
+
+            <a
+                href="{{ produit.get_absolute_url }}"
+                class="product-likes"
+                title="{{ produit.nombre_jaimes|default:'0' }} mention(s) J’aime"
+                style="text-decoration: none;"
+            >
+
+                <i class="fa-solid fa-heart"></i>
+
+                <strong>
+                    {{ produit.nombre_jaimes|default:"0" }}
+                </strong>
+
+                <span>
+                    J’aime
+                </span>
+
+            </a>
+
+
+        </div>
+
+
+        <!-- =================================================
+             PRIX + VOIR PRODUIT
+             ================================================= -->
+
+        <div class="product-card-footer">
+
+
+            <!-- PRIX -->
+
+            <div class="product-price">
+
+                <strong>
+
+                    {{ produit.prix_actuel|floatformat:2 }} $
+
+                </strong>
+
+
+                {% if produit.prix_promotionnel %}
+
+                    <del>
+
+                        {{ produit.prix|floatformat:2 }} $
+
+                    </del>
+
+                {% endif %}
+
+            </div>
+
+
+            <!-- VOIR PRODUIT -->
+
+            <a
+                href="{{ produit.get_absolute_url }}"
+                class="view-product-button"
+                title="Voir le produit"
+                aria-label="Voir {{ produit.nom }}"
+            >
+
+                <i class="fa-solid fa-arrow-right"></i>
+
+            </a>
+
+
+        </div>
+
+
+    </div>
+
+
+</article>

@@ -1,0 +1,2161 @@
+{% extends "zendo/base.html" %}
+
+{% block title %}
+Client — {{ client_detail.get_full_name|default:client_detail.username }} — Zendo Afrique
+{% endblock %}
+
+{% block extra_css %}
+<style>
+
+    :root {
+        --client-primary: #0d4b3b;
+        --client-primary-2: #17634d;
+        --client-dark: #061d17;
+
+        --client-gold: #d9ad59;
+        --client-gold-soft: #fff6df;
+
+        --client-bg: #f3f7f5;
+        --client-white: #ffffff;
+
+        --client-text: #17231f;
+        --client-muted: #6b7973;
+
+        --client-border: #dde8e3;
+        --client-soft: #eaf4f0;
+
+        --client-blue: #2173a7;
+        --client-blue-soft: #eaf5fc;
+
+        --client-success: #188052;
+        --client-success-soft: #e8f8f0;
+
+        --client-warning: #a66d09;
+        --client-warning-soft: #fff6df;
+
+        --client-danger: #bc3126;
+        --client-danger-soft: #fff0ee;
+
+        --client-shadow:
+            0 16px 45px rgba(6, 29, 23, 0.08);
+
+        --client-shadow-hover:
+            0 25px 60px rgba(6, 29, 23, 0.13);
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    .client-detail-page {
+        min-height: 100vh;
+        padding-bottom: 80px;
+
+        color: var(--client-text);
+
+        background:
+            radial-gradient(
+                circle at 96% 5%,
+                rgba(217, 173, 89, 0.14),
+                transparent 26%
+            ),
+            var(--client-bg);
+
+        font-family:
+            Inter,
+            "Segoe UI",
+            Arial,
+            sans-serif;
+    }
+
+    .client-detail-container {
+        width: min(
+            1240px,
+            calc(100% - 40px)
+        );
+
+        margin: 0 auto;
+    }
+
+
+    /* =====================================================
+       HERO
+    ===================================================== */
+
+    .client-detail-hero {
+        position: relative;
+
+        overflow: hidden;
+
+        padding:
+            34px
+            0
+            115px;
+
+        color: var(--client-white);
+
+        background:
+            linear-gradient(
+                135deg,
+                var(--client-dark),
+                var(--client-primary) 65%,
+                var(--client-primary-2)
+            );
+    }
+
+    .client-detail-hero::before {
+        content: "";
+
+        position: absolute;
+
+        top: -310px;
+        right: -140px;
+
+        width: 620px;
+        height: 620px;
+
+        border:
+            1px solid
+            rgba(255, 255, 255, 0.08);
+
+        border-radius: 50%;
+    }
+
+    .client-detail-hero::after {
+        content: "";
+
+        position: absolute;
+
+        right: 3%;
+        bottom: -280px;
+
+        width: 520px;
+        height: 520px;
+
+        background:
+            radial-gradient(
+                circle,
+                rgba(217, 173, 89, 0.29),
+                transparent 68%
+            );
+
+        border-radius: 50%;
+    }
+
+
+    /* =====================================================
+       TOPBAR
+    ===================================================== */
+
+    .client-detail-topbar {
+        position: relative;
+        z-index: 3;
+
+        margin-bottom: 40px;
+
+        display: flex;
+
+        align-items: center;
+        justify-content: space-between;
+
+        gap: 20px;
+    }
+
+    .client-detail-back {
+        display: inline-flex;
+
+        min-height: 44px;
+
+        padding:
+            0
+            16px;
+
+        align-items: center;
+        justify-content: center;
+
+        gap: 9px;
+
+        color: var(--client-white);
+
+        background:
+            rgba(
+                255,
+                255,
+                255,
+                0.08
+            );
+
+        border:
+            1px solid
+            rgba(
+                255,
+                255,
+                255,
+                0.14
+            );
+
+        border-radius: 12px;
+
+        text-decoration: none;
+
+        font-size: 11px;
+        font-weight: 900;
+
+        transition: 0.23s ease;
+    }
+
+    .client-detail-back:hover {
+        color: var(--client-dark);
+
+        background: var(--client-gold);
+
+        border-color:
+            var(--client-gold);
+
+        transform:
+            translateY(-2px);
+    }
+
+    .client-detail-secure {
+        display: inline-flex;
+
+        align-items: center;
+
+        gap: 8px;
+
+        color: #dff8eb;
+
+        font-size: 10px;
+        font-weight: 900;
+    }
+
+    .client-detail-secure::before {
+        content: "";
+
+        width: 7px;
+        height: 7px;
+
+        background: #63d99b;
+
+        border-radius: 50%;
+    }
+
+
+    /* =====================================================
+       HERO CLIENT
+    ===================================================== */
+
+    .client-detail-hero-content {
+        position: relative;
+        z-index: 2;
+
+        display: flex;
+
+        align-items: center;
+        justify-content: space-between;
+
+        gap: 35px;
+    }
+
+    .client-hero-profile {
+        display: flex;
+
+        align-items: center;
+
+        gap: 20px;
+
+        min-width: 0;
+    }
+
+    .client-hero-avatar {
+        display: grid;
+
+        width: 82px;
+        height: 82px;
+
+        flex-shrink: 0;
+
+        place-items: center;
+
+        color: var(--client-dark);
+
+        background:
+            linear-gradient(
+                145deg,
+                #f8e4b4,
+                var(--client-gold)
+            );
+
+        border:
+            1px solid
+            rgba(
+                255,
+                255,
+                255,
+                0.28
+            );
+
+        border-radius: 24px;
+
+        box-shadow:
+            0
+            16px
+            35px
+            rgba(
+                0,
+                0,
+                0,
+                0.18
+            );
+
+        font-size: 30px;
+        font-weight: 900;
+    }
+
+    .client-hero-info {
+        min-width: 0;
+    }
+
+    .client-hero-label {
+        display: inline-flex;
+
+        margin-bottom: 8px;
+
+        align-items: center;
+
+        gap: 7px;
+
+        color: #f4d898;
+
+        font-size: 10px;
+        font-weight: 900;
+
+        text-transform: uppercase;
+
+        letter-spacing: 0.9px;
+    }
+
+    .client-hero-info h1 {
+        margin: 0;
+
+        color: var(--client-white);
+
+        font-size:
+            clamp(
+                29px,
+                5vw,
+                46px
+            );
+
+        line-height: 1.08;
+
+        font-weight: 900;
+
+        letter-spacing: -1.4px;
+    }
+
+    .client-hero-info p {
+        margin:
+            10px
+            0
+            0;
+
+        color:
+            rgba(
+                255,
+                255,
+                255,
+                0.67
+            );
+
+        font-size: 12px;
+    }
+
+    .client-hero-status {
+        min-width: 210px;
+
+        padding: 18px;
+
+        background:
+            rgba(
+                255,
+                255,
+                255,
+                0.08
+            );
+
+        border:
+            1px solid
+            rgba(
+                255,
+                255,
+                255,
+                0.14
+            );
+
+        border-radius: 17px;
+
+        backdrop-filter:
+            blur(12px);
+    }
+
+    .client-hero-status span,
+    .client-hero-status strong {
+        display: block;
+    }
+
+    .client-hero-status span {
+        margin-bottom: 7px;
+
+        color:
+            rgba(
+                255,
+                255,
+                255,
+                0.58
+            );
+
+        font-size: 9px;
+        font-weight: 900;
+
+        text-transform: uppercase;
+    }
+
+    .client-hero-status strong {
+        color: #dff8eb;
+
+        font-size: 14px;
+        font-weight: 900;
+    }
+
+    .client-hero-status.inactive strong {
+        color: #ffd7d2;
+    }
+
+
+    /* =====================================================
+       MAIN
+    ===================================================== */
+
+    .client-detail-main {
+        position: relative;
+        z-index: 4;
+
+        margin-top: -58px;
+    }
+
+
+    /* =====================================================
+       STATS
+    ===================================================== */
+
+    .client-statistics {
+        display: grid;
+
+        grid-template-columns:
+            repeat(
+                3,
+                minmax(
+                    0,
+                    1fr
+                )
+            );
+
+        gap: 17px;
+
+        margin-bottom: 24px;
+    }
+
+    .client-stat-card {
+        position: relative;
+
+        overflow: hidden;
+
+        min-height: 135px;
+
+        padding: 21px;
+
+        display: flex;
+
+        align-items: center;
+
+        gap: 15px;
+
+        background:
+            var(--client-white);
+
+        border:
+            1px solid
+            var(--client-border);
+
+        border-radius: 20px;
+
+        box-shadow:
+            var(--client-shadow);
+
+        transition: 0.23s ease;
+    }
+
+    .client-stat-card:hover {
+        transform:
+            translateY(-4px);
+
+        box-shadow:
+            var(--client-shadow-hover);
+    }
+
+    .client-stat-icon {
+        display: grid;
+
+        width: 55px;
+        height: 55px;
+
+        flex-shrink: 0;
+
+        place-items: center;
+
+        color:
+            var(--client-primary);
+
+        background:
+            var(--client-soft);
+
+        border-radius: 16px;
+
+        font-size: 20px;
+    }
+
+    .client-stat-card.success
+    .client-stat-icon {
+        color:
+            var(--client-success);
+
+        background:
+            var(--client-success-soft);
+    }
+
+    .client-stat-card.gold
+    .client-stat-icon {
+        color: #795510;
+
+        background:
+            var(--client-gold-soft);
+    }
+
+    .client-stat-content span,
+    .client-stat-content strong,
+    .client-stat-content small {
+        display: block;
+    }
+
+    .client-stat-content span {
+        margin-bottom: 7px;
+
+        color:
+            var(--client-muted);
+
+        font-size: 9px;
+        font-weight: 900;
+
+        text-transform: uppercase;
+
+        letter-spacing: 0.6px;
+    }
+
+    .client-stat-content strong {
+        color:
+            var(--client-dark);
+
+        font-size:
+            clamp(
+                24px,
+                3vw,
+                31px
+            );
+
+        line-height: 1;
+
+        font-weight: 900;
+    }
+
+    .client-stat-content small {
+        margin-top: 7px;
+
+        color: #87958f;
+
+        font-size: 9px;
+    }
+
+
+    /* =====================================================
+       GRID
+    ===================================================== */
+
+    .client-detail-grid {
+        display: grid;
+
+        grid-template-columns:
+            minmax(
+                280px,
+                0.8fr
+            )
+            minmax(
+                0,
+                1.7fr
+            );
+
+        align-items: start;
+
+        gap: 24px;
+    }
+
+
+    /* =====================================================
+       CARD
+    ===================================================== */
+
+    .client-card {
+        overflow: hidden;
+
+        margin-bottom: 24px;
+
+        background:
+            var(--client-white);
+
+        border:
+            1px solid
+            var(--client-border);
+
+        border-radius: 22px;
+
+        box-shadow:
+            var(--client-shadow);
+    }
+
+    .client-card-header {
+        padding:
+            20px
+            22px;
+
+        display: flex;
+
+        align-items: center;
+        justify-content:
+            space-between;
+
+        gap: 16px;
+
+        background:
+            linear-gradient(
+                135deg,
+                #ffffff,
+                #fbfdfc
+            );
+
+        border-bottom:
+            1px solid
+            var(--client-border);
+    }
+
+    .client-card-title {
+        display: flex;
+
+        align-items: center;
+
+        gap: 12px;
+    }
+
+    .client-card-icon {
+        display: grid;
+
+        width: 44px;
+        height: 44px;
+
+        flex-shrink: 0;
+
+        place-items: center;
+
+        color:
+            var(--client-primary);
+
+        background:
+            var(--client-soft);
+
+        border-radius: 13px;
+
+        font-size: 17px;
+    }
+
+    .client-card-header h2 {
+        margin: 0;
+
+        color:
+            var(--client-dark);
+
+        font-size: 17px;
+        font-weight: 900;
+    }
+
+    .client-card-header p {
+        margin:
+            4px
+            0
+            0;
+
+        color:
+            var(--client-muted);
+
+        font-size: 9px;
+    }
+
+    .client-card-body {
+        padding: 22px;
+    }
+
+
+    /* =====================================================
+       INFORMATIONS CLIENT
+    ===================================================== */
+
+    .client-info-list {
+        display: grid;
+
+        gap: 2px;
+    }
+
+    .client-info-row {
+        padding:
+            13px
+            0;
+
+        display: flex;
+
+        align-items:
+            flex-start;
+
+        justify-content:
+            space-between;
+
+        gap: 18px;
+
+        border-bottom:
+            1px solid
+            #edf2ef;
+    }
+
+    .client-info-row:last-child {
+        border-bottom: 0;
+    }
+
+    .client-info-row span {
+        color:
+            var(--client-muted);
+
+        font-size: 10px;
+    }
+
+    .client-info-row strong {
+        max-width: 60%;
+
+        color:
+            var(--client-dark);
+
+        text-align: right;
+
+        font-size: 10px;
+        font-weight: 900;
+
+        overflow-wrap:
+            anywhere;
+    }
+
+    .client-account-status {
+        display: inline-flex;
+
+        padding:
+            6px
+            9px;
+
+        align-items: center;
+
+        gap: 5px;
+
+        color:
+            var(--client-success);
+
+        background:
+            var(--client-success-soft);
+
+        border-radius: 999px;
+
+        font-size: 8px;
+        font-weight: 900;
+    }
+
+    .client-account-status.inactive {
+        color:
+            var(--client-danger);
+
+        background:
+            var(--client-danger-soft);
+    }
+
+
+    /* =====================================================
+       ADRESSES
+    ===================================================== */
+
+    .client-address {
+        position: relative;
+
+        padding: 16px;
+
+        color:
+            var(--client-muted);
+
+        background:
+            #f8fbf9;
+
+        border:
+            1px solid
+            var(--client-border);
+
+        border-radius: 14px;
+
+        font-size: 10px;
+
+        line-height: 1.7;
+    }
+
+    .client-address
+    + .client-address {
+        margin-top: 11px;
+    }
+
+    .client-address strong {
+        display: block;
+
+        margin-bottom: 5px;
+
+        color:
+            var(--client-dark);
+
+        font-size: 11px;
+    }
+
+    .client-address-main {
+        display: inline-flex;
+
+        margin-top: 10px;
+
+        padding:
+            5px
+            8px;
+
+        align-items: center;
+
+        gap: 5px;
+
+        color:
+            var(--client-success);
+
+        background:
+            var(--client-success-soft);
+
+        border-radius: 999px;
+
+        font-size: 8px;
+        font-weight: 900;
+    }
+
+
+    /* =====================================================
+       COMMANDES
+    ===================================================== */
+
+    .client-orders-header-count {
+        display: inline-flex;
+
+        padding:
+            7px
+            10px;
+
+        align-items: center;
+
+        gap: 6px;
+
+        color:
+            var(--client-primary);
+
+        background:
+            var(--client-soft);
+
+        border-radius: 999px;
+
+        font-size: 9px;
+        font-weight: 900;
+    }
+
+    .client-orders-table-wrapper {
+        overflow-x: auto;
+    }
+
+    .client-orders-table {
+        width: 100%;
+
+        border-collapse:
+            collapse;
+
+        white-space:
+            nowrap;
+    }
+
+    .client-orders-table th {
+        padding:
+            13px
+            17px;
+
+        color: #73817b;
+
+        background:
+            #f7faf8;
+
+        border-bottom:
+            1px solid
+            var(--client-border);
+
+        text-align: left;
+
+        font-size: 9px;
+        font-weight: 900;
+
+        text-transform:
+            uppercase;
+
+        letter-spacing:
+            0.6px;
+    }
+
+    .client-orders-table td {
+        padding:
+            16px
+            17px;
+
+        color:
+            var(--client-muted);
+
+        border-bottom:
+            1px solid
+            #edf2ef;
+
+        font-size: 10px;
+
+        vertical-align: middle;
+    }
+
+    .client-orders-table
+    tbody
+    tr {
+        transition: 0.2s ease;
+    }
+
+    .client-orders-table
+    tbody
+    tr:hover {
+        background:
+            #f9fcfa;
+    }
+
+    .client-orders-table
+    tbody
+    tr:last-child
+    td {
+        border-bottom: 0;
+    }
+
+    .client-order-number {
+        color:
+            var(--client-dark);
+
+        font-weight: 900;
+    }
+
+    .client-order-total {
+        color:
+            var(--client-primary);
+
+        font-size: 11px;
+        font-weight: 900;
+    }
+
+
+    /* =====================================================
+       BADGES COMMANDE
+    ===================================================== */
+
+    .client-order-badge {
+        display: inline-flex;
+
+        padding:
+            6px
+            9px;
+
+        align-items: center;
+
+        gap: 5px;
+
+        border-radius: 999px;
+
+        font-size: 8px;
+        font-weight: 900;
+    }
+
+    .client-order-badge.paid {
+        color:
+            var(--client-success);
+
+        background:
+            var(--client-success-soft);
+    }
+
+    .client-order-badge.unpaid {
+        color:
+            var(--client-warning);
+
+        background:
+            var(--client-warning-soft);
+    }
+
+    .client-order-badge.attente,
+    .client-order-badge.brouillon {
+        color:
+            var(--client-warning);
+
+        background:
+            var(--client-warning-soft);
+    }
+
+    .client-order-badge.confirmee,
+    .client-order-badge.preparation {
+        color:
+            var(--client-blue);
+
+        background:
+            var(--client-blue-soft);
+    }
+
+    .client-order-badge.expediee,
+    .client-order-badge.livree {
+        color:
+            var(--client-success);
+
+        background:
+            var(--client-success-soft);
+    }
+
+    .client-order-badge.annulee,
+    .client-order-badge.remboursee {
+        color:
+            var(--client-danger);
+
+        background:
+            var(--client-danger-soft);
+    }
+
+
+    /* =====================================================
+       ACTION
+    ===================================================== */
+
+    .client-order-action {
+        display: inline-flex;
+
+        width: 38px;
+        height: 38px;
+
+        align-items: center;
+        justify-content: center;
+
+        color:
+            var(--client-primary);
+
+        background:
+            var(--client-soft);
+
+        border-radius: 10px;
+
+        text-decoration: none;
+
+        transition: 0.2s ease;
+    }
+
+    .client-order-action:hover {
+        color:
+            var(--client-white);
+
+        background:
+            var(--client-primary);
+
+        transform:
+            translateY(-2px);
+    }
+
+
+    /* =====================================================
+       VIDE
+    ===================================================== */
+
+    .client-empty {
+        min-height: 200px;
+
+        padding:
+            35px
+            20px;
+
+        display: flex;
+
+        flex-direction:
+            column;
+
+        align-items: center;
+        justify-content: center;
+
+        text-align: center;
+    }
+
+    .client-empty-icon {
+        display: grid;
+
+        width: 60px;
+        height: 60px;
+
+        margin-bottom: 14px;
+
+        place-items: center;
+
+        color:
+            var(--client-primary);
+
+        background:
+            var(--client-soft);
+
+        border-radius: 18px;
+
+        font-size: 22px;
+    }
+
+    .client-empty h3 {
+        margin:
+            0
+            0
+            6px;
+
+        color:
+            var(--client-dark);
+
+        font-size: 14px;
+        font-weight: 900;
+    }
+
+    .client-empty p {
+        max-width: 350px;
+
+        margin: 0;
+
+        color:
+            var(--client-muted);
+
+        font-size: 10px;
+
+        line-height: 1.7;
+    }
+
+
+    /* =====================================================
+       RESPONSIVE
+    ===================================================== */
+
+    @media (max-width: 950px) {
+
+        .client-detail-grid {
+            grid-template-columns:
+                1fr;
+        }
+
+        .client-statistics {
+            grid-template-columns:
+                repeat(
+                    3,
+                    minmax(
+                        0,
+                        1fr
+                    )
+                );
+        }
+    }
+
+    @media (max-width: 720px) {
+
+        .client-detail-container {
+            width:
+                min(
+                    100% - 24px,
+                    1240px
+                );
+        }
+
+        .client-detail-topbar {
+            align-items:
+                flex-start;
+
+            flex-direction:
+                column;
+        }
+
+        .client-detail-hero-content {
+            align-items:
+                flex-start;
+
+            flex-direction:
+                column;
+        }
+
+        .client-hero-status {
+            width: 100%;
+        }
+
+        .client-statistics {
+            grid-template-columns:
+                1fr;
+        }
+
+        .client-card-header {
+            align-items:
+                flex-start;
+
+            flex-direction:
+                column;
+        }
+    }
+
+    @media (max-width: 500px) {
+
+        .client-hero-profile {
+            align-items:
+                flex-start;
+
+            flex-direction:
+                column;
+        }
+
+        .client-hero-avatar {
+            width: 70px;
+            height: 70px;
+
+            border-radius: 20px;
+
+            font-size: 25px;
+        }
+
+        .client-info-row {
+            flex-direction:
+                column;
+
+            gap: 6px;
+        }
+
+        .client-info-row strong {
+            max-width: 100%;
+
+            text-align: left;
+        }
+    }
+
+</style>
+{% endblock %}
+
+
+{% block content %}
+
+<main class="client-detail-page">
+
+    <!-- ==================================================
+         HERO
+    =================================================== -->
+
+    <header class="client-detail-hero">
+
+        <div class="client-detail-container">
+
+            <div class="client-detail-topbar">
+
+                <a
+                    href="{% url 'zendo:gestion_clients' %}"
+                    class="client-detail-back"
+                >
+                    <i class="fa-solid fa-arrow-left"></i>
+
+                    Retour aux clients
+                </a>
+
+                <span class="client-detail-secure">
+                    Dossier client sécurisé
+                </span>
+
+            </div>
+
+
+            <div class="client-detail-hero-content">
+
+                <div class="client-hero-profile">
+
+                    <span class="client-hero-avatar">
+
+                        {% if client_detail.first_name %}
+
+                            {{ client_detail.first_name|first|upper }}
+
+                        {% else %}
+
+                            {{ client_detail.username|first|upper }}
+
+                        {% endif %}
+
+                    </span>
+
+
+                    <div class="client-hero-info">
+
+                        <span class="client-hero-label">
+
+                            <i class="fa-solid fa-user"></i>
+
+                            Dossier client
+
+                        </span>
+
+                        <h1>
+
+                            {% if client_detail.get_full_name %}
+
+                                {{ client_detail.get_full_name }}
+
+                            {% else %}
+
+                                {{ client_detail.username }}
+
+                            {% endif %}
+
+                        </h1>
+
+                        <p>
+                            Client inscrit depuis le
+                            {{ client_detail.date_joined|date:"d/m/Y" }}
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="
+                        client-hero-status
+                        {% if not client_detail.is_active %}
+                            inactive
+                        {% endif %}
+                    "
+                >
+
+                    <span>
+                        État du compte
+                    </span>
+
+                    {% if client_detail.is_active %}
+
+                        <strong>
+                            <i class="fa-solid fa-circle-check"></i>
+                            Compte actif
+                        </strong>
+
+                    {% else %}
+
+                        <strong>
+                            <i class="fa-solid fa-circle-xmark"></i>
+                            Compte inactif
+                        </strong>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- ==================================================
+         MAIN
+    =================================================== -->
+
+    <div class="client-detail-container client-detail-main">
+
+
+        <!-- =================================================
+             STATISTIQUES
+        ================================================== -->
+
+        <section class="client-statistics">
+
+            <article class="client-stat-card">
+
+                <span class="client-stat-icon">
+
+                    <i class="fa-solid fa-cart-shopping"></i>
+
+                </span>
+
+                <div class="client-stat-content">
+
+                    <span>
+                        Commandes
+                    </span>
+
+                    <strong>
+                        {{ nombre_commandes|default:"0" }}
+                    </strong>
+
+                    <small>
+                        Nombre total de commandes
+                    </small>
+
+                </div>
+
+            </article>
+
+
+            <article class="client-stat-card success">
+
+                <span class="client-stat-icon">
+
+                    <i class="fa-solid fa-circle-check"></i>
+
+                </span>
+
+                <div class="client-stat-content">
+
+                    <span>
+                        Commandes payées
+                    </span>
+
+                    <strong>
+                        {{ nombre_commandes_payees|default:"0" }}
+                    </strong>
+
+                    <small>
+                        Paiements confirmés
+                    </small>
+
+                </div>
+
+            </article>
+
+
+            <article class="client-stat-card gold">
+
+                <span class="client-stat-icon">
+
+                    <i class="fa-solid fa-dollar-sign"></i>
+
+                </span>
+
+                <div class="client-stat-content">
+
+                    <span>
+                        Total des achats
+                    </span>
+
+                    <strong>
+                        {{ total_achats|default:"0"|floatformat:2 }} $
+                    </strong>
+
+                    <small>
+                        Commandes payées
+                    </small>
+
+                </div>
+
+            </article>
+
+        </section>
+
+
+        <!-- =================================================
+             GRID
+        ================================================== -->
+
+        <div class="client-detail-grid">
+
+
+            <!-- =================================================
+                 COLONNE GAUCHE
+            ================================================== -->
+
+            <aside>
+
+
+                <!-- =============================================
+                     INFORMATIONS CLIENT
+                ============================================== -->
+
+                <section class="client-card">
+
+                    <header class="client-card-header">
+
+                        <div class="client-card-title">
+
+                            <span class="client-card-icon">
+
+                                <i class="fa-solid fa-id-card"></i>
+
+                            </span>
+
+                            <div>
+
+                                <h2>
+                                    Informations
+                                </h2>
+
+                                <p>
+                                    Coordonnées du client
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </header>
+
+
+                    <div class="client-card-body">
+
+                        <div class="client-info-list">
+
+
+                            <div class="client-info-row">
+
+                                <span>
+                                    Nom complet
+                                </span>
+
+                                <strong>
+
+                                    {% if client_detail.get_full_name %}
+
+                                        {{ client_detail.get_full_name }}
+
+                                    {% else %}
+
+                                        —
+
+                                    {% endif %}
+
+                                </strong>
+
+                            </div>
+
+
+                            <div class="client-info-row">
+
+                                <span>
+                                    Nom d'utilisateur
+                                </span>
+
+                                <strong>
+                                    @{{ client_detail.username }}
+                                </strong>
+
+                            </div>
+
+
+                            <div class="client-info-row">
+
+                                <span>
+                                    Courriel
+                                </span>
+
+                                <strong>
+                                    {{ client_detail.email|default:"Aucun courriel" }}
+                                </strong>
+
+                            </div>
+
+
+                            <div class="client-info-row">
+
+                                <span>
+                                    Téléphone
+                                </span>
+
+                                <strong>
+
+                                    {% if client_detail.profil_zendo.telephone %}
+
+                                        {{ client_detail.profil_zendo.telephone }}
+
+                                    {% else %}
+
+                                        Aucun téléphone
+
+                                    {% endif %}
+
+                                </strong>
+
+                            </div>
+
+
+                            <div class="client-info-row">
+
+                                <span>
+                                    Date d'inscription
+                                </span>
+
+                                <strong>
+                                    {{ client_detail.date_joined|date:"d/m/Y H:i" }}
+                                </strong>
+
+                            </div>
+
+
+                            <div class="client-info-row">
+
+                                <span>
+                                    Dernière connexion
+                                </span>
+
+                                <strong>
+
+                                    {% if client_detail.last_login %}
+
+                                        {{ client_detail.last_login|date:"d/m/Y H:i" }}
+
+                                    {% else %}
+
+                                        Aucune connexion
+
+                                    {% endif %}
+
+                                </strong>
+
+                            </div>
+
+
+                            <div class="client-info-row">
+
+                                <span>
+                                    État
+                                </span>
+
+                                <strong>
+
+                                    {% if client_detail.is_active %}
+
+                                        <span class="client-account-status">
+
+                                            <i class="fa-solid fa-circle-check"></i>
+
+                                            Actif
+
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="client-account-status inactive">
+
+                                            <i class="fa-solid fa-circle-xmark"></i>
+
+                                            Inactif
+
+                                        </span>
+
+                                    {% endif %}
+
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =============================================
+                     ADRESSES
+                ============================================== -->
+
+                <section class="client-card">
+
+                    <header class="client-card-header">
+
+                        <div class="client-card-title">
+
+                            <span class="client-card-icon">
+
+                                <i class="fa-solid fa-location-dot"></i>
+
+                            </span>
+
+                            <div>
+
+                                <h2>
+                                    Adresses
+                                </h2>
+
+                                <p>
+                                    Adresses enregistrées
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </header>
+
+
+                    <div class="client-card-body">
+
+                        {% if adresses %}
+
+                            {% for adresse in adresses %}
+
+                                <div class="client-address">
+
+                                    <strong>
+                                        {{ adresse.nom_complet }}
+                                    </strong>
+
+                                    {{ adresse.adresse1 }}
+
+                                    {% if adresse.adresse2 %}
+
+                                        <br>
+
+                                        {{ adresse.adresse2 }}
+
+                                    {% endif %}
+
+                                    <br>
+
+                                    {{ adresse.ville }}
+
+                                    {% if adresse.province %}
+
+                                        ,
+                                        {{ adresse.province }}
+
+                                    {% endif %}
+
+                                    <br>
+
+                                    {{ adresse.code_postal }}
+
+                                    <br>
+
+                                    {{ adresse.pays }}
+
+
+                                    {% if adresse.telephone %}
+
+                                        <br><br>
+
+                                        <strong>
+                                            Téléphone
+                                        </strong>
+
+                                        {{ adresse.telephone }}
+
+                                    {% endif %}
+
+
+                                    {% if adresse.principale %}
+
+                                        <span class="client-address-main">
+
+                                            <i class="fa-solid fa-star"></i>
+
+                                            Adresse principale
+
+                                        </span>
+
+                                    {% endif %}
+
+                                </div>
+
+                            {% endfor %}
+
+                        {% else %}
+
+                            <div class="client-empty">
+
+                                <span class="client-empty-icon">
+
+                                    <i class="fa-solid fa-location-dot"></i>
+
+                                </span>
+
+                                <h3>
+                                    Aucune adresse
+                                </h3>
+
+                                <p>
+                                    Ce client n'a enregistré
+                                    aucune adresse.
+                                </p>
+
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+
+                </section>
+
+            </aside>
+
+
+            <!-- =================================================
+                 COLONNE DROITE
+            ================================================== -->
+
+            <div>
+
+
+                <!-- =============================================
+                     HISTORIQUE COMMANDES
+                ============================================== -->
+
+                <section class="client-card">
+
+                    <header class="client-card-header">
+
+                        <div class="client-card-title">
+
+                            <span class="client-card-icon">
+
+                                <i class="fa-solid fa-receipt"></i>
+
+                            </span>
+
+                            <div>
+
+                                <h2>
+                                    Historique des commandes
+                                </h2>
+
+                                <p>
+                                    Toutes les commandes du client
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <span class="client-orders-header-count">
+
+                            <i class="fa-solid fa-cart-shopping"></i>
+
+                            {{ nombre_commandes|default:"0" }}
+
+                        </span>
+
+                    </header>
+
+
+                    {% if commandes %}
+
+                        <div class="client-orders-table-wrapper">
+
+                            <table class="client-orders-table">
+
+                                <thead>
+
+                                    <tr>
+
+                                        <th>
+                                            Commande
+                                        </th>
+
+                                        <th>
+                                            Date
+                                        </th>
+
+                                        <th>
+                                            Total
+                                        </th>
+
+                                        <th>
+                                            Paiement
+                                        </th>
+
+                                        <th>
+                                            Statut
+                                        </th>
+
+                                        <th>
+                                            Relances
+                                        </th>
+
+                                        <th>
+                                            Action
+                                        </th>
+
+                                    </tr>
+
+                                </thead>
+
+
+                                <tbody>
+
+                                    {% for commande in commandes %}
+
+                                        <tr>
+
+                                            <td>
+
+                                                <span class="client-order-number">
+
+                                                    {{ commande.numero }}
+
+                                                </span>
+
+                                            </td>
+
+
+                                            <td>
+
+                                                {{ commande.cree_le|date:"d/m/Y H:i" }}
+
+                                            </td>
+
+
+                                            <td>
+
+                                                <span class="client-order-total">
+
+                                                    {{ commande.total|floatformat:2 }} $
+
+                                                </span>
+
+                                            </td>
+
+
+                                            <td>
+
+                                                {% if commande.est_payee %}
+
+                                                    <span class="client-order-badge paid">
+
+                                                        <i class="fa-solid fa-circle-check"></i>
+
+                                                        Payé
+
+                                                    </span>
+
+                                                {% else %}
+
+                                                    <span class="client-order-badge unpaid">
+
+                                                        <i class="fa-solid fa-clock"></i>
+
+                                                        À payer
+
+                                                    </span>
+
+                                                {% endif %}
+
+                                            </td>
+
+
+                                            <td>
+
+                                                <span
+                                                    class="
+                                                        client-order-badge
+                                                        {{ commande.statut }}
+                                                    "
+                                                >
+
+                                                    {{ commande.get_statut_display }}
+
+                                                </span>
+
+                                            </td>
+
+
+                                            <td>
+
+                                                {{ commande.nombre_relances_paiement|default:"0" }}
+
+                                            </td>
+
+
+                                            <td>
+
+                                                <a
+                                                    href="{% url 'zendo:gestion_commande_detail' commande.pk %}"
+                                                    class="client-order-action"
+                                                    title="Voir la commande"
+                                                >
+
+                                                    <i class="fa-solid fa-eye"></i>
+
+                                                </a>
+
+                                            </td>
+
+                                        </tr>
+
+                                    {% endfor %}
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+                    {% else %}
+
+                        <div class="client-empty">
+
+                            <span class="client-empty-icon">
+
+                                <i class="fa-solid fa-cart-shopping"></i>
+
+                            </span>
+
+                            <h3>
+                                Aucune commande
+                            </h3>
+
+                            <p>
+                                Ce client n'a encore effectué
+                                aucune commande sur Zendo Afrique.
+                            </p>
+
+                        </div>
+
+                    {% endif %}
+
+                </section>
+
+
+                <!-- =============================================
+                     RÉSUMÉ CLIENT
+                ============================================== -->
+
+                <section class="client-card">
+
+                    <header class="client-card-header">
+
+                        <div class="client-card-title">
+
+                            <span class="client-card-icon">
+
+                                <i class="fa-solid fa-chart-line"></i>
+
+                            </span>
+
+                            <div>
+
+                                <h2>
+                                    Résumé commercial
+                                </h2>
+
+                                <p>
+                                    Activité du client
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </header>
+
+
+                    <div class="client-card-body">
+
+                        <div class="client-info-list">
+
+
+                            <div class="client-info-row">
+
+                                <span>
+                                    Nombre total de commandes
+                                </span>
+
+                                <strong>
+                                    {{ nombre_commandes|default:"0" }}
+                                </strong>
+
+                            </div>
+
+
+                            <div class="client-info-row">
+
+                                <span>
+                                    Commandes payées
+                                </span>
+
+                                <strong>
+                                    {{ nombre_commandes_payees|default:"0" }}
+                                </strong>
+
+                            </div>
+
+
+                            <div class="client-info-row">
+
+                                <span>
+                                    Total des achats payés
+                                </span>
+
+                                <strong>
+                                    {{ total_achats|default:"0"|floatformat:2 }}
+                                    $
+                                </strong>
+
+                            </div>
+
+
+                            <div class="client-info-row">
+
+                                <span>
+                                    Adresses enregistrées
+                                </span>
+
+                                <strong>
+                                    {{ adresses|length }}
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</main>
+
+{% endblock %}

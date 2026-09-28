@@ -1,0 +1,869 @@
+{% extends "zendo/base.html" %}
+
+{% block title %}
+    {{ titre_page }} — Zendo Afrique
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --delivery-primary: #124c3b;
+        --delivery-primary-light: #1b6b52;
+        --delivery-dark: #071f19;
+        --delivery-gold: #d6a84f;
+        --delivery-gold-light: #fff7e5;
+        --delivery-page: #f4f8f6;
+        --delivery-white: #ffffff;
+        --delivery-text: #17211e;
+        --delivery-muted: #68756f;
+        --delivery-border: #dce7e2;
+        --delivery-soft: #e9f4ef;
+        --delivery-danger: #b42318;
+        --delivery-danger-soft: #fff0ee;
+        --delivery-shadow:
+            0 24px 65px rgba(7, 31, 25, 0.11);
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    .delivery-page {
+        min-height: 100vh;
+        padding: 60px 20px 90px;
+        color: var(--delivery-text);
+        background:
+            radial-gradient(
+                circle at 92% 8%,
+                rgba(214, 168, 79, 0.15),
+                transparent 28%
+            ),
+            var(--delivery-page);
+    }
+
+    .delivery-container {
+        width: min(900px, 100%);
+        margin: 0 auto;
+    }
+
+    .delivery-header {
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 24px;
+        padding: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 25px;
+        color: var(--delivery-white);
+        background:
+            linear-gradient(
+                135deg,
+                var(--delivery-dark),
+                var(--delivery-primary)
+            );
+        border-radius: 25px;
+        box-shadow:
+            0 24px 60px rgba(7, 31, 25, 0.20);
+    }
+
+    .delivery-header::after {
+        content: "";
+        position: absolute;
+        right: -100px;
+        bottom: -150px;
+        width: 330px;
+        height: 330px;
+        background:
+            radial-gradient(
+                circle,
+                rgba(214, 168, 79, 0.32),
+                transparent 68%
+            );
+        border-radius: 50%;
+    }
+
+    .delivery-heading {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        gap: 17px;
+    }
+
+    .delivery-heading-icon {
+        display: grid;
+        width: 58px;
+        height: 58px;
+        flex-shrink: 0;
+        place-items: center;
+        color: var(--delivery-dark);
+        background:
+            linear-gradient(
+                135deg,
+                #f1d28d,
+                var(--delivery-gold)
+            );
+        border-radius: 17px;
+        font-size: 22px;
+        box-shadow:
+            0 10px 25px rgba(214, 168, 79, 0.25);
+    }
+
+    .delivery-label {
+        display: block;
+        margin-bottom: 7px;
+        color: #f1d28d;
+        font-size: 10px;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .delivery-header h1 {
+        margin: 0;
+        color: var(--delivery-white);
+        font-size: clamp(25px, 4vw, 38px);
+        font-weight: 900;
+        letter-spacing: -0.8px;
+    }
+
+    .delivery-header p {
+        max-width: 580px;
+        margin: 8px 0 0;
+        color: rgba(255, 255, 255, 0.69);
+        font-size: 11px;
+        line-height: 1.6;
+    }
+
+    .delivery-back {
+        position: relative;
+        z-index: 2;
+        display: inline-flex;
+        min-height: 43px;
+        padding: 0 15px;
+        flex-shrink: 0;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        color: var(--delivery-white);
+        background: rgba(255, 255, 255, 0.09);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 12px;
+        text-decoration: none;
+        font-size: 10px;
+        font-weight: 900;
+        backdrop-filter: blur(10px);
+        transition: 0.22s ease;
+    }
+
+    .delivery-back:hover {
+        color: var(--delivery-dark);
+        background: var(--delivery-gold);
+        transform: translateY(-2px);
+    }
+
+    .delivery-card {
+        overflow: hidden;
+        background: var(--delivery-white);
+        border: 1px solid var(--delivery-border);
+        border-radius: 24px;
+        box-shadow: var(--delivery-shadow);
+    }
+
+    .delivery-card-header {
+        padding: 23px 27px;
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        background:
+            linear-gradient(
+                135deg,
+                #ffffff,
+                #f8fbf9
+            );
+        border-bottom: 1px solid var(--delivery-border);
+    }
+
+    .delivery-card-header > i {
+        display: grid;
+        width: 43px;
+        height: 43px;
+        flex-shrink: 0;
+        place-items: center;
+        color: var(--delivery-primary);
+        background: var(--delivery-soft);
+        border-radius: 12px;
+        font-size: 16px;
+    }
+
+    .delivery-card-header strong,
+    .delivery-card-header small {
+        display: block;
+    }
+
+    .delivery-card-header strong {
+        color: var(--delivery-dark);
+        font-size: 14px;
+        font-weight: 900;
+    }
+
+    .delivery-card-header small {
+        margin-top: 4px;
+        color: var(--delivery-muted);
+        font-size: 9px;
+    }
+
+    .delivery-form {
+        padding: 28px;
+    }
+
+    /* =========================================
+       NOTIFICATION AUTOMATIQUE PAR COURRIEL
+    ========================================= */
+
+    .delivery-email-notice {
+        margin: 22px 27px 0;
+        padding: 17px 18px;
+        display: flex;
+        align-items: flex-start;
+        gap: 13px;
+        color: #0d5133;
+        background:
+            linear-gradient(
+                135deg,
+                #eaf8f0,
+                #f8fffb
+            );
+        border: 1px solid #bfe5cf;
+        border-radius: 15px;
+    }
+
+    .delivery-email-notice.warning {
+        color: #7b4d05;
+        background:
+            linear-gradient(
+                135deg,
+                #fff6df,
+                #fffaf0
+            );
+        border-color: #f0d493;
+    }
+
+    .delivery-email-notice-icon {
+        display: grid;
+        width: 43px;
+        height: 43px;
+        flex-shrink: 0;
+        place-items: center;
+        color: #ffffff;
+        background: #188052;
+        border-radius: 12px;
+        font-size: 16px;
+    }
+
+    .delivery-email-notice.warning
+    .delivery-email-notice-icon {
+        background: #a66d09;
+    }
+
+    .delivery-email-notice-content {
+        min-width: 0;
+        flex: 1;
+    }
+
+    .delivery-email-notice-content strong {
+        display: block;
+        color: inherit;
+        font-size: 11px;
+        font-weight: 900;
+    }
+
+    .delivery-email-notice-content p {
+        margin: 5px 0 0;
+        color: #527364;
+        font-size: 9px;
+        line-height: 1.6;
+    }
+
+    .delivery-email-notice.warning
+    .delivery-email-notice-content p {
+        color: #8d6a2e;
+    }
+
+    .delivery-email-address {
+        display: inline-flex;
+        max-width: 100%;
+        margin-top: 8px;
+        padding: 6px 9px;
+        align-items: center;
+        gap: 6px;
+        overflow: hidden;
+        color: #0d5133;
+        background: rgba(255, 255, 255, 0.75);
+        border-radius: 999px;
+        font-size: 8px;
+        font-weight: 900;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .delivery-email-notice.warning
+    .delivery-email-address {
+        color: #7b4d05;
+    }
+
+    .delivery-client-summary {
+        margin: 0 27px 0;
+        padding: 14px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        color: var(--delivery-muted);
+        background: #fbfdfc;
+        border: 1px solid var(--delivery-border);
+        border-top: 0;
+        border-radius: 0 0 14px 14px;
+        font-size: 9px;
+    }
+
+    .delivery-client-summary strong {
+        color: var(--delivery-dark);
+    }
+
+    .delivery-client-summary span {
+        overflow-wrap: anywhere;
+    }
+
+    .delivery-form-grid {
+        display: grid;
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+        gap: 21px;
+    }
+
+    .delivery-field {
+        min-width: 0;
+    }
+
+    .delivery-field.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .delivery-field label {
+        display: flex;
+        margin-bottom: 8px;
+        align-items: center;
+        gap: 7px;
+        color: var(--delivery-dark);
+        font-size: 10px;
+        font-weight: 900;
+    }
+
+    .delivery-field label i {
+        color: var(--delivery-primary);
+    }
+
+    .delivery-input {
+        width: 100%;
+        min-height: 49px;
+        padding: 0 14px;
+        color: var(--delivery-text);
+        background: #fbfdfc;
+        border: 1px solid var(--delivery-border);
+        border-radius: 12px;
+        outline: none;
+        font: inherit;
+        font-size: 11px;
+        transition: 0.22s ease;
+    }
+
+    .delivery-input:focus {
+        background: var(--delivery-white);
+        border-color: var(--delivery-primary);
+        box-shadow:
+            0 0 0 4px rgba(18, 76, 59, 0.09);
+    }
+
+    select.delivery-input {
+        cursor: pointer;
+    }
+
+    .delivery-help {
+        display: block;
+        margin-top: 6px;
+        color: var(--delivery-muted);
+        font-size: 8px;
+        line-height: 1.5;
+    }
+
+    .delivery-error {
+        margin-top: 6px;
+        padding: 8px 10px;
+        color: var(--delivery-danger);
+        background: var(--delivery-danger-soft);
+        border-radius: 8px;
+        font-size: 9px;
+        font-weight: 700;
+    }
+
+    .delivery-form-errors {
+        margin-bottom: 22px;
+        padding: 14px 16px;
+        display: flex;
+        align-items: flex-start;
+        gap: 11px;
+        color: var(--delivery-danger);
+        background: var(--delivery-danger-soft);
+        border: 1px solid #ffc9c3;
+        border-radius: 13px;
+        font-size: 10px;
+        line-height: 1.6;
+    }
+
+    .delivery-form-errors i {
+        margin-top: 2px;
+    }
+
+    .delivery-actions {
+        margin-top: 28px;
+        padding-top: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 11px;
+        border-top: 1px solid var(--delivery-border);
+    }
+
+    .delivery-cancel,
+    .delivery-submit {
+        display: inline-flex;
+        min-height: 47px;
+        padding: 0 19px;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        border: 0;
+        border-radius: 12px;
+        text-decoration: none;
+        font-size: 10px;
+        font-weight: 900;
+        cursor: pointer;
+        transition: 0.22s ease;
+    }
+
+    .delivery-cancel {
+        color: var(--delivery-muted);
+        background: #f4f7f5;
+        border: 1px solid var(--delivery-border);
+    }
+
+    .delivery-cancel:hover {
+        color: var(--delivery-dark);
+        background: var(--delivery-soft);
+    }
+
+    .delivery-submit {
+        color: var(--delivery-dark);
+        background:
+            linear-gradient(
+                135deg,
+                #f1d28d,
+                var(--delivery-gold)
+            );
+        box-shadow:
+            0 10px 24px rgba(214, 168, 79, 0.26);
+    }
+
+    .delivery-submit:hover {
+        color: var(--delivery-white);
+        background: var(--delivery-primary);
+        transform: translateY(-2px);
+    }
+
+    @media (max-width: 700px) {
+        .delivery-page {
+            padding: 30px 12px 60px;
+        }
+
+        .delivery-header {
+            padding: 25px 20px;
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .delivery-back {
+            width: 100%;
+        }
+
+        .delivery-form {
+            padding: 21px;
+        }
+
+        .delivery-email-notice {
+            margin: 18px 20px 0;
+        }
+
+        .delivery-client-summary {
+            margin: 0 20px;
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .delivery-form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .delivery-field.full-width {
+            grid-column: auto;
+        }
+
+        .delivery-actions {
+            align-items: stretch;
+            flex-direction: column-reverse;
+        }
+
+        .delivery-cancel,
+        .delivery-submit {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<main class="delivery-page">
+
+    <div class="delivery-container">
+
+        <header class="delivery-header">
+
+            <div class="delivery-heading">
+                <span class="delivery-heading-icon">
+                    <i class="fa-solid {{ icone_page }}"></i>
+                </span>
+
+                <div>
+                    <span class="delivery-label">
+                        Gestion des livraisons
+                    </span>
+
+                    <h1>{{ titre_page }}</h1>
+
+                    <p>{{ description_page }}</p>
+                </div>
+            </div>
+
+            <a
+                href="{% url 'zendo:tableau_bord' %}#gestion-livraisons"
+                class="delivery-back"
+            >
+                <i class="fa-solid fa-arrow-left"></i>
+                Retour au tableau de bord
+            </a>
+
+        </header>
+
+        <section class="delivery-card">
+
+            <header class="delivery-card-header">
+                <i class="fa-solid fa-clipboard-list"></i>
+
+                <div>
+                    <strong>Informations de livraison</strong>
+
+                    <small>
+                        Les champs marqués d’un astérisque sont obligatoires.
+                    </small>
+                </div>
+            </header>
+
+            {% if mode_modification %}
+
+                {% if livraison.commande.client.email %}
+
+                    <div class="delivery-email-notice">
+
+                        <span class="delivery-email-notice-icon">
+                            <i class="fa-solid fa-envelope-circle-check"></i>
+                        </span>
+
+                        <div class="delivery-email-notice-content">
+
+                            <strong>
+                                Notification automatique au client activée
+                            </strong>
+
+                            <p>
+                                Après l’enregistrement de cette modification,
+                                Zendo Afrique enverra automatiquement un courriel
+                                au client avec le nouveau statut de livraison,
+                                le transporteur, le numéro de suivi et les dates
+                                disponibles.
+                            </p>
+
+                            <span class="delivery-email-address">
+                                <i class="fa-solid fa-envelope"></i>
+                                {{ livraison.commande.client.email }}
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    <div class="delivery-client-summary">
+
+                        <span>
+                            Client :
+                            <strong>
+                                {% if livraison.commande.client.get_full_name %}
+                                    {{ livraison.commande.client.get_full_name }}
+                                {% else %}
+                                    {{ livraison.commande.client.username }}
+                                {% endif %}
+                            </strong>
+                        </span>
+
+                        <span>
+                            Commande :
+                            <strong>
+                                {{ livraison.commande.numero }}
+                            </strong>
+                        </span>
+
+                    </div>
+
+                {% else %}
+
+                    <div class="delivery-email-notice warning">
+
+                        <span class="delivery-email-notice-icon">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                        </span>
+
+                        <div class="delivery-email-notice-content">
+
+                            <strong>
+                                Aucun courriel disponible pour ce client
+                            </strong>
+
+                            <p>
+                                La livraison pourra être modifiée normalement,
+                                mais aucune notification automatique ne pourra
+                                être envoyée tant que le client ne possède pas
+                                d’adresse courriel.
+                            </p>
+
+                            <span class="delivery-email-address">
+                                <i class="fa-solid fa-user"></i>
+                                {{ livraison.commande.client.username }}
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                {% endif %}
+
+            {% endif %}
+
+            <form method="post" class="delivery-form" novalidate>
+
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div class="delivery-form-errors">
+                        <i class="fa-solid fa-circle-exclamation"></i>
+
+                        <div>
+                            {% for erreur in form.non_field_errors %}
+                                <div>{{ erreur }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+
+                <div class="delivery-form-grid">
+
+                    <div class="delivery-field full-width">
+                        <label for="{{ form.commande.id_for_label }}">
+                            <i class="fa-solid fa-cart-shopping"></i>
+                            {{ form.commande.label }} *
+                        </label>
+
+                        {{ form.commande }}
+
+                        {% for erreur in form.commande.errors %}
+                            <div class="delivery-error">
+                                {{ erreur }}
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="delivery-field">
+                        <label for="{{ form.transporteur.id_for_label }}">
+                            <i class="fa-solid fa-truck"></i>
+                            {{ form.transporteur.label }}
+                        </label>
+
+                        {{ form.transporteur }}
+
+                        <small class="delivery-help">
+                            Entreprise chargée de transporter le colis.
+                        </small>
+
+                        {% for erreur in form.transporteur.errors %}
+                            <div class="delivery-error">
+                                {{ erreur }}
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="delivery-field">
+                        <label for="{{ form.numero_suivi.id_for_label }}">
+                            <i class="fa-solid fa-barcode"></i>
+                            {{ form.numero_suivi.label }}
+                        </label>
+
+                        {{ form.numero_suivi }}
+
+                        <small class="delivery-help">
+                            Numéro permettant au client de suivre son colis.
+                        </small>
+
+                        {% for erreur in form.numero_suivi.errors %}
+                            <div class="delivery-error">
+                                {{ erreur }}
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="delivery-field">
+                        <label for="{{ form.statut.id_for_label }}">
+                            <i class="fa-solid fa-list-check"></i>
+                            {{ form.statut.label }} *
+                        </label>
+
+                        {{ form.statut }}
+
+                        {% for erreur in form.statut.errors %}
+                            <div class="delivery-error">
+                                {{ erreur }}
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="delivery-field">
+                        <label for="{{ form.livraison_prevue.id_for_label }}">
+                            <i class="fa-regular fa-calendar"></i>
+                            {{ form.livraison_prevue.label }}
+                        </label>
+
+                        {{ form.livraison_prevue }}
+
+                        <small class="delivery-help">
+                            Date estimée communiquée au client.
+                        </small>
+
+                        {% for erreur in form.livraison_prevue.errors %}
+                            <div class="delivery-error">
+                                {{ erreur }}
+                            </div>
+                        {% endfor %}
+                    </div>
+
+
+                    {% if form.date_expedition %}
+
+                        <div class="delivery-field">
+
+                            <label for="{{ form.date_expedition.id_for_label }}">
+                                <i class="fa-solid fa-calendar-check"></i>
+                                {{ form.date_expedition.label }}
+                            </label>
+
+                            {{ form.date_expedition }}
+
+                            <small class="delivery-help">
+                                Date réelle d’expédition du colis.
+                            </small>
+
+                            {% for erreur in form.date_expedition.errors %}
+                                <div class="delivery-error">
+                                    {{ erreur }}
+                                </div>
+                            {% endfor %}
+
+                        </div>
+
+                    {% endif %}
+
+
+                    {% if form.url_suivi %}
+
+                        <div class="delivery-field full-width">
+
+                            <label for="{{ form.url_suivi.id_for_label }}">
+                                <i class="fa-solid fa-link"></i>
+                                {{ form.url_suivi.label }}
+                            </label>
+
+                            {{ form.url_suivi }}
+
+                            <small class="delivery-help">
+                                Lien officiel de suivi. S’il est renseigné,
+                                le courriel envoyé au client contiendra un
+                                bouton « Suivre mon colis ».
+                            </small>
+
+                            {% for erreur in form.url_suivi.errors %}
+                                <div class="delivery-error">
+                                    {{ erreur }}
+                                </div>
+                            {% endfor %}
+
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+                <div class="delivery-actions">
+
+                    <a
+                        href="{% url 'zendo:tableau_bord' %}#gestion-livraisons"
+                        class="delivery-cancel"
+                    >
+                        <i class="fa-solid fa-xmark"></i>
+                        Annuler
+                    </a>
+
+                    <button type="submit" class="delivery-submit">
+
+                        {% if mode_modification and livraison.commande.client.email %}
+
+                            <i class="fa-solid fa-paper-plane"></i>
+                            Enregistrer et notifier le client
+
+                        {% else %}
+
+                            <i class="fa-solid fa-floppy-disk"></i>
+                            {{ texte_bouton }}
+
+                        {% endif %}
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </section>
+
+    </div>
+
+</main>
+
+{% endblock %}

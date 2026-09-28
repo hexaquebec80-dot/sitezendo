@@ -1,0 +1,1128 @@
+{% extends "zendo/base.html" %}
+
+{% block title %}
+Personnalisation — Zendo Afrique
+{% endblock %}
+
+
+{% block extra_css %}
+
+<style>
+
+.custom-request-page {
+    min-height: 100vh;
+
+    background:
+        linear-gradient(
+            180deg,
+            #f8faf8 0%,
+            #ffffff 100%
+        );
+}
+
+
+/* ============================================================
+   HERO
+   ============================================================ */
+
+.custom-request-hero {
+    position: relative;
+
+    padding:
+        95px 20px 115px;
+
+    overflow: hidden;
+
+    color:
+        #ffffff;
+
+    background:
+        radial-gradient(
+            circle at 85% 25%,
+            rgba(214, 168, 79, 0.23),
+            transparent 25%
+        ),
+        linear-gradient(
+            135deg,
+            #071f19,
+            #124c3b
+        );
+}
+
+
+.custom-request-hero::before {
+    content: "";
+
+    position: absolute;
+
+    top: -260px;
+
+    right: -170px;
+
+    width: 600px;
+
+    height: 600px;
+
+    border:
+        1px solid rgba(214, 168, 79, 0.20);
+
+    border-radius: 50%;
+}
+
+
+.custom-request-hero-content {
+    position: relative;
+
+    z-index: 2;
+
+    max-width: 850px;
+
+    margin:
+        0 auto;
+
+    text-align: center;
+}
+
+
+.custom-request-label {
+    margin-bottom: 18px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    padding:
+        8px 14px;
+
+    color:
+        #f1ca7d;
+
+    background:
+        rgba(214, 168, 79, 0.10);
+
+    border:
+        1px solid rgba(214, 168, 79, 0.35);
+
+    border-radius: 999px;
+
+    font-size: 10px;
+
+    font-weight: 900;
+
+    letter-spacing: 1.4px;
+
+    text-transform: uppercase;
+}
+
+
+.custom-request-hero h1 {
+    margin:
+        0 0 20px;
+
+    font-family:
+        "Playfair Display",
+        serif;
+
+    font-size:
+        clamp(42px, 6vw, 70px);
+
+    line-height: 1.05;
+}
+
+
+.custom-request-hero h1 span {
+    color:
+        #d6a84f;
+}
+
+
+.custom-request-hero p {
+    max-width: 680px;
+
+    margin:
+        0 auto;
+
+    color:
+        rgba(255, 255, 255, 0.73);
+
+    font-size: 16px;
+
+    line-height: 1.8;
+}
+
+
+/* ============================================================
+   CONTENU
+   ============================================================ */
+
+.custom-request-container {
+    width:
+        min(100% - 40px, 1180px);
+
+    margin:
+        -55px auto 0;
+
+    padding-bottom:
+        100px;
+
+    position: relative;
+
+    z-index: 5;
+
+    display: grid;
+
+    grid-template-columns:
+        0.72fr 1.28fr;
+
+    gap: 30px;
+
+    align-items: start;
+}
+
+
+/* ============================================================
+   INFORMATIONS
+   ============================================================ */
+
+.custom-request-info {
+    padding:
+        35px;
+
+    color:
+        #ffffff;
+
+    background:
+        #071f19;
+
+    border-radius: 24px;
+
+    box-shadow:
+        0 25px 60px rgba(7, 31, 25, 0.18);
+}
+
+
+.custom-request-info h2 {
+    margin:
+        0 0 12px;
+
+    font-family:
+        "Playfair Display",
+        serif;
+
+    font-size: 31px;
+}
+
+
+.custom-request-info > p {
+    margin:
+        0 0 32px;
+
+    color:
+        rgba(255, 255, 255, 0.65);
+
+    line-height: 1.7;
+
+    font-size: 13px;
+}
+
+
+.custom-request-steps {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 18px;
+}
+
+
+.custom-request-step {
+    display: flex;
+
+    gap: 13px;
+
+    align-items: flex-start;
+}
+
+
+.custom-step-icon {
+    width: 42px;
+
+    height: 42px;
+
+    flex-shrink: 0;
+
+    display: grid;
+
+    place-items: center;
+
+    color:
+        #071f19;
+
+    background:
+        #d6a84f;
+
+    border-radius: 12px;
+}
+
+
+.custom-request-step strong {
+    display: block;
+
+    margin-bottom: 4px;
+
+    font-size: 13px;
+}
+
+
+.custom-request-step span {
+    color:
+        rgba(255, 255, 255, 0.58);
+
+    font-size: 11px;
+
+    line-height: 1.5;
+}
+
+
+/* ============================================================
+   FORMULAIRE
+   ============================================================ */
+
+.custom-request-form {
+    padding:
+        40px;
+
+    background:
+        #ffffff;
+
+    border:
+        1px solid #e2e8e4;
+
+    border-radius: 24px;
+
+    box-shadow:
+        0 25px 60px rgba(7, 31, 25, 0.12);
+}
+
+
+.form-heading {
+    margin-bottom: 30px;
+}
+
+
+.form-heading span {
+    display: block;
+
+    margin-bottom: 7px;
+
+    color:
+        #a97b29;
+
+    font-size: 10px;
+
+    font-weight: 900;
+
+    letter-spacing: 1.3px;
+
+    text-transform: uppercase;
+}
+
+
+.form-heading h2 {
+    margin:
+        0 0 8px;
+
+    color:
+        #071f19;
+
+    font-family:
+        "Playfair Display",
+        serif;
+
+    font-size: 34px;
+}
+
+
+.form-heading p {
+    margin: 0;
+
+    color:
+        #65716c;
+
+    font-size: 13px;
+}
+
+
+.form-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 20px;
+}
+
+
+.form-group {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 7px;
+}
+
+
+.form-group-full {
+    grid-column:
+        1 / -1;
+}
+
+
+.form-group label {
+    color:
+        #071f19;
+
+    font-size: 12px;
+
+    font-weight: 800;
+}
+
+
+.form-control {
+    width: 100%;
+
+    min-height: 50px;
+
+    padding:
+        12px 14px;
+
+    color:
+        #071f19;
+
+    background:
+        #f8faf8;
+
+    border:
+        1px solid #dce5e0;
+
+    border-radius: 11px;
+
+    outline: none;
+
+    font-family: inherit;
+
+    font-size: 13px;
+
+    transition:
+        all 0.2s ease;
+}
+
+
+textarea.form-control {
+    min-height: 145px;
+
+    resize: vertical;
+}
+
+
+.form-control:focus {
+    background:
+        #ffffff;
+
+    border-color:
+        #d6a84f;
+
+    box-shadow:
+        0 0 0 4px rgba(214, 168, 79, 0.12);
+}
+
+
+.form-help {
+    color:
+        #89938e;
+
+    font-size: 10px;
+
+    line-height: 1.5;
+}
+
+
+.form-error {
+    color:
+        #b42318;
+
+    font-size: 11px;
+
+    font-weight: 700;
+}
+
+
+.upload-box {
+    padding:
+        18px;
+
+    background:
+        #fbf8f1;
+
+    border:
+        1px dashed #d6a84f;
+
+    border-radius: 13px;
+}
+
+
+.submit-button {
+    width: 100%;
+
+    min-height: 55px;
+
+    margin-top: 10px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 10px;
+
+    color:
+        #071f19;
+
+    background:
+        #d6a84f;
+
+    border: 0;
+
+    border-radius: 999px;
+
+    font-weight: 900;
+
+    cursor: pointer;
+
+    transition:
+        all 0.25s ease;
+}
+
+
+.submit-button:hover {
+    color:
+        #ffffff;
+
+    background:
+        #124c3b;
+
+    transform:
+        translateY(-2px);
+}
+
+
+/* ============================================================
+   MOBILE
+   ============================================================ */
+
+@media (max-width: 850px) {
+
+    .custom-request-container {
+        grid-template-columns:
+            1fr;
+    }
+
+}
+
+
+@media (max-width: 650px) {
+
+    .custom-request-hero {
+        padding:
+            75px 20px 100px;
+    }
+
+
+    .custom-request-container {
+        width:
+            calc(100% - 28px);
+
+        margin-top:
+            -40px;
+    }
+
+
+    .custom-request-form,
+    .custom-request-info {
+        padding:
+            25px 20px;
+    }
+
+
+    .form-grid {
+        grid-template-columns:
+            1fr;
+    }
+
+
+    .form-group-full {
+        grid-column:
+            auto;
+    }
+
+}
+
+</style>
+
+{% endblock %}
+
+
+
+{% block content %}
+
+<div class="custom-request-page">
+
+
+    <!-- HERO -->
+
+    <section class="custom-request-hero">
+
+        <div class="custom-request-hero-content">
+
+            <span class="custom-request-label">
+
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+
+                Service de personnalisation
+
+            </span>
+
+
+            <h1>
+
+                Donnez vie à
+
+                <span>
+                    votre idée.
+                </span>
+
+            </h1>
+
+
+            <p>
+
+                Entreprise ou particulier, transmettez-nous
+                votre projet de personnalisation de tenues.
+                Envoyez votre logo, votre image ou votre plan
+                et indiquez les détails de votre commande.
+
+            </p>
+
+        </div>
+
+    </section>
+
+
+
+    <div class="custom-request-container">
+
+
+        <!-- INFORMATIONS -->
+
+        <aside class="custom-request-info">
+
+            <h2>
+                Votre projet, votre identité.
+            </h2>
+
+
+            <p>
+
+                Zendo Afrique vous accompagne dans la
+                personnalisation de vos vêtements et tenues.
+
+            </p>
+
+
+            <div class="custom-request-steps">
+
+
+                <div class="custom-request-step">
+
+                    <div class="custom-step-icon">
+
+                        <i class="fa-solid fa-image"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <strong>
+                            Ajoutez votre logo ou votre image
+                        </strong>
+
+                        <span>
+                            Envoyez le visuel que vous souhaitez
+                            intégrer à vos tenues.
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="custom-request-step">
+
+                    <div class="custom-step-icon">
+
+                        <i class="fa-solid fa-shirt"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <strong>
+                            Choisissez la quantité
+                        </strong>
+
+                        <span>
+                            Indiquez le nombre de pièces dont
+                            vous avez besoin.
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="custom-request-step">
+
+                    <div class="custom-step-icon">
+
+                        <i class="fa-solid fa-palette"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <strong>
+                            Couleurs et tailles
+                        </strong>
+
+                        <span>
+                            Précisez vos couleurs et les tailles
+                            souhaitées.
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="custom-request-step">
+
+                    <div class="custom-step-icon">
+
+                        <i class="fa-solid fa-envelope-circle-check"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <strong>
+                            Recevez un suivi
+                        </strong>
+
+                        <span>
+                            Notre équipe reçoit votre demande
+                            et peut ensuite vous contacter.
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </aside>
+
+
+
+        <!-- FORMULAIRE -->
+
+        <div class="custom-request-form">
+
+
+            <div class="form-heading">
+
+                <span>
+                    Demande de personnalisation
+                </span>
+
+
+                <h2>
+                    Parlez-nous de votre projet
+                </h2>
+
+
+                <p>
+                    Remplissez les informations ci-dessous.
+                </p>
+
+            </div>
+
+
+
+            <form
+                method="post"
+                enctype="multipart/form-data"
+            >
+
+                {% csrf_token %}
+
+
+                <div class="form-grid">
+
+
+                    <!-- TYPE -->
+
+                    <div class="form-group">
+
+                        <label for="{{ form.type_client.id_for_label }}">
+                            Vous êtes *
+                        </label>
+
+                        {{ form.type_client }}
+
+                        {% for error in form.type_client.errors %}
+                            <span class="form-error">
+                                {{ error }}
+                            </span>
+                        {% endfor %}
+
+                    </div>
+
+
+
+                    <!-- NOM -->
+
+                    <div class="form-group">
+
+                        <label for="{{ form.nom.id_for_label }}">
+                            Nom complet *
+                        </label>
+
+                        {{ form.nom }}
+
+                        {% for error in form.nom.errors %}
+                            <span class="form-error">
+                                {{ error }}
+                            </span>
+                        {% endfor %}
+
+                    </div>
+
+
+
+                    <!-- ENTREPRISE -->
+
+                    <div
+                        class="form-group"
+                        id="company-field"
+                    >
+
+                        <label for="{{ form.nom_entreprise.id_for_label }}">
+                            Nom de l’entreprise
+                        </label>
+
+                        {{ form.nom_entreprise }}
+
+                        {% for error in form.nom_entreprise.errors %}
+                            <span class="form-error">
+                                {{ error }}
+                            </span>
+                        {% endfor %}
+
+                    </div>
+
+
+
+                    <!-- TELEPHONE -->
+
+                    <div class="form-group">
+
+                        <label for="{{ form.telephone.id_for_label }}">
+                            Numéro de téléphone *
+                        </label>
+
+                        {{ form.telephone }}
+
+                        {% for error in form.telephone.errors %}
+                            <span class="form-error">
+                                {{ error }}
+                            </span>
+                        {% endfor %}
+
+                    </div>
+
+
+
+                    <!-- EMAIL -->
+
+                    <div class="form-group">
+
+                        <label for="{{ form.email.id_for_label }}">
+                            Adresse email *
+                        </label>
+
+                        {{ form.email }}
+
+                        {% for error in form.email.errors %}
+                            <span class="form-error">
+                                {{ error }}
+                            </span>
+                        {% endfor %}
+
+                    </div>
+
+
+
+                    <!-- POSTAL -->
+
+                    <div class="form-group">
+
+                        <label for="{{ form.code_postal.id_for_label }}">
+                            Code postal *
+                        </label>
+
+                        {{ form.code_postal }}
+
+                        {% for error in form.code_postal.errors %}
+                            <span class="form-error">
+                                {{ error }}
+                            </span>
+                        {% endfor %}
+
+                    </div>
+
+
+
+                    <!-- QUANTITE -->
+
+                    <div class="form-group">
+
+                        <label for="{{ form.quantite.id_for_label }}">
+                            Combien de pièces souhaitez-vous ? *
+                        </label>
+
+                        {{ form.quantite }}
+
+                        {% for error in form.quantite.errors %}
+                            <span class="form-error">
+                                {{ error }}
+                            </span>
+                        {% endfor %}
+
+                    </div>
+
+
+
+                    <!-- COULEUR -->
+
+                    <div class="form-group">
+
+                        <label for="{{ form.couleur.id_for_label }}">
+                            Couleur souhaitée
+                        </label>
+
+                        {{ form.couleur }}
+
+                    </div>
+
+
+
+                    <!-- TAILLES -->
+
+                    <div class="form-group form-group-full">
+
+                        <label for="{{ form.taille.id_for_label }}">
+                            Taille(s) souhaitée(s)
+                        </label>
+
+                        {{ form.taille }}
+
+                        <span class="form-help">
+
+                            Exemple :
+                            10 × M, 10 × L, 5 × XL
+
+                        </span>
+
+                    </div>
+
+
+
+                    <!-- DESCRIPTION -->
+
+                    <div class="form-group form-group-full">
+
+                        <label for="{{ form.description.id_for_label }}">
+                            Décrivez votre demande *
+                        </label>
+
+                        {{ form.description }}
+
+                        {% for error in form.description.errors %}
+                            <span class="form-error">
+                                {{ error }}
+                            </span>
+                        {% endfor %}
+
+                    </div>
+
+
+
+                    <!-- FICHIER -->
+
+                    <div class="form-group form-group-full">
+
+                        <div class="upload-box">
+
+                            <label for="{{ form.fichier.id_for_label }}">
+
+                                <i class="fa-solid fa-cloud-arrow-up"></i>
+
+                                Logo, image ou plan
+
+                            </label>
+
+                            {{ form.fichier }}
+
+                            <span class="form-help">
+
+                                Vous pouvez transmettre votre logo,
+                                votre maquette, une image de référence
+                                ou votre plan.
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    {% if form.non_field_errors %}
+
+                        <div class="form-group form-group-full">
+
+                            {% for error in form.non_field_errors %}
+
+                                <span class="form-error">
+                                    {{ error }}
+                                </span>
+
+                            {% endfor %}
+
+                        </div>
+
+                    {% endif %}
+
+
+                    <!-- BOUTON -->
+
+                    <div class="form-group form-group-full">
+
+                        <button
+                            type="submit"
+                            class="submit-button"
+                        >
+
+                            <i class="fa-solid fa-paper-plane"></i>
+
+                            Envoyer ma demande
+
+                        </button>
+
+                    </div>
+
+
+                </div>
+
+
+            </form>
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const typeClient =
+            document.getElementById(
+                "id_type_client"
+            );
+
+        const companyField =
+            document.getElementById(
+                "company-field"
+            );
+
+
+        if (
+            !typeClient
+            ||
+            !companyField
+        ) {
+            return;
+        }
+
+
+        function updateCompanyField() {
+
+            if (
+                typeClient.value ===
+                "entreprise"
+            ) {
+
+                companyField.style.display =
+                    "flex";
+
+            } else {
+
+                companyField.style.display =
+                    "none";
+
+            }
+
+        }
+
+
+        updateCompanyField();
+
+
+        typeClient.addEventListener(
+            "change",
+            updateCompanyField
+        );
+
+    }
+);
+
+</script>
+
+{% endblock %}

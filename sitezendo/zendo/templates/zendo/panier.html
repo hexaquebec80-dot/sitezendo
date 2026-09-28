@@ -1,0 +1,2542 @@
+{% extends "zendo/base.html" %}
+{% load static %}
+
+{% block title %}
+    Mon panier — Zendo Afrique
+{% endblock %}
+
+
+{% block extra_css %}
+
+<style>
+
+    :root {
+        --cart-primary: #124c3b;
+        --cart-dark: #071f19;
+        --cart-soft: #e9f4ef;
+        --cart-gold: #d9a441;
+        --cart-white: #ffffff;
+        --cart-page: #f5f9f7;
+        --cart-text: #17211e;
+        --cart-muted: #68756f;
+        --cart-border: #dfe8e4;
+        --cart-danger: #b42318;
+        --cart-success: #168253;
+        --cart-shadow:
+            0 18px 50px rgba(7, 31, 25, .08);
+    }
+
+
+    /* =========================================================
+       PAGE
+       ========================================================= */
+
+    .cart-page {
+        min-height: 100vh;
+        padding-bottom: 85px;
+
+        background:
+            radial-gradient(
+                circle at 94% 8%,
+                rgba(217, 164, 65, .11),
+                transparent 25%
+            ),
+            var(--cart-page);
+    }
+
+
+    .cart-container {
+        width:
+            min(1200px, calc(100% - 40px));
+
+        margin:
+            0 auto;
+    }
+
+
+    /* =========================================================
+       HERO
+       ========================================================= */
+
+    .cart-hero {
+        position: relative;
+
+        overflow: hidden;
+
+        padding:
+            52px 0 94px;
+
+        color:
+            var(--cart-white);
+
+        background:
+            linear-gradient(
+                135deg,
+                var(--cart-dark),
+                var(--cart-primary)
+            );
+    }
+
+
+    .cart-hero::before {
+        content: "";
+
+        position: absolute;
+
+        top: -230px;
+        right: -100px;
+
+        width: 490px;
+        height: 490px;
+
+        border:
+            1px solid rgba(255, 255, 255, .1);
+
+        border-radius:
+            50%;
+    }
+
+
+    .cart-hero::after {
+        content: "";
+
+        position: absolute;
+
+        right: 15%;
+        bottom: -180px;
+
+        width: 320px;
+        height: 320px;
+
+        background:
+            radial-gradient(
+                circle,
+                rgba(217, 164, 65, .28),
+                transparent 67%
+            );
+
+        border-radius:
+            50%;
+    }
+
+
+    .cart-hero-content {
+        position: relative;
+
+        z-index: 1;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content:
+            space-between;
+
+        gap: 35px;
+    }
+
+
+    .cart-label {
+        display: inline-flex;
+
+        align-items: center;
+
+        gap: 8px;
+
+        margin-bottom: 12px;
+
+        color: #f1d28d;
+
+        font-size: 11px;
+
+        font-weight: 900;
+
+        text-transform:
+            uppercase;
+
+        letter-spacing:
+            1.1px;
+    }
+
+
+    .cart-hero h1 {
+        margin: 0;
+
+        color:
+            var(--cart-white);
+
+        font-size:
+            clamp(38px, 6vw, 58px);
+
+        line-height: 1.05;
+
+        letter-spacing:
+            -1.8px;
+    }
+
+
+    .cart-hero p {
+        margin:
+            14px 0 0;
+
+        color:
+            rgba(255, 255, 255, .68);
+
+        font-size: 15px;
+    }
+
+
+    /* =========================================================
+       ÉTAPES
+       ========================================================= */
+
+    .checkout-steps {
+        display: flex;
+
+        align-items: center;
+
+        gap: 10px;
+
+        padding:
+            13px 16px;
+
+        background:
+            rgba(255, 255, 255, .08);
+
+        border:
+            1px solid rgba(255, 255, 255, .11);
+
+        border-radius:
+            15px;
+
+        backdrop-filter:
+            blur(12px);
+    }
+
+
+    .checkout-step {
+        display: flex;
+
+        align-items: center;
+
+        gap: 8px;
+
+        color:
+            rgba(255, 255, 255, .5);
+
+        font-size: 10px;
+
+        font-weight: 800;
+    }
+
+
+    .checkout-step.active {
+        color:
+            var(--cart-white);
+    }
+
+
+    .checkout-step-number {
+        width: 27px;
+        height: 27px;
+
+        display: grid;
+
+        place-items: center;
+
+        color:
+            var(--cart-dark);
+
+        background:
+            rgba(255, 255, 255, .55);
+
+        border-radius:
+            50%;
+
+        font-size: 10px;
+
+        font-weight: 900;
+    }
+
+
+    .checkout-step.active
+    .checkout-step-number {
+        background:
+            var(--cart-gold);
+    }
+
+
+    .checkout-step-divider {
+        width: 23px;
+        height: 1px;
+
+        background:
+            rgba(255, 255, 255, .18);
+    }
+
+
+    /* =========================================================
+       CONTENU
+       ========================================================= */
+
+    .cart-main {
+        position: relative;
+
+        z-index: 2;
+
+        margin-top:
+            -47px;
+    }
+
+
+    /* =========================================================
+       ASSURANCES
+       ========================================================= */
+
+    .cart-assurances {
+        display: grid;
+
+        grid-template-columns:
+            repeat(3, minmax(0, 1fr));
+
+        gap: 15px;
+
+        margin-bottom:
+            23px;
+    }
+
+
+    .cart-assurance {
+        display: flex;
+
+        align-items: center;
+
+        gap: 13px;
+
+        padding: 17px;
+
+        background:
+            var(--cart-white);
+
+        border:
+            1px solid var(--cart-border);
+
+        border-radius:
+            16px;
+
+        box-shadow:
+            var(--cart-shadow);
+    }
+
+
+    .cart-assurance i {
+        width: 39px;
+        height: 39px;
+
+        display: grid;
+
+        place-items: center;
+
+        flex:
+            0 0 auto;
+
+        color:
+            var(--cart-primary);
+
+        background:
+            var(--cart-soft);
+
+        border-radius:
+            12px;
+    }
+
+
+    .cart-assurance strong,
+    .cart-assurance small {
+        display: block;
+    }
+
+
+    .cart-assurance strong {
+        color:
+            var(--cart-dark);
+
+        font-size: 12px;
+    }
+
+
+    .cart-assurance small {
+        margin-top: 3px;
+
+        color:
+            var(--cart-muted);
+
+        font-size: 9px;
+    }
+
+
+    /* =========================================================
+       LAYOUT
+       ========================================================= */
+
+    .cart-layout {
+        display: grid;
+
+        grid-template-columns:
+            minmax(0, 1.45fr)
+            minmax(340px, .55fr);
+
+        align-items:
+            start;
+
+        gap: 25px;
+    }
+
+
+    .cart-products-panel,
+    .order-summary {
+        background:
+            var(--cart-white);
+
+        border:
+            1px solid var(--cart-border);
+
+        border-radius:
+            22px;
+
+        box-shadow:
+            var(--cart-shadow);
+    }
+
+
+    /* =========================================================
+       PRODUITS
+       ========================================================= */
+
+    .cart-products-panel {
+        overflow: hidden;
+    }
+
+
+    .cart-panel-heading {
+        display: flex;
+
+        align-items: center;
+
+        justify-content:
+            space-between;
+
+        gap: 18px;
+
+        padding:
+            22px 25px;
+
+        border-bottom:
+            1px solid var(--cart-border);
+    }
+
+
+    .cart-panel-heading h2 {
+        margin: 0;
+
+        color:
+            var(--cart-dark);
+
+        font-size: 23px;
+
+        font-weight: 900;
+
+        letter-spacing:
+            -.4px;
+    }
+
+
+    .cart-count {
+        padding:
+            7px 11px;
+
+        color:
+            var(--cart-primary);
+
+        background:
+            var(--cart-soft);
+
+        border-radius:
+            999px;
+
+        font-size: 10px;
+
+        font-weight: 900;
+    }
+
+
+    .cart-products {
+        padding:
+            0 25px;
+    }
+
+
+    .cart-item {
+        display: grid;
+
+        grid-template-columns:
+            116px
+            minmax(0, 1fr)
+            190px
+            100px;
+
+        align-items: center;
+
+        gap: 20px;
+
+        padding:
+            24px 0;
+    }
+
+
+    .cart-item + .cart-item {
+        border-top:
+            1px solid #e9efec;
+    }
+
+
+    /* =========================================================
+       IMAGE
+       ========================================================= */
+
+    .cart-item-image {
+        width: 116px;
+        height: 124px;
+
+        overflow: hidden;
+
+        background:
+            #f1f5f3;
+
+        border:
+            1px solid var(--cart-border);
+
+        border-radius:
+            16px;
+    }
+
+
+    .cart-item-image img {
+        display: block;
+
+        width: 100%;
+        height: 100%;
+
+        object-fit:
+            cover;
+
+        object-position:
+            center;
+    }
+
+
+    .small-placeholder {
+        width: 100%;
+        height: 100%;
+
+        display: grid;
+
+        place-items: center;
+
+        color:
+            var(--cart-primary);
+
+        background:
+            var(--cart-soft);
+
+        font-size: 29px;
+    }
+
+
+    /* =========================================================
+       INFORMATIONS PRODUIT
+       ========================================================= */
+
+    .product-category {
+        display: inline-flex;
+
+        margin-bottom: 7px;
+
+        color:
+            var(--cart-primary);
+
+        font-size: 9px;
+
+        font-weight: 900;
+
+        text-decoration:
+            none;
+
+        text-transform:
+            uppercase;
+
+        letter-spacing:
+            .8px;
+    }
+
+
+    .cart-item-information h3 {
+        margin:
+            0 0 7px;
+
+        font-size: 16px;
+
+        line-height: 1.35;
+    }
+
+
+    .cart-item-information h3 a {
+        color:
+            var(--cart-dark);
+
+        text-decoration:
+            none;
+    }
+
+
+    .variant-name {
+        margin:
+            0 0 9px;
+
+        color:
+            var(--cart-muted);
+
+        font-size: 11px;
+
+        line-height: 1.5;
+    }
+
+
+    .customization-note {
+        margin:
+            8px 0;
+
+        padding:
+            8px 10px;
+
+        color:
+            #65521a;
+
+        background:
+            #fff8e6;
+
+        border:
+            1px solid #f3e1ae;
+
+        border-radius:
+            9px;
+
+        font-size: 10px;
+
+        line-height: 1.5;
+    }
+
+
+    .cart-unit-price {
+        margin: 0;
+
+        color:
+            var(--cart-muted);
+
+        font-size: 10px;
+    }
+
+
+    .cart-unit-price strong {
+        color:
+            var(--cart-text);
+
+        font-size: 12px;
+    }
+
+
+    /* =========================================================
+       QUANTITÉ
+       ========================================================= */
+
+    .quantity-form label {
+        display: block;
+
+        margin-bottom: 7px;
+
+        color:
+            var(--cart-muted);
+
+        font-size: 9px;
+
+        font-weight: 900;
+
+        text-transform:
+            uppercase;
+
+        letter-spacing:
+            .6px;
+    }
+
+
+    .quantity-controls {
+        display: grid;
+
+        grid-template-columns:
+            38px 1fr 38px;
+
+        overflow: hidden;
+
+        border:
+            1px solid #d3ded9;
+
+        border-radius:
+            11px;
+    }
+
+
+    .quantity-button {
+        min-height: 39px;
+
+        padding: 0;
+
+        color:
+            var(--cart-primary);
+
+        background:
+            #f5f9f7;
+
+        border: 0;
+
+        cursor: pointer;
+
+        font-size: 15px;
+
+        font-weight: 900;
+    }
+
+
+    .quantity-button:hover {
+        background:
+            var(--cart-soft);
+    }
+
+
+    .quantity-controls input {
+        width: 100%;
+
+        min-width: 0;
+
+        padding:
+            7px 3px;
+
+        color:
+            var(--cart-dark);
+
+        background:
+            var(--cart-white);
+
+        border: 0;
+
+        border-right:
+            1px solid #e1e8e5;
+
+        border-left:
+            1px solid #e1e8e5;
+
+        outline: 0;
+
+        text-align:
+            center;
+
+        font-weight: 900;
+
+        -moz-appearance:
+            textfield;
+    }
+
+
+    .quantity-controls
+    input::-webkit-outer-spin-button,
+
+    .quantity-controls
+    input::-webkit-inner-spin-button {
+
+        margin: 0;
+
+        -webkit-appearance:
+            none;
+    }
+
+
+    .update-quantity-button {
+        width: 100%;
+
+        margin-top: 7px;
+
+        padding: 7px;
+
+        color:
+            var(--cart-primary);
+
+        background:
+            transparent;
+
+        border:
+            1px solid var(--cart-border);
+
+        border-radius:
+            9px;
+
+        cursor: pointer;
+
+        font-size: 9px;
+
+        font-weight: 900;
+    }
+
+
+    .update-quantity-button:hover {
+        background:
+            var(--cart-soft);
+    }
+
+
+    .remove-hint {
+        display: block;
+
+        margin-top: 6px;
+
+        color:
+            #98a39e;
+
+        font-size: 8px;
+
+        line-height: 1.4;
+    }
+
+
+    .cart-line-total {
+        color:
+            var(--cart-dark);
+
+        text-align:
+            right;
+
+        font-size: 17px;
+
+        font-weight: 900;
+
+        white-space:
+            nowrap;
+    }
+
+
+    /* =========================================================
+       RÉSUMÉ
+       ========================================================= */
+
+    .order-summary {
+        position: sticky;
+
+        top: 20px;
+
+        padding: 27px;
+    }
+
+
+    .summary-heading {
+        display: flex;
+
+        align-items: center;
+
+        justify-content:
+            space-between;
+
+        gap: 15px;
+
+        margin-bottom: 20px;
+    }
+
+
+    .summary-heading h2 {
+        margin: 0;
+
+        color:
+            var(--cart-dark);
+
+        font-size: 24px;
+
+        font-weight: 900;
+    }
+
+
+    .summary-heading i {
+        width: 42px;
+        height: 42px;
+
+        display: grid;
+
+        place-items: center;
+
+        color:
+            var(--cart-primary);
+
+        background:
+            var(--cart-soft);
+
+        border-radius:
+            13px;
+    }
+
+
+    /* =========================================================
+       LIGNES DU RÉSUMÉ
+       ========================================================= */
+
+    .summary-line {
+        display: flex;
+
+        align-items: center;
+
+        justify-content:
+            space-between;
+
+        gap: 18px;
+
+        padding:
+            10px 0;
+
+        color:
+            var(--cart-muted);
+
+        font-size: 12px;
+    }
+
+
+    .summary-line span {
+        display: flex;
+
+        align-items: center;
+
+        gap: 7px;
+    }
+
+
+    .summary-line strong {
+        color:
+            var(--cart-text);
+
+        font-size: 13px;
+
+        white-space:
+            nowrap;
+    }
+
+
+    .summary-line i {
+        width: 16px;
+
+        color:
+            var(--cart-primary);
+
+        text-align: center;
+
+        font-size: 10px;
+    }
+
+
+    /* REMISE */
+
+    .summary-discount strong {
+        color:
+            var(--cart-success);
+    }
+
+
+    /* TAXES */
+
+    .summary-tax {
+        padding:
+            9px 0;
+    }
+
+
+    .summary-tax strong {
+        color:
+            #42524c;
+    }
+
+
+    /* LIVRAISON */
+
+    .summary-shipping strong {
+        color:
+            var(--cart-primary);
+    }
+
+
+    /* =========================================================
+       SÉPARATEUR
+       ========================================================= */
+
+    .summary-separator {
+        height: 1px;
+
+        margin:
+            8px 0;
+
+        background:
+            var(--cart-border);
+    }
+
+
+    /* =========================================================
+       TOTAL FINAL
+       ========================================================= */
+
+    .summary-total {
+        margin-top: 8px;
+
+        padding:
+            18px 0;
+
+        color:
+            var(--cart-dark);
+
+        border-top:
+            1px solid var(--cart-border);
+
+        border-bottom:
+            1px solid var(--cart-border);
+
+        font-size: 14px;
+
+        font-weight: 900;
+    }
+
+
+    .summary-total span {
+        display: block;
+    }
+
+
+    .summary-total small {
+        display: block;
+
+        margin-top: 3px;
+
+        color:
+            var(--cart-muted);
+
+        font-size: 8px;
+
+        font-weight: 600;
+    }
+
+
+    .summary-total strong {
+        color:
+            var(--cart-primary);
+
+        font-size: 23px;
+    }
+
+
+    /* =========================================================
+       TAX INFO
+       ========================================================= */
+
+    .tax-information {
+        display: flex;
+
+        align-items: flex-start;
+
+        gap: 9px;
+
+        margin:
+            14px 0 0;
+
+        padding:
+            12px;
+
+        color:
+            #5f655f;
+
+        background:
+            #faf8f2;
+
+        border:
+            1px solid #eee3ca;
+
+        border-radius:
+            11px;
+
+        font-size: 9px;
+
+        line-height: 1.55;
+    }
+
+
+    .tax-information i {
+        margin-top: 2px;
+
+        color:
+            var(--cart-gold);
+    }
+
+
+    /* =========================================================
+       COUPON
+       ========================================================= */
+
+    .coupon-form {
+        margin:
+            21px 0;
+
+        padding: 16px;
+
+        background:
+            #f8faf9;
+
+        border:
+            1px solid var(--cart-border);
+
+        border-radius:
+            14px;
+    }
+
+
+    .coupon-form label {
+        display: block;
+
+        margin-bottom: 9px;
+
+        color:
+            var(--cart-text);
+
+        font-size: 10px;
+
+        font-weight: 900;
+
+        text-transform:
+            uppercase;
+
+        letter-spacing:
+            .5px;
+    }
+
+
+    .coupon-control {
+        display: flex;
+
+        gap: 8px;
+    }
+
+
+    .coupon-control input {
+        width: 100%;
+
+        min-width: 0;
+
+        min-height: 42px;
+
+        padding:
+            10px 12px;
+
+        color:
+            var(--cart-text);
+
+        background:
+            var(--cart-white);
+
+        border:
+            1px solid #d5dfdb;
+
+        border-radius:
+            10px;
+
+        outline: 0;
+
+        font: inherit;
+
+        text-transform:
+            uppercase;
+    }
+
+
+    .coupon-control input:focus {
+        border-color:
+            var(--cart-primary);
+
+        box-shadow:
+            0 0 0 3px rgba(18, 76, 59, .09);
+    }
+
+
+    .coupon-control button {
+        padding:
+            10px 13px;
+
+        color:
+            var(--cart-white);
+
+        background:
+            var(--cart-primary);
+
+        border: 0;
+
+        border-radius:
+            10px;
+
+        cursor: pointer;
+
+        font-size: 10px;
+
+        font-weight: 900;
+    }
+
+
+    .coupon-error {
+        display: block;
+
+        margin-top: 7px;
+
+        color:
+            var(--cart-danger);
+
+        font-size: 9px;
+
+        font-weight: 800;
+    }
+
+
+    /* =========================================================
+       INFORMATION COMMANDE
+       ========================================================= */
+
+    .summary-information {
+        display: flex;
+
+        align-items: flex-start;
+
+        gap: 8px;
+
+        margin:
+            0 0 18px;
+
+        color:
+            var(--cart-muted);
+
+        font-size: 10px;
+
+        line-height: 1.55;
+    }
+
+
+    .summary-information i {
+        margin-top: 2px;
+
+        color:
+            var(--cart-primary);
+    }
+
+
+    /* =========================================================
+       BOUTON CHECKOUT
+       ========================================================= */
+
+    .checkout-button {
+        width: 100%;
+
+        min-height: 54px;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content:
+            center;
+
+        gap: 9px;
+
+        color:
+            var(--cart-white);
+
+        background:
+            linear-gradient(
+                135deg,
+                var(--cart-primary),
+                var(--cart-dark)
+            );
+
+        border-radius:
+            13px;
+
+        box-shadow:
+            0 13px 28px rgba(18, 76, 59, .22);
+
+        text-decoration:
+            none;
+
+        font-size: 13px;
+
+        font-weight: 900;
+
+        transition:
+            .2s ease;
+    }
+
+
+    .checkout-button:hover {
+        transform:
+            translateY(-2px);
+
+        box-shadow:
+            0 17px 34px rgba(18, 76, 59, .28);
+    }
+
+
+    .secure-checkout {
+        display: flex;
+
+        align-items: center;
+
+        justify-content:
+            center;
+
+        gap: 6px;
+
+        margin-top: 12px;
+
+        color:
+            var(--cart-muted);
+
+        font-size: 9px;
+
+        font-weight: 750;
+    }
+
+
+    .secure-checkout i {
+        color:
+            var(--cart-primary);
+    }
+
+
+    .continue-shopping-link {
+        display: flex;
+
+        align-items: center;
+
+        justify-content:
+            center;
+
+        gap: 7px;
+
+        margin-top: 19px;
+
+        color:
+            var(--cart-primary);
+
+        font-size: 11px;
+
+        font-weight: 900;
+
+        text-decoration:
+            none;
+    }
+
+
+    /* =========================================================
+       PANIER VIDE
+       ========================================================= */
+
+    .empty-cart {
+        max-width: 650px;
+
+        margin:
+            0 auto;
+
+        padding:
+            65px 28px;
+
+        text-align:
+            center;
+
+        background:
+            var(--cart-white);
+
+        border:
+            1px solid var(--cart-border);
+
+        border-radius:
+            24px;
+
+        box-shadow:
+            var(--cart-shadow);
+    }
+
+
+    .empty-cart-icon {
+        position: relative;
+
+        width: 88px;
+        height: 88px;
+
+        display: grid;
+
+        place-items: center;
+
+        margin:
+            0 auto 23px;
+
+        color:
+            var(--cart-primary);
+
+        background:
+            var(--cart-soft);
+
+        border-radius:
+            27px;
+
+        font-size: 33px;
+    }
+
+
+    .empty-cart-icon::after {
+        content: "0";
+
+        position: absolute;
+
+        top: -8px;
+        right: -8px;
+
+        width: 28px;
+        height: 28px;
+
+        display: grid;
+
+        place-items: center;
+
+        color:
+            var(--cart-dark);
+
+        background:
+            var(--cart-gold);
+
+        border:
+            3px solid var(--cart-white);
+
+        border-radius:
+            50%;
+
+        font-size: 10px;
+
+        font-weight: 900;
+    }
+
+
+    .empty-cart h2 {
+        margin:
+            0 0 10px;
+
+        color:
+            var(--cart-dark);
+
+        font-size: 29px;
+
+        font-weight: 900;
+
+        letter-spacing:
+            -.7px;
+    }
+
+
+    .empty-cart p {
+        max-width: 430px;
+
+        margin:
+            0 auto 23px;
+
+        color:
+            var(--cart-muted);
+
+        font-size: 13px;
+
+        line-height: 1.7;
+    }
+
+
+    .shop-button {
+        display: inline-flex;
+
+        align-items: center;
+
+        gap: 9px;
+
+        padding:
+            13px 19px;
+
+        color:
+            var(--cart-white);
+
+        background:
+            var(--cart-primary);
+
+        border-radius:
+            12px;
+
+        text-decoration:
+            none;
+
+        font-size: 12px;
+
+        font-weight: 900;
+    }
+
+
+    /* =========================================================
+       RESPONSIVE
+       ========================================================= */
+
+    @media (max-width: 1040px) {
+
+        .cart-layout {
+            grid-template-columns:
+                1fr;
+        }
+
+
+        .order-summary {
+            position:
+                static;
+        }
+
+    }
+
+
+    @media (max-width: 800px) {
+
+        .cart-item {
+            grid-template-columns:
+                100px
+                minmax(0, 1fr)
+                150px;
+        }
+
+
+        .cart-line-total {
+            grid-column:
+                2 / -1;
+        }
+
+    }
+
+
+    @media (max-width: 680px) {
+
+        .cart-container {
+            width:
+                min(100% - 24px, 1200px);
+        }
+
+
+        .cart-hero {
+            padding:
+                40px 0 80px;
+        }
+
+
+        .cart-hero-content {
+            display: block;
+        }
+
+
+        .cart-hero h1 {
+            font-size:
+                36px;
+        }
+
+
+        .checkout-steps {
+            display:
+                none;
+        }
+
+
+        .cart-assurances {
+            grid-template-columns:
+                1fr;
+
+            gap:
+                9px;
+        }
+
+
+        .cart-assurance {
+            padding:
+                13px;
+        }
+
+
+        .cart-products-panel,
+        .order-summary {
+            border-radius:
+                18px;
+        }
+
+
+        .cart-panel-heading,
+        .cart-products,
+        .order-summary {
+            padding-right:
+                18px;
+
+            padding-left:
+                18px;
+        }
+
+
+        .cart-item {
+            grid-template-columns:
+                86px
+                minmax(0, 1fr);
+
+            gap:
+                14px;
+        }
+
+
+        .cart-item-image {
+            width:
+                86px;
+
+            height:
+                96px;
+        }
+
+
+        .quantity-form {
+            grid-column:
+                1 / 2;
+        }
+
+
+        .cart-line-total {
+            grid-column:
+                2 / 3;
+
+            align-self:
+                center;
+        }
+
+
+        .coupon-control {
+            flex-direction:
+                column;
+        }
+
+
+        .empty-cart {
+            padding:
+                50px 20px;
+        }
+
+    }
+
+</style>
+
+{% endblock %}
+
+
+{% block content %}
+
+<main class="cart-page">
+
+
+    <!-- =====================================================
+         HERO
+         ===================================================== -->
+
+    <header class="cart-hero">
+
+        <div class="cart-container cart-hero-content">
+
+
+            <div>
+
+                <span class="cart-label">
+
+                    <i class="fa-solid fa-bag-shopping"></i>
+
+                    Votre sélection
+
+                </span>
+
+
+                <h1>
+                    Votre panier
+                </h1>
+
+
+                <p>
+                    Vérifiez vos articles et le résumé
+                    de votre commande avant de continuer.
+                </p>
+
+            </div>
+
+
+            <!-- ÉTAPES -->
+
+            <div
+                class="checkout-steps"
+                aria-label="Étapes de la commande"
+            >
+
+                <span class="checkout-step active">
+
+                    <span class="checkout-step-number">
+                        1
+                    </span>
+
+                    Panier
+
+                </span>
+
+
+                <span class="checkout-step-divider"></span>
+
+
+                <span class="checkout-step">
+
+                    <span class="checkout-step-number">
+                        2
+                    </span>
+
+                    Livraison
+
+                </span>
+
+
+                <span class="checkout-step-divider"></span>
+
+
+                <span class="checkout-step">
+
+                    <span class="checkout-step-number">
+                        3
+                    </span>
+
+                    Confirmation
+
+                </span>
+
+            </div>
+
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+         CONTENU
+         ===================================================== -->
+
+    <div class="cart-container cart-main">
+
+
+        {% if panier.lignes.exists %}
+
+
+            <!-- =================================================
+                 GARANTIES
+                 ================================================= -->
+
+            <section
+                class="cart-assurances"
+                aria-label="Garanties de commande"
+            >
+
+
+                <div class="cart-assurance">
+
+                    <i class="fa-solid fa-shield-halved"></i>
+
+                    <span>
+
+                        <strong>
+                            Paiement sécurisé
+                        </strong>
+
+                        <small>
+                            Vos informations sont protégées
+                        </small>
+
+                    </span>
+
+                </div>
+
+
+                <div class="cart-assurance">
+
+                    <i class="fa-solid fa-truck-fast"></i>
+
+                    <span>
+
+                        <strong>
+                            Livraison professionnelle
+                        </strong>
+
+                        <small>
+                            Suivi clair de votre commande
+                        </small>
+
+                    </span>
+
+                </div>
+
+
+                <div class="cart-assurance">
+
+                    <i class="fa-solid fa-headset"></i>
+
+                    <span>
+
+                        <strong>
+                            Service client
+                        </strong>
+
+                        <small>
+                            Une équipe disponible pour vous
+                        </small>
+
+                    </span>
+
+                </div>
+
+
+            </section>
+
+
+            <!-- =================================================
+                 LAYOUT
+                 ================================================= -->
+
+            <div class="cart-layout">
+
+
+                <!-- =================================================
+                     PRODUITS
+                     ================================================= -->
+
+                <section class="cart-products-panel">
+
+
+                    <header class="cart-panel-heading">
+
+                        <h2>
+                            Articles sélectionnés
+                        </h2>
+
+
+                        <span class="cart-count">
+
+                            {{ panier.lignes.count }}
+
+                            article{{ panier.lignes.count|pluralize }}
+
+                        </span>
+
+                    </header>
+
+
+                    <div class="cart-products">
+
+
+                        {% for ligne in panier.lignes.all %}
+
+
+                            <article class="cart-item">
+
+
+                                <!-- IMAGE -->
+
+                                <div class="cart-item-image">
+
+
+                                    {% with image=ligne.variante.produit.images.first %}
+
+
+                                        {% if image %}
+
+                                            <img
+                                                src="{{ image.image.url }}"
+                                                alt="{{ ligne.variante.produit.nom }}"
+                                                loading="lazy"
+                                            >
+
+                                        {% else %}
+
+                                            <div class="small-placeholder">
+
+                                                <i class="fa-solid fa-shirt"></i>
+
+                                            </div>
+
+                                        {% endif %}
+
+
+                                    {% endwith %}
+
+
+                                </div>
+
+
+                                <!-- INFORMATIONS -->
+
+                                <div class="cart-item-information">
+
+
+                                    {% if ligne.variante.produit.categorie %}
+
+                                        <a
+                                            href="{{ ligne.variante.produit.get_absolute_url }}"
+                                            class="product-category"
+                                        >
+
+                                            {{ ligne.variante.produit.categorie.nom }}
+
+                                        </a>
+
+                                    {% endif %}
+
+
+                                    <h3>
+
+                                        <a href="{{ ligne.variante.produit.get_absolute_url }}">
+
+                                            {{ ligne.variante.produit.nom }}
+
+                                        </a>
+
+                                    </h3>
+
+
+                                    <p class="variant-name">
+
+                                        <i class="fa-solid fa-layer-group"></i>
+
+                                        {{ ligne.variante }}
+
+                                    </p>
+
+
+                                    {% if ligne.personnalisation %}
+
+                                        <p class="customization-note">
+
+                                            <strong>
+                                                Personnalisation :
+                                            </strong>
+
+                                            {{ ligne.personnalisation }}
+
+                                        </p>
+
+                                    {% endif %}
+
+
+                                    <p class="cart-unit-price">
+
+                                        <strong>
+                                            {{ ligne.prix_unitaire|floatformat:2 }} $ CA
+                                        </strong>
+
+                                        par article
+
+                                    </p>
+
+
+                                </div>
+
+
+                                <!-- QUANTITÉ -->
+
+                                <form
+                                    method="post"
+                                    action="{% url 'zendo:modifier_ligne' ligne.pk %}"
+                                    class="quantity-form"
+                                >
+
+                                    {% csrf_token %}
+
+
+                                    <label for="quantite-{{ ligne.pk }}">
+                                        Quantité
+                                    </label>
+
+
+                                    <div class="quantity-controls">
+
+
+                                        <button
+                                            type="button"
+                                            class="quantity-button quantity-minus"
+                                            aria-label="Diminuer la quantité"
+                                        >
+
+                                            −
+
+                                        </button>
+
+
+                                        <input
+                                            id="quantite-{{ ligne.pk }}"
+                                            type="number"
+                                            name="quantite"
+                                            value="{{ ligne.quantite }}"
+                                            min="0"
+                                            max="{{ ligne.variante.stock }}"
+                                        >
+
+
+                                        <button
+                                            type="button"
+                                            class="quantity-button quantity-plus"
+                                            aria-label="Augmenter la quantité"
+                                        >
+
+                                            +
+
+                                        </button>
+
+
+                                    </div>
+
+
+                                    <button
+                                        type="submit"
+                                        class="update-quantity-button"
+                                    >
+
+                                        Mettre à jour
+
+                                    </button>
+
+
+                                    <small class="remove-hint">
+
+                                        Mettez 0 pour supprimer l’article.
+
+                                    </small>
+
+
+                                </form>
+
+
+                                <!-- TOTAL LIGNE -->
+
+                                <strong class="cart-line-total">
+
+                                    {{ ligne.total|floatformat:2 }} $ CA
+
+                                </strong>
+
+
+                            </article>
+
+
+                        {% endfor %}
+
+
+                    </div>
+
+
+                </section>
+
+
+                <!-- =================================================
+                     RÉSUMÉ DE COMMANDE
+                     ================================================= -->
+
+                <aside class="order-summary">
+
+
+                    <div class="summary-heading">
+
+                        <h2>
+                            Résumé
+                        </h2>
+
+                        <i class="fa-solid fa-receipt"></i>
+
+                    </div>
+
+
+                    <!-- SOUS TOTAL -->
+
+                    <div class="summary-line">
+
+                        <span>
+
+                            <i class="fa-solid fa-bag-shopping"></i>
+
+                            Sous-total
+
+                        </span>
+
+                        <strong>
+
+                            {{ sous_total|floatformat:2 }} $ CA
+
+                        </strong>
+
+                    </div>
+
+
+                    <!-- REMISE -->
+
+                    {% if remise %}
+
+                        <div class="summary-line summary-discount">
+
+                            <span>
+
+                                <i class="fa-solid fa-ticket"></i>
+
+                                Remise
+
+                            </span>
+
+                            <strong>
+
+                                − {{ remise|floatformat:2 }} $ CA
+
+                            </strong>
+
+                        </div>
+
+                    {% endif %}
+
+
+                    <!-- LIVRAISON -->
+
+                    <div class="summary-line summary-shipping">
+
+                        <span>
+
+                            <i class="fa-solid fa-truck"></i>
+
+                            Livraison
+
+                        </span>
+
+
+                        {% if livraison %}
+
+                            <strong>
+
+                                {{ livraison|floatformat:2 }} $ CA
+
+                            </strong>
+
+                        {% else %}
+
+                            <strong>
+                                À confirmer
+                            </strong>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <div class="summary-separator"></div>
+
+
+                    <!-- TPS -->
+
+                    <div class="summary-line summary-tax">
+
+                        <span>
+
+                            <i class="fa-solid fa-file-invoice-dollar"></i>
+
+                            TPS
+
+                            <small>
+                                5 %
+                            </small>
+
+                        </span>
+
+                        <strong>
+
+                            {{ tps|floatformat:2 }} $ CA
+
+                        </strong>
+
+                    </div>
+
+
+                    <!-- TVQ -->
+
+                    <div class="summary-line summary-tax">
+
+                        <span>
+
+                            <i class="fa-solid fa-file-invoice-dollar"></i>
+
+                            TVQ
+
+                            <small>
+                                9,975 %
+                            </small>
+
+                        </span>
+
+                        <strong>
+
+                            {{ tvq|floatformat:2 }} $ CA
+
+                        </strong>
+
+                    </div>
+
+
+                    <!-- TOTAL -->
+
+                    <div class="summary-line summary-total">
+
+                        <span>
+
+                            Total estimé
+
+                            {% if not livraison %}
+
+                                <small>
+                                    Hors frais de livraison définitifs
+                                </small>
+
+                            {% endif %}
+
+                        </span>
+
+
+                        <strong>
+
+                            {{ total|floatformat:2 }} $ CA
+
+                        </strong>
+
+                    </div>
+
+
+                    <!-- INFORMATION TAXES -->
+
+                    <div class="tax-information">
+
+                        <i class="fa-solid fa-circle-info"></i>
+
+                        <span>
+
+                            La TPS et la TVQ sont incluses
+                            dans le total affiché.
+
+                            {% if not livraison %}
+
+                                Les frais de livraison seront
+                                confirmés à l’étape suivante.
+
+                            {% endif %}
+
+                        </span>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         COUPON
+                         ================================================= -->
+
+                    <form
+                        method="post"
+                        action="{% url 'zendo:appliquer_coupon' %}"
+                        class="coupon-form"
+                    >
+
+                        {% csrf_token %}
+
+
+                        <label for="{{ coupon_form.code.id_for_label }}">
+
+                            <i class="fa-solid fa-ticket"></i>
+
+                            Code promotionnel
+
+                        </label>
+
+
+                        <div class="coupon-control">
+
+                            {{ coupon_form.code }}
+
+
+                            <button type="submit">
+
+                                Appliquer
+
+                            </button>
+
+                        </div>
+
+
+                        {% for error in coupon_form.code.errors %}
+
+                            <small class="coupon-error">
+
+                                {{ error }}
+
+                            </small>
+
+                        {% endfor %}
+
+
+                    </form>
+
+
+                    <!-- =================================================
+                         INFORMATION
+                         ================================================= -->
+
+                    <p class="summary-information">
+
+                        <i class="fa-solid fa-shield-halved"></i>
+
+                        <span>
+
+                            Les montants seront vérifiés une dernière
+                            fois avant l’enregistrement définitif
+                            de votre commande.
+
+                        </span>
+
+                    </p>
+
+
+                    <!-- =================================================
+                         CHECKOUT
+                         ================================================= -->
+
+                    <a
+                        href="{% url 'zendo:checkout' %}"
+                        class="checkout-button"
+                    >
+
+                        Passer la commande
+
+                        <i class="fa-solid fa-arrow-right"></i>
+
+                    </a>
+
+
+                    <span class="secure-checkout">
+
+                        <i class="fa-solid fa-lock"></i>
+
+                        Paiement et informations sécurisés
+
+                    </span>
+
+
+                    <a
+                        href="{% url 'zendo:catalogue' %}"
+                        class="continue-shopping-link"
+                    >
+
+                        <i class="fa-solid fa-arrow-left"></i>
+
+                        Continuer mes achats
+
+                    </a>
+
+
+                </aside>
+
+
+            </div>
+
+
+        {% else %}
+
+
+            <!-- =================================================
+                 PANIER VIDE
+                 ================================================= -->
+
+            <section class="empty-cart">
+
+
+                <div class="empty-cart-icon">
+
+                    <i class="fa-solid fa-bag-shopping"></i>
+
+                </div>
+
+
+                <h2>
+                    Votre panier est vide
+                </h2>
+
+
+                <p>
+
+                    Découvrez nos collections et ajoutez
+                    vos articles préférés pour commencer
+                    votre commande.
+
+                </p>
+
+
+                <a
+                    href="{% url 'zendo:catalogue' %}"
+                    class="shop-button"
+                >
+
+                    <i class="fa-solid fa-store"></i>
+
+                    Découvrir la boutique
+
+                </a>
+
+
+            </section>
+
+
+        {% endif %}
+
+
+    </div>
+
+
+</main>
+
+{% endblock %}
+
+
+{% block extra_js %}
+
+<script>
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        function () {
+
+
+            document
+                .querySelectorAll(".quantity-form")
+                .forEach(function (form) {
+
+
+                    const input =
+                        form.querySelector(
+                            'input[name="quantite"]'
+                        );
+
+
+                    const minus =
+                        form.querySelector(
+                            ".quantity-minus"
+                        );
+
+
+                    const plus =
+                        form.querySelector(
+                            ".quantity-plus"
+                        );
+
+
+                    if (
+                        !input
+                        || !minus
+                        || !plus
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    /* =========================================
+                       DIMINUER
+                       ========================================= */
+
+                    minus.addEventListener(
+                        "click",
+                        function () {
+
+
+                            const minimum =
+                                Number(
+                                    input.min || 0
+                                );
+
+
+                            const current =
+                                Number(
+                                    input.value || minimum
+                                );
+
+
+                            input.value =
+                                Math.max(
+                                    minimum,
+                                    current - 1
+                                );
+
+                        }
+                    );
+
+
+                    /* =========================================
+                       AUGMENTER
+                       ========================================= */
+
+                    plus.addEventListener(
+                        "click",
+                        function () {
+
+
+                            const maximum =
+                                Number(
+                                    input.max || 999
+                                );
+
+
+                            const current =
+                                Number(
+                                    input.value || 0
+                                );
+
+
+                            input.value =
+                                Math.min(
+                                    maximum,
+                                    current + 1
+                                );
+
+                        }
+                    );
+
+
+                });
+
+        }
+    );
+
+</script>
+
+{% endblock %}

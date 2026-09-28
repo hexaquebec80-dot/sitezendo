@@ -1,0 +1,2819 @@
+{% extends "zendo/base.html" %}
+{% load static %}
+
+{% block title %}
+Tableau de bord — Zendo Afrique
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --admin-primary: #0d4b3b;
+        --admin-primary-2: #17634d;
+        --admin-dark: #061d17;
+        --admin-gold: #d9ad59;
+        --admin-gold-soft: #fff6df;
+        --admin-bg: #f3f7f5;
+        --admin-white: #ffffff;
+        --admin-text: #17231f;
+        --admin-muted: #6b7973;
+        --admin-border: #dde8e3;
+        --admin-soft: #eaf4f0;
+        --admin-blue: #2173a7;
+        --admin-blue-soft: #eaf5fc;
+        --admin-success: #188052;
+        --admin-success-soft: #e8f8f0;
+        --admin-warning: #a66d09;
+        --admin-warning-soft: #fff6df;
+        --admin-danger: #bc3126;
+        --admin-danger-soft: #fff0ee;
+        --admin-shadow: 0 16px 45px rgba(6, 29, 23, 0.08);
+        --admin-shadow-hover: 0 25px 60px rgba(6, 29, 23, 0.14);
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    html {
+        scroll-behavior: smooth;
+    }
+
+    .admin-dashboard {
+        min-height: 100vh;
+        padding-bottom: 80px;
+        color: var(--admin-text);
+        background:
+            radial-gradient(
+                circle at 96% 5%,
+                rgba(217, 173, 89, 0.14),
+                transparent 25%
+            ),
+            var(--admin-bg);
+        font-family: Inter, "Segoe UI", Arial, sans-serif;
+    }
+
+    .admin-container {
+        width: min(1240px, calc(100% - 40px));
+        margin: 0 auto;
+    }
+
+    .admin-dashboard i[class*="fa-"] {
+        display: inline-flex;
+        width: 1em;
+        height: 1em;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+        vertical-align: middle;
+    }
+
+    /* EN-TÊTE ADMIN */
+
+    .admin-hero {
+        position: relative;
+        overflow: hidden;
+        padding: 26px 0 110px;
+        color: var(--admin-white);
+        background:
+            linear-gradient(
+                135deg,
+                var(--admin-dark),
+                var(--admin-primary) 65%,
+                var(--admin-primary-2)
+            );
+    }
+
+    .admin-hero::before {
+        content: "";
+        position: absolute;
+        top: -310px;
+        right: -150px;
+        width: 650px;
+        height: 650px;
+        border: 1px solid rgba(255, 255, 255, 0.09);
+        border-radius: 50%;
+    }
+
+    .admin-hero::after {
+        content: "";
+        position: absolute;
+        right: 8%;
+        bottom: -260px;
+        width: 500px;
+        height: 500px;
+        background:
+            radial-gradient(
+                circle,
+                rgba(217, 173, 89, 0.30),
+                transparent 68%
+            );
+        border-radius: 50%;
+    }
+
+    .admin-toolbar {
+        position: relative;
+        z-index: 3;
+        margin-bottom: 42px;
+        padding: 12px 14px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.13);
+        border-radius: 17px;
+        backdrop-filter: blur(15px);
+    }
+
+    .admin-brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .admin-brand-icon {
+        display: grid;
+        width: 43px;
+        height: 43px;
+        flex-shrink: 0;
+        place-items: center;
+        color: var(--admin-dark);
+        background:
+            linear-gradient(
+                135deg,
+                #f4d898,
+                var(--admin-gold)
+            );
+        border-radius: 12px;
+        box-shadow: 0 8px 20px rgba(217, 173, 89, 0.24);
+        font-size: 17px;
+    }
+
+    .admin-brand strong,
+    .admin-brand small {
+        display: block;
+    }
+
+    .admin-brand strong {
+        font-size: 13px;
+        font-weight: 900;
+    }
+
+    .admin-brand small {
+        margin-top: 3px;
+        color: rgba(255, 255, 255, 0.62);
+        font-size: 10px;
+    }
+
+    .admin-system-status {
+        display: inline-flex;
+        padding: 9px 12px;
+        align-items: center;
+        gap: 8px;
+        color: #d9f8e9;
+        background: rgba(99, 217, 155, 0.09);
+        border: 1px solid rgba(99, 217, 155, 0.19);
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 800;
+    }
+
+    .admin-system-status::before {
+        content: "";
+        width: 7px;
+        height: 7px;
+        background: #63d99b;
+        border-radius: 50%;
+        animation: adminPulse 1.8s infinite;
+    }
+
+    .admin-hero-content {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 40px;
+    }
+
+    .admin-label {
+        display: inline-flex;
+        margin-bottom: 13px;
+        align-items: center;
+        gap: 8px;
+        color: #f4d898;
+        font-size: 11px;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 1.2px;
+    }
+
+    .admin-hero h1 {
+        margin: 0;
+        color: var(--admin-white);
+        font-size: clamp(37px, 5vw, 55px);
+        line-height: 1.03;
+        font-weight: 900;
+        letter-spacing: -1.7px;
+    }
+
+    .admin-hero-description {
+        max-width: 680px;
+        margin: 16px 0 0;
+        color: rgba(255, 255, 255, 0.72);
+        font-size: 15px;
+        line-height: 1.7;
+    }
+
+    .admin-security {
+        display: flex;
+        max-width: 300px;
+        padding: 17px;
+        align-items: center;
+        gap: 13px;
+        color: rgba(255, 255, 255, 0.72);
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.13);
+        border-radius: 17px;
+        backdrop-filter: blur(12px);
+        font-size: 11px;
+        line-height: 1.5;
+    }
+
+    .admin-security-icon {
+        display: grid;
+        width: 45px;
+        height: 45px;
+        flex-shrink: 0;
+        place-items: center;
+        color: var(--admin-dark);
+        background: var(--admin-gold);
+        border-radius: 13px;
+        font-size: 18px;
+    }
+
+    .admin-security strong {
+        display: block;
+        margin-bottom: 3px;
+        color: var(--admin-white);
+        font-size: 13px;
+    }
+
+    .admin-main {
+        position: relative;
+        z-index: 4;
+        margin-top: -55px;
+    }
+
+    /* STATISTIQUES */
+
+    .admin-statistics {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 18px;
+        margin-bottom: 25px;
+    }
+
+    .admin-stat-card {
+        position: relative;
+        overflow: hidden;
+        min-height: 150px;
+        padding: 22px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        background: var(--admin-white);
+        border: 1px solid var(--admin-border);
+        border-radius: 21px;
+        box-shadow: var(--admin-shadow);
+        animation: adminCardIn 0.65s ease both;
+        transition: 0.25s ease;
+    }
+
+    .admin-stat-card:nth-child(2) {
+        animation-delay: 0.08s;
+    }
+
+    .admin-stat-card:nth-child(3) {
+        animation-delay: 0.16s;
+    }
+
+    .admin-stat-card:nth-child(4) {
+        animation-delay: 0.24s;
+    }
+
+    .admin-stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--admin-shadow-hover);
+    }
+
+    .admin-stat-card::after {
+        content: "";
+        position: absolute;
+        top: -45px;
+        right: -45px;
+        width: 105px;
+        height: 105px;
+        background: var(--admin-soft);
+        border-radius: 50%;
+        opacity: 0.55;
+    }
+
+    .admin-stat-icon {
+        position: relative;
+        z-index: 2;
+        display: grid;
+        width: 58px;
+        height: 58px;
+        flex-shrink: 0;
+        place-items: center;
+        color: var(--admin-primary);
+        background: var(--admin-soft);
+        border-radius: 17px;
+        box-shadow: inset 0 0 0 1px rgba(13, 75, 59, 0.05);
+        font-size: 21px;
+    }
+
+    .admin-stat-card.gold .admin-stat-icon {
+        color: #795510;
+        background: var(--admin-gold-soft);
+    }
+
+    .admin-stat-card.blue .admin-stat-icon {
+        color: var(--admin-blue);
+        background: var(--admin-blue-soft);
+    }
+
+    .admin-stat-card.danger .admin-stat-icon {
+        color: var(--admin-danger);
+        background: var(--admin-danger-soft);
+    }
+
+    .admin-stat-content {
+        position: relative;
+        z-index: 2;
+        min-width: 0;
+    }
+
+    .admin-stat-content span,
+    .admin-stat-content strong,
+    .admin-stat-content small {
+        display: block;
+    }
+
+    .admin-stat-content span {
+        margin-bottom: 8px;
+        color: var(--admin-muted);
+        font-size: 10px;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.7px;
+    }
+
+    .admin-stat-content strong {
+        color: var(--admin-dark);
+        font-size: clamp(27px, 4vw, 35px);
+        line-height: 1;
+        font-weight: 900;
+    }
+
+    .admin-stat-content small {
+        margin-top: 8px;
+        color: #87958f;
+        font-size: 10px;
+    }
+
+    /* INVENTAIRE */
+
+    .admin-inventory {
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 25px;
+        padding: 28px;
+        color: var(--admin-white);
+        background:
+            linear-gradient(
+                135deg,
+                var(--admin-dark),
+                var(--admin-primary) 70%,
+                var(--admin-primary-2)
+            );
+        border-radius: 25px;
+        box-shadow: 0 25px 60px rgba(6, 29, 23, 0.19);
+        animation: adminSectionIn 0.75s ease both;
+    }
+
+    .admin-inventory::before {
+        content: "";
+        position: absolute;
+        top: -190px;
+        right: -110px;
+        width: 400px;
+        height: 400px;
+        background:
+            radial-gradient(
+                circle,
+                rgba(217, 173, 89, 0.25),
+                transparent 68%
+            );
+        border-radius: 50%;
+    }
+
+    .admin-inventory-header {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 22px;
+    }
+
+    .admin-inventory-header h2 {
+        margin: 0;
+        color: var(--admin-white);
+        font-size: clamp(23px, 3vw, 30px);
+        font-weight: 900;
+    }
+
+    .admin-inventory-header p {
+        margin: 7px 0 0;
+        color: rgba(255, 255, 255, 0.65);
+        font-size: 12px;
+    }
+
+    .admin-live {
+        display: inline-flex;
+        padding: 8px 11px;
+        align-items: center;
+        gap: 8px;
+        color: #dff8eb;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 999px;
+        font-size: 10px;
+        font-weight: 800;
+        white-space: nowrap;
+    }
+
+    .admin-live::before {
+        content: "";
+        width: 7px;
+        height: 7px;
+        background: #63d99b;
+        border-radius: 50%;
+        animation: adminPulse 1.8s infinite;
+    }
+/* =========================================
+   INVENTAIRE — CARTES MODERNES CORRIGÉES
+========================================= */
+
+.admin-inventory-grid {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 15px;
+}
+
+.admin-inventory-card {
+    position: relative;
+    min-width: 0;
+    min-height: 155px;
+    padding: 19px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255, 255, 255, 0.12),
+            rgba(255, 255, 255, 0.06)
+        );
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 18px;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.08),
+        0 12px 30px rgba(0, 0, 0, 0.08);
+    backdrop-filter: blur(12px);
+    transition:
+        transform 0.25s ease,
+        background 0.25s ease,
+        border-color 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+.admin-inventory-card:hover {
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255, 255, 255, 0.17),
+            rgba(255, 255, 255, 0.09)
+        );
+    border-color: rgba(255, 255, 255, 0.24);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.12),
+        0 18px 38px rgba(0, 0, 0, 0.13);
+    transform: translateY(-5px);
+}
+
+/* Ligne supérieure : titre + icône */
+
+.admin-inventory-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.admin-inventory-card-label {
+    min-width: 0;
+    color: rgba(255, 255, 255, 0.82);
+    font-size: 10px;
+    line-height: 1.4;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.65px;
+}
+
+/* Bloc de l’icône */
+
+.admin-inventory-icon {
+    display: inline-flex !important;
+    width: 43px !important;
+    height: 43px !important;
+    min-width: 43px;
+    flex: 0 0 43px;
+    margin: 0 !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: #61450d;
+    background:
+        linear-gradient(
+            145deg,
+            #f8e2ad,
+            #d9ad59
+        );
+    border: 1px solid rgba(255, 255, 255, 0.30);
+    border-radius: 13px;
+    box-shadow:
+        0 9px 20px rgba(217, 173, 89, 0.22);
+}
+
+/* Correction directe de l’icône Font Awesome */
+
+.admin-inventory-icon i {
+    display: inline-flex !important;
+    width: 18px !important;
+    height: 18px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    align-items: center !important;
+    justify-content: center !important;
+    line-height: 1 !important;
+    font-size: 17px !important;
+    transform: none !important;
+}
+
+/* Couleurs selon le type de carte */
+
+.admin-inventory-card.success .admin-inventory-icon {
+    color: #0c5b38;
+    background:
+        linear-gradient(
+            145deg,
+            #ddf8e9,
+            #9de0bd
+        );
+    box-shadow:
+        0 9px 20px rgba(76, 190, 130, 0.18);
+}
+
+.admin-inventory-card.blue .admin-inventory-icon {
+    color: #155273;
+    background:
+        linear-gradient(
+            145deg,
+            #e4f5fd,
+            #a9d9f1
+        );
+    box-shadow:
+        0 9px 20px rgba(71, 161, 206, 0.17);
+}
+
+.admin-inventory-card.danger .admin-inventory-icon {
+    color: #8b2118;
+    background:
+        linear-gradient(
+            145deg,
+            #ffe8e5,
+            #ffb7b0
+        );
+    box-shadow:
+        0 9px 20px rgba(205, 63, 50, 0.17);
+}
+
+/* Chiffre principal */
+
+.admin-inventory-value {
+    display: block;
+    margin: 15px 0 0;
+    overflow: hidden;
+    color: #ffffff;
+    font-size: clamp(28px, 3vw, 36px);
+    line-height: 1;
+    font-weight: 900;
+    letter-spacing: -1px;
+    text-overflow: ellipsis;
+}
+
+/* Description sous le chiffre */
+
+.admin-inventory-description {
+    display: block;
+    min-height: 28px;
+    margin-top: 9px;
+    color: rgba(255, 255, 255, 0.54);
+    font-size: 9px;
+    line-height: 1.5;
+}
+
+/* Responsive */
+
+@media (max-width: 1050px) {
+    .admin-inventory-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    .admin-inventory-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-inventory-card {
+        min-height: 145px;
+    }
+
+    .admin-inventory-icon {
+        width: 45px !important;
+        height: 45px !important;
+        min-width: 45px;
+        flex-basis: 45px;
+    }
+}
+    /* ALERTE STOCK */
+
+    .admin-stock-alert {
+        position: relative;
+        z-index: 2;
+        margin-top: 17px;
+        padding: 16px 18px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        color: #702016;
+        background: linear-gradient(135deg, #fff1ee, #fff9f7);
+        border: 1px solid #ffc7c0;
+        border-radius: 16px;
+    }
+
+    .admin-stock-alert-content {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .admin-stock-alert-icon {
+        display: grid;
+        width: 43px;
+        height: 43px;
+        flex-shrink: 0;
+        place-items: center;
+        color: var(--admin-white);
+        background: var(--admin-danger);
+        border-radius: 12px;
+        font-size: 17px;
+        animation: adminShake 3s infinite;
+    }
+
+    .admin-stock-alert strong,
+    .admin-stock-alert small {
+        display: block;
+    }
+
+    .admin-stock-alert strong {
+        font-size: 12px;
+    }
+
+    .admin-stock-alert small {
+        margin-top: 4px;
+        color: #98645d;
+        font-size: 9px;
+    }
+
+    .admin-empty-products {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 6px;
+    }
+
+    .admin-empty-product {
+        padding: 6px 9px;
+        color: #8b1c14;
+        background: rgba(255, 255, 255, 0.88);
+        border: 1px solid #f2c3bd;
+        border-radius: 999px;
+        font-size: 9px;
+        font-weight: 800;
+    }
+
+    /* BOUTONS */
+
+    .admin-button {
+        display: inline-flex;
+        min-height: 45px;
+        padding: 0 18px;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        color: var(--admin-white);
+        background: var(--admin-primary);
+        border: 0;
+        border-radius: 12px;
+        box-shadow: 0 9px 22px rgba(13, 75, 59, 0.18);
+        text-decoration: none;
+        font-size: 12px;
+        font-weight: 900;
+        cursor: pointer;
+        transition: 0.23s ease;
+    }
+
+    .admin-button:hover {
+        color: var(--admin-dark);
+        background: var(--admin-gold);
+        transform: translateY(-2px);
+    }
+
+    .admin-delivery-button {
+        color: var(--admin-dark);
+        background:
+            linear-gradient(
+                135deg,
+                #f4d898,
+                var(--admin-gold)
+            );
+        box-shadow: 0 10px 25px rgba(217, 173, 89, 0.28);
+    }
+
+    .admin-delivery-button:hover {
+        color: var(--admin-white);
+        background: var(--admin-primary);
+    }
+
+    /* ACTIONS RAPIDES */
+
+    .admin-quick-section {
+        margin-bottom: 25px;
+        padding: 23px;
+        background: var(--admin-white);
+        border: 1px solid var(--admin-border);
+        border-radius: 22px;
+        box-shadow: var(--admin-shadow);
+        animation: adminSectionIn 0.75s 0.08s ease both;
+    }
+
+    .admin-quick-header {
+        display: flex;
+        margin-bottom: 18px;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+    }
+
+    .admin-quick-header h2 {
+        margin: 0;
+        color: var(--admin-dark);
+        font-size: 20px;
+        font-weight: 900;
+    }
+
+    .admin-quick-header span {
+        color: var(--admin-muted);
+        font-size: 11px;
+    }
+
+    .admin-quick-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 13px;
+    }
+
+    .admin-quick-action {
+        min-height: 98px;
+        padding: 17px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        color: var(--admin-text);
+        background:
+            linear-gradient(
+                145deg,
+                #ffffff,
+                #f8fbf9
+            );
+        border: 1px solid var(--admin-border);
+        border-radius: 16px;
+        text-decoration: none;
+        transition: 0.23s ease;
+    }
+
+    .admin-quick-action:hover {
+        color: var(--admin-primary);
+        background: var(--admin-soft);
+        border-color: #c8ddd4;
+        transform: translateY(-4px);
+        box-shadow: 0 15px 32px rgba(6, 29, 23, 0.09);
+    }
+
+    .admin-quick-icon {
+        display: grid;
+        width: 51px;
+        height: 51px;
+        flex-shrink: 0;
+        place-items: center;
+        color: var(--admin-primary);
+        background:
+            linear-gradient(
+                145deg,
+                var(--admin-white),
+                var(--admin-soft)
+            );
+        border: 1px solid var(--admin-border);
+        border-radius: 14px;
+        box-shadow: 0 8px 18px rgba(13, 75, 59, 0.08);
+        font-size: 19px;
+    }
+
+    .admin-quick-action.delivery .admin-quick-icon {
+        color: #795510;
+        background: var(--admin-gold-soft);
+    }
+
+    .admin-quick-action.orders .admin-quick-icon {
+        color: var(--admin-blue);
+        background: var(--admin-blue-soft);
+    }
+
+    .admin-quick-action.clients .admin-quick-icon {
+        color: var(--admin-success);
+        background: var(--admin-success-soft);
+    }
+
+    .admin-paid-actions {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .admin-quick-action strong,
+    .admin-quick-action small {
+        display: block;
+    }
+
+    .admin-quick-action strong {
+        font-size: 13px;
+        font-weight: 900;
+    }
+
+    .admin-quick-action small {
+        margin-top: 4px;
+        color: var(--admin-muted);
+        font-size: 10px;
+        line-height: 1.4;
+    }
+
+    /* COMMANDE PAYÉE */
+
+    .admin-paid-alert {
+        margin-bottom: 25px;
+        padding: 18px 22px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        color: #0d5133;
+        background: linear-gradient(135deg, #eaf8f0, #f8fffb);
+        border: 1px solid #bfe5cf;
+        border-radius: 20px;
+        box-shadow: var(--admin-shadow);
+        animation: adminSectionIn 0.75s 0.12s ease both;
+    }
+
+    .admin-paid-content {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+    }
+
+    .admin-paid-icon {
+        display: grid;
+        width: 47px;
+        height: 47px;
+        flex-shrink: 0;
+        place-items: center;
+        color: var(--admin-white);
+        background: var(--admin-success);
+        border-radius: 13px;
+        font-size: 17px;
+    }
+
+    .admin-paid-content strong,
+    .admin-paid-content small {
+        display: block;
+    }
+
+    .admin-paid-content strong {
+        font-size: 13px;
+    }
+
+    .admin-paid-content small {
+        margin-top: 4px;
+        color: #4d7462;
+        font-size: 10px;
+    }
+
+    /* CARTES ADMIN */
+
+    .admin-card {
+        overflow: hidden;
+        margin-bottom: 25px;
+        background: var(--admin-white);
+        border: 1px solid var(--admin-border);
+        border-radius: 22px;
+        box-shadow: var(--admin-shadow);
+        scroll-margin-top: 30px;
+        animation: adminSectionIn 0.75s 0.16s ease both;
+    }
+
+    .admin-card-header {
+        padding: 22px 25px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        background:
+            linear-gradient(
+                135deg,
+                #ffffff,
+                #fbfdfc
+            );
+        border-bottom: 1px solid var(--admin-border);
+    }
+
+    .admin-card-title {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .admin-card-icon {
+        display: grid;
+        width: 47px;
+        height: 47px;
+        flex-shrink: 0;
+        place-items: center;
+        color: var(--admin-primary);
+        background: var(--admin-soft);
+        border-radius: 14px;
+        box-shadow: inset 0 0 0 1px rgba(13, 75, 59, 0.05);
+        font-size: 18px;
+    }
+
+    .admin-card-icon.warning {
+        color: var(--admin-warning);
+        background: var(--admin-warning-soft);
+    }
+
+    .admin-card-header h2 {
+        margin: 0;
+        color: var(--admin-dark);
+        font-size: 20px;
+        font-weight: 900;
+    }
+
+    .admin-card-header p {
+        margin: 5px 0 0;
+        color: var(--admin-muted);
+        font-size: 11px;
+    }
+
+    .admin-card-actions {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .admin-count {
+        display: inline-flex;
+        padding: 8px 11px;
+        align-items: center;
+        gap: 6px;
+        color: var(--admin-primary);
+        background: var(--admin-soft);
+        border-radius: 999px;
+        font-size: 10px;
+        font-weight: 900;
+        white-space: nowrap;
+    }
+
+    /* TABLEAUX */
+
+    .admin-table-wrapper {
+        overflow-x: auto;
+    }
+
+    .admin-table {
+        width: 100%;
+        border-collapse: collapse;
+        white-space: nowrap;
+    }
+
+    .admin-table th {
+        padding: 14px 20px;
+        color: #73817b;
+        background: #f7faf8;
+        border-bottom: 1px solid var(--admin-border);
+        text-align: left;
+        font-size: 10px;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.7px;
+    }
+
+    .admin-table td {
+        padding: 17px 20px;
+        color: var(--admin-muted);
+        border-bottom: 1px solid #eaf0ed;
+        font-size: 12px;
+    }
+
+    .admin-table tbody tr {
+        transition: 0.2s ease;
+    }
+
+    .admin-table tbody tr:hover {
+        background: #f9fcfa;
+    }
+
+    .admin-table tbody tr:last-child td {
+        border-bottom: 0;
+    }
+
+    .admin-product {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+    }
+
+    .admin-product-image {
+        display: grid;
+        width: 49px;
+        height: 49px;
+        flex-shrink: 0;
+        overflow: hidden;
+        place-items: center;
+        color: var(--admin-primary);
+        background: var(--admin-soft);
+        border-radius: 12px;
+        font-size: 17px;
+    }
+
+    .admin-product-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .admin-product strong,
+    .admin-product small,
+    .admin-customer strong,
+    .admin-customer small {
+        display: block;
+    }
+
+    .admin-product strong,
+    .admin-customer strong {
+        color: var(--admin-dark);
+        font-size: 11px;
+    }
+
+    .admin-product small,
+    .admin-customer small {
+        margin-top: 4px;
+        color: var(--admin-muted);
+        font-size: 9px;
+    }
+
+    .admin-strong {
+        color: var(--admin-dark);
+        font-weight: 900;
+    }
+
+    .admin-state {
+        display: inline-flex;
+        padding: 6px 9px;
+        align-items: center;
+        gap: 5px;
+        color: var(--admin-success);
+        background: var(--admin-success-soft);
+        border-radius: 999px;
+        font-size: 9px;
+        font-weight: 900;
+    }
+
+    .admin-state.inactive {
+        color: var(--admin-danger);
+        background: var(--admin-danger-soft);
+    }
+
+    .admin-table-actions {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+    }
+
+    .admin-table-action {
+        display: inline-flex;
+        width: 36px;
+        height: 36px;
+        align-items: center;
+        justify-content: center;
+        color: var(--admin-primary);
+        background: var(--admin-soft);
+        border-radius: 10px;
+        text-decoration: none;
+        transition: 0.2s ease;
+    }
+
+    .admin-table-action:hover {
+        color: var(--admin-white);
+        background: var(--admin-primary);
+        transform: translateY(-2px);
+    }
+
+    .admin-table-action.delete {
+        color: var(--admin-danger);
+        background: var(--admin-danger-soft);
+    }
+
+    .admin-table-action.delete:hover {
+        color: var(--admin-white);
+        background: var(--admin-danger);
+    }
+
+    /* LIVRAISONS */
+
+    .admin-delivery-summary {
+        padding: 20px 24px;
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+        background: #fbfdfc;
+        border-bottom: 1px solid var(--admin-border);
+    }
+
+    .admin-delivery-stat {
+        padding: 16px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: var(--admin-white);
+        border: 1px solid var(--admin-border);
+        border-radius: 15px;
+        transition: 0.23s ease;
+    }
+
+    .admin-delivery-stat:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 26px rgba(6, 29, 23, 0.08);
+    }
+
+    .admin-delivery-icon {
+        display: grid;
+        width: 41px;
+        height: 41px;
+        flex-shrink: 0;
+        place-items: center;
+        color: var(--admin-primary);
+        background: var(--admin-soft);
+        border-radius: 12px;
+        font-size: 16px;
+    }
+
+    .admin-delivery-stat.transit .admin-delivery-icon {
+        color: var(--admin-blue);
+        background: var(--admin-blue-soft);
+    }
+
+    .admin-delivery-stat.delivered .admin-delivery-icon {
+        color: var(--admin-success);
+        background: var(--admin-success-soft);
+    }
+
+    .admin-delivery-stat.problem .admin-delivery-icon {
+        color: var(--admin-danger);
+        background: var(--admin-danger-soft);
+    }
+
+    .admin-delivery-stat strong,
+    .admin-delivery-stat small {
+        display: block;
+    }
+
+    .admin-delivery-stat strong {
+        color: var(--admin-dark);
+        font-size: 20px;
+        font-weight: 900;
+    }
+
+    .admin-delivery-stat small {
+        color: var(--admin-muted);
+        font-size: 10px;
+    }
+
+    .admin-delivery-badge {
+        display: inline-flex;
+        padding: 6px 9px;
+        align-items: center;
+        gap: 5px;
+        border-radius: 999px;
+        font-size: 9px;
+        font-weight: 900;
+    }
+
+    .admin-delivery-badge.preparation,
+    .admin-delivery-badge.en_attente,
+    .admin-delivery-badge.a_preparer {
+        color: var(--admin-warning);
+        background: var(--admin-warning-soft);
+    }
+
+    .admin-delivery-badge.expedie,
+    .admin-delivery-badge.expediee,
+    .admin-delivery-badge.transit,
+    .admin-delivery-badge.en_transit {
+        color: var(--admin-blue);
+        background: var(--admin-blue-soft);
+    }
+
+    .admin-delivery-badge.livre,
+    .admin-delivery-badge.livree {
+        color: var(--admin-success);
+        background: var(--admin-success-soft);
+    }
+
+    .admin-delivery-badge.probleme,
+    .admin-delivery-badge.echec,
+    .admin-delivery-badge.retournee,
+    .admin-delivery-badge.perdue {
+        color: var(--admin-danger);
+        background: var(--admin-danger-soft);
+    }
+
+    /* ACTIVITÉ ET STOCK */
+
+    .admin-bottom-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+        align-items: start;
+        gap: 25px;
+    }
+
+    .admin-month-list,
+    .admin-stock-list {
+        padding: 5px 23px 18px;
+    }
+
+    .admin-month {
+        padding: 16px 0;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto auto;
+        align-items: center;
+        gap: 18px;
+    }
+
+    .admin-month + .admin-month,
+    .admin-stock-item + .admin-stock-item {
+        border-top: 1px solid #eaf0ed;
+    }
+
+    .admin-month-date {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .admin-month-icon,
+    .admin-stock-icon {
+        display: grid;
+        width: 39px;
+        height: 39px;
+        flex-shrink: 0;
+        place-items: center;
+        color: var(--admin-primary);
+        background: var(--admin-soft);
+        border-radius: 11px;
+    }
+
+    .admin-month-date strong,
+    .admin-month-date small {
+        display: block;
+    }
+
+    .admin-month-date strong {
+        color: var(--admin-dark);
+        font-size: 11px;
+        text-transform: capitalize;
+    }
+
+    .admin-month-date small {
+        color: var(--admin-muted);
+        font-size: 9px;
+    }
+
+    .admin-month-orders {
+        color: var(--admin-muted);
+        font-size: 10px;
+    }
+
+    .admin-month-total {
+        color: var(--admin-primary);
+        font-size: 13px;
+        font-weight: 900;
+    }
+
+    .admin-stock-item {
+        padding: 16px 0;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .admin-stock-product {
+        display: flex;
+        min-width: 0;
+        align-items: center;
+        gap: 11px;
+    }
+
+    .admin-stock-icon {
+        color: var(--admin-warning);
+        background: var(--admin-warning-soft);
+    }
+
+    .admin-stock-product strong,
+    .admin-stock-product small {
+        display: block;
+    }
+
+    .admin-stock-product strong {
+        overflow: hidden;
+        color: var(--admin-dark);
+        font-size: 11px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .admin-stock-product small {
+        margin-top: 4px;
+        color: var(--admin-muted);
+        font-size: 9px;
+    }
+
+    .admin-stock-quantity {
+        padding: 7px 9px;
+        color: var(--admin-danger);
+        background: var(--admin-danger-soft);
+        border: 1px solid #ffd1cb;
+        border-radius: 999px;
+        font-size: 9px;
+        font-weight: 900;
+        white-space: nowrap;
+    }
+
+    .admin-stock-quantity.zero {
+        color: var(--admin-white);
+        background: var(--admin-danger);
+        border-color: var(--admin-danger);
+    }
+
+    /* ÉTAT VIDE */
+
+    .admin-empty {
+        min-height: 215px;
+        padding: 35px 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .admin-empty-icon {
+        display: grid;
+        width: 64px;
+        height: 64px;
+        margin-bottom: 16px;
+        place-items: center;
+        color: var(--admin-primary);
+        background: var(--admin-soft);
+        border-radius: 19px;
+        font-size: 24px;
+    }
+
+    .admin-empty h3 {
+        margin: 0 0 7px;
+        color: var(--admin-dark);
+        font-size: 16px;
+        font-weight: 900;
+    }
+
+    .admin-empty p {
+        max-width: 370px;
+        margin: 0;
+        color: var(--admin-muted);
+        font-size: 11px;
+        line-height: 1.6;
+    }
+
+    /* ANIMATIONS */
+
+    @keyframes adminCardIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px) scale(0.98);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    @keyframes adminSectionIn {
+        from {
+            opacity: 0;
+            transform: translateY(25px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes adminPulse {
+        0% {
+            box-shadow: 0 0 0 0 rgba(99, 217, 155, 0.55);
+        }
+
+        70% {
+            box-shadow: 0 0 0 8px rgba(99, 217, 155, 0);
+        }
+
+        100% {
+            box-shadow: 0 0 0 0 rgba(99, 217, 155, 0);
+        }
+    }
+
+    @keyframes adminShake {
+        0%,
+        86%,
+        100% {
+            transform: rotate(0);
+        }
+
+        89% {
+            transform: rotate(-7deg);
+        }
+
+        92% {
+            transform: rotate(7deg);
+        }
+
+        95% {
+            transform: rotate(-4deg);
+        }
+    }
+
+    /* RESPONSIVE */
+
+    @media (max-width: 1100px) {
+        .admin-statistics,
+        .admin-delivery-summary {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .admin-inventory-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .admin-quick-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .admin-bottom-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 760px) {
+        .admin-container {
+            width: min(100% - 24px, 1240px);
+        }
+
+        .admin-hero {
+            padding-top: 15px;
+        }
+
+        .admin-toolbar,
+        .admin-inventory-header,
+        .admin-stock-alert,
+        .admin-card-header,
+        .admin-paid-alert,
+        .admin-quick-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .admin-system-status {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .admin-security {
+            display: none;
+        }
+
+        .admin-statistics,
+        .admin-quick-grid,
+        .admin-delivery-summary {
+            grid-template-columns: 1fr;
+        }
+
+        .admin-inventory-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .admin-card-actions {
+            width: 100%;
+            align-items: stretch;
+            flex-direction: column;
+        }
+
+        .admin-empty-products {
+            justify-content: flex-start;
+        }
+
+        .admin-button {
+            width: 100%;
+        }
+
+        .admin-paid-actions {
+            width: 100%;
+            align-items: stretch;
+            flex-direction: column;
+        }
+
+        .admin-month {
+            grid-template-columns: minmax(0, 1fr) auto;
+        }
+
+        .admin-month-orders {
+            display: none;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .admin-inventory {
+            padding: 20px;
+        }
+
+        .admin-inventory-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        * {
+            animation: none !important;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<main class="admin-dashboard">
+
+    <!-- EN-TÊTE ADMIN -->
+
+    <header class="admin-hero">
+        <div class="admin-container">
+
+            <div class="admin-toolbar">
+
+                <div class="admin-brand">
+                    <span class="admin-brand-icon">
+                        <i class="fa-solid fa-layer-group"></i>
+                    </span>
+
+                    <span>
+                        <strong>Centre d’administration</strong>
+                        <small>Zendo Afrique · Gestion commerciale</small>
+                    </span>
+                </div>
+
+                <span class="admin-system-status">
+                    Système opérationnel
+                </span>
+
+            </div>
+
+            <div class="admin-hero-content">
+
+                <div>
+                    <span class="admin-label">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        Administration Zendo Afrique
+                    </span>
+
+                    <h1>Tableau de bord</h1>
+
+                    <p class="admin-hero-description">
+                        Gérez vos produits, commandes, clients, paiements,
+                        stocks, ventes et livraisons depuis un espace
+                        professionnel, moderne et sécurisé.
+                    </p>
+                </div>
+
+                <div class="admin-security">
+                    <span class="admin-security-icon">
+                        <i class="fa-solid fa-user-shield"></i>
+                    </span>
+
+                    <div>
+                        <strong>Espace sécurisé</strong>
+                        Accès réservé aux membres autorisés
+                        de l’administration.
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </header>
+
+    <div class="admin-container admin-main">
+
+        <!-- STATISTIQUES PRINCIPALES -->
+
+        <section class="admin-statistics">
+
+            <article class="admin-stat-card">
+                <span class="admin-stat-icon">
+                    <i class="fa-solid fa-dollar-sign"></i>
+                </span>
+
+                <div class="admin-stat-content">
+                    <span>Chiffre d’affaires</span>
+
+                    <strong>
+                        {{ ca|default:"0"|floatformat:2 }} $
+                    </strong>
+
+                    <small>Commandes non annulées</small>
+                </div>
+            </article>
+
+            <article class="admin-stat-card gold">
+                <span class="admin-stat-icon">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                </span>
+
+                <div class="admin-stat-content">
+                    <span>Commandes</span>
+
+                    <strong>
+                        {{ nb_commandes|default:"0" }}
+                    </strong>
+
+                    <small>Commandes valides enregistrées</small>
+                </div>
+            </article>
+
+            <article class="admin-stat-card blue">
+                <span class="admin-stat-icon">
+                    <i class="fa-solid fa-truck-fast"></i>
+                </span>
+
+                <div class="admin-stat-content">
+                    <span>Livraisons en cours</span>
+
+                    <strong>
+                        {{ nb_livraisons_en_cours|default:"0" }}
+                    </strong>
+
+                    <small>Préparation et transport</small>
+                </div>
+            </article>
+
+            <article class="admin-stat-card danger">
+                <span class="admin-stat-icon">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </span>
+
+                <div class="admin-stat-content">
+                    <span>Alertes de stock</span>
+
+                    <strong>
+                        {{ nb_alertes_stock|default:"0" }}
+                    </strong>
+
+                    <small>Stocks faibles et ruptures</small>
+                </div>
+            </article>
+
+        </section>
+
+        <!-- INVENTAIRE -->
+<section class="admin-inventory">
+
+    <header class="admin-inventory-header">
+
+        <div>
+            <span class="admin-label">
+                <i class="fa-solid fa-chart-pie"></i>
+                Inventaire en temps réel
+            </span>
+
+            <h2>Vue d’ensemble du stock</h2>
+
+            <p>
+                Suivez les produits disponibles, vendus,
+                commandés et en rupture.
+            </p>
+        </div>
+
+        <span class="admin-live">
+            Données actualisées
+        </span>
+
+    </header>
+
+    <div class="admin-inventory-grid">
+
+        <!-- STOCK TOTAL -->
+
+        <article class="admin-inventory-card">
+
+            <div class="admin-inventory-card-header">
+
+                <span class="admin-inventory-card-label">
+                    Stock total
+                </span>
+
+                <span class="admin-inventory-icon">
+                    <i class="fa-solid fa-boxes-stacked"></i>
+                </span>
+
+            </div>
+
+            <strong class="admin-inventory-value">
+                {{ stock_total|default:"0" }}
+            </strong>
+
+            <small class="admin-inventory-description">
+                Total des unités actuellement disponibles
+            </small>
+
+        </article>
+
+        <!-- TOTAL DES PRODUITS -->
+
+        <article class="admin-inventory-card blue">
+
+            <div class="admin-inventory-card-header">
+
+                <span class="admin-inventory-card-label">
+                    Total des produits
+                </span>
+
+                <span class="admin-inventory-icon">
+                    <i class="fa-solid fa-shirt"></i>
+                </span>
+
+            </div>
+
+            <strong class="admin-inventory-value">
+                {{ nb_produits_total|default:"0" }}
+            </strong>
+
+            <small class="admin-inventory-description">
+                {{ nb_produits_actifs|default:"0" }}
+                produit(s) actuellement publié(s)
+            </small>
+
+        </article>
+
+        <!-- PRODUITS EN STOCK -->
+
+        <article class="admin-inventory-card success">
+
+            <div class="admin-inventory-card-header">
+
+                <span class="admin-inventory-card-label">
+                    Produits en stock
+                </span>
+
+                <span class="admin-inventory-icon">
+                    <i class="fa-solid fa-box-open"></i>
+                </span>
+
+            </div>
+
+            <strong class="admin-inventory-value">
+                {{ nb_produits_en_stock|default:"0" }}
+            </strong>
+
+            <small class="admin-inventory-description">
+                Produits possédant au moins une unité
+            </small>
+
+        </article>
+
+        <!-- PRODUITS VENDUS -->
+
+        <article class="admin-inventory-card success">
+
+            <div class="admin-inventory-card-header">
+
+                <span class="admin-inventory-card-label">
+                    Produits vendus
+                </span>
+
+                <span class="admin-inventory-icon">
+                    <i class="fa-solid fa-arrow-trend-up"></i>
+                </span>
+
+            </div>
+
+            <strong class="admin-inventory-value">
+                {{ quantite_produits_vendus|default:"0" }}
+            </strong>
+
+            <small class="admin-inventory-description">
+                {{ nb_produits_differents_vendus|default:"0" }}
+                produit(s) différent(s) vendu(s)
+            </small>
+
+        </article>
+
+        <!-- PRODUITS COMMANDÉS -->
+
+        <article class="admin-inventory-card blue">
+
+            <div class="admin-inventory-card-header">
+
+                <span class="admin-inventory-card-label">
+                    Produits commandés
+                </span>
+
+                <span class="admin-inventory-icon">
+                    <i class="fa-solid fa-clipboard-list"></i>
+                </span>
+
+            </div>
+
+            <strong class="admin-inventory-value">
+                {{ nb_lignes_commandes|default:"0" }}
+            </strong>
+
+            <small class="admin-inventory-description">
+                Dans {{ nb_commandes|default:"0" }}
+                commande(s) valide(s)
+            </small>
+
+        </article>
+
+        <!-- PRODUITS EN RUPTURE -->
+
+        <article class="admin-inventory-card danger">
+
+            <div class="admin-inventory-card-header">
+
+                <span class="admin-inventory-card-label">
+                    Produits en rupture
+                </span>
+
+                <span class="admin-inventory-icon">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                </span>
+
+            </div>
+
+            <strong class="admin-inventory-value">
+                {{ nb_produits_stock_vide|default:"0" }}
+            </strong>
+
+            <small class="admin-inventory-description">
+                {{ nb_alertes_stock_faible|default:"0" }}
+                produit(s) avec un stock faible
+            </small>
+
+        </article>
+
+    </div>
+
+    <!-- ALERTE DE STOCK VIDE -->
+
+    {% if alerte_stock_vide %}
+
+        <div class="admin-stock-alert">
+
+            <div class="admin-stock-alert-content">
+
+                <span class="admin-stock-alert-icon">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </span>
+
+                <div>
+                    <strong>
+                        {{ message_stock_vide }}
+                    </strong>
+
+                    <small>
+                        Ajoutez du stock pour éviter
+                        de perdre de nouvelles commandes.
+                    </small>
+                </div>
+
+            </div>
+
+            <div class="admin-empty-products">
+
+                {% for produit in produits_stock_vide|slice:":5" %}
+
+                    <span class="admin-empty-product">
+                        {{ produit.nom }}
+                    </span>
+
+                {% endfor %}
+
+                {% if nb_produits_stock_vide > 5 %}
+
+                    <span class="admin-empty-product">
+                        +{{ nb_produits_stock_vide|add:"-5" }}
+                        autre(s)
+                    </span>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    {% endif %}
+
+</section>
+
+        <!-- ACTIONS RAPIDES -->
+
+        <section class="admin-quick-section">
+
+            <header class="admin-quick-header">
+                <h2>Actions rapides</h2>
+
+                <span>
+                    Accès direct aux fonctions importantes
+                </span>
+            </header>
+
+            <div class="admin-quick-grid">
+
+                <a
+                    href="{% url 'zendo:produit_ajouter' %}"
+                    class="admin-quick-action"
+                >
+                    <span class="admin-quick-icon">
+                        <i class="fa-solid fa-circle-plus"></i>
+                    </span>
+
+                    <span>
+                        <strong>Ajouter un produit</strong>
+                        <small>Créer un nouvel article</small>
+                    </span>
+                </a>
+
+                <a
+                    href="#gestion-produits"
+                    class="admin-quick-action"
+                >
+                    <span class="admin-quick-icon">
+                        <i class="fa-solid fa-shirt"></i>
+                    </span>
+
+                    <span>
+                        <strong>Gérer les produits</strong>
+                        <small>Modifier ou supprimer</small>
+                    </span>
+                </a>
+
+                <a
+                    href="{% url 'zendo:gestion_commandes' %}"
+                    class="admin-quick-action orders"
+                >
+                    <span class="admin-quick-icon">
+                        <i class="fa-solid fa-receipt"></i>
+                    </span>
+
+                    <span>
+                        <strong>Gestion des commandes</strong>
+                        <small>
+                            Consulter les commandes et relancer les paiements
+                        </small>
+                    </span>
+                </a>
+
+                <a
+                    href="{% url 'zendo:gestion_clients' %}"
+                    class="admin-quick-action clients"
+                >
+                    <span class="admin-quick-icon">
+                        <i class="fa-solid fa-users"></i>
+                    </span>
+
+                    <span>
+                        <strong>Gestion des clients</strong>
+                        <small>
+                            Voir les clients inscrits et leur historique
+                        </small>
+                    </span>
+                </a>
+
+                <a
+                    href="{% url 'zendo:livraison_ajouter' %}"
+                    class="admin-quick-action delivery"
+                >
+                    <span class="admin-quick-icon">
+                        <i class="fa-solid fa-truck-ramp-box"></i>
+                    </span>
+
+                    <span>
+                        <strong>Ajouter une livraison</strong>
+                        <small>Préparer une nouvelle expédition</small>
+                    </span>
+                </a>
+
+                <a
+                    href="{% url 'zendo:catalogue' %}"
+                    class="admin-quick-action"
+                >
+                    <span class="admin-quick-icon">
+                        <i class="fa-solid fa-store"></i>
+                    </span>
+
+                    <span>
+                        <strong>Voir la boutique</strong>
+                        <small>Consulter le catalogue public</small>
+                    </span>
+                </a>
+
+            </div>
+
+        </section>
+
+        <!-- COMMANDES PAYÉES -->
+
+        {% if commandes_payees %}
+            <section class="admin-paid-alert">
+
+                <div class="admin-paid-content">
+                    <span class="admin-paid-icon">
+                        <i class="fa-solid fa-bell"></i>
+                    </span>
+
+                    <div>
+                        <strong>
+                            {{ commandes_payees|length }}
+                            nouvelle(s) commande(s) payée(s)
+                        </strong>
+
+                        <small>
+                            Le paiement est confirmé. Préparez les colis
+                            et ajoutez les informations de livraison.
+                        </small>
+                    </div>
+                </div>
+
+                <div class="admin-paid-actions">
+
+                    <a
+                        href="{% url 'zendo:gestion_commandes' %}?paiement=paye"
+                        class="admin-button"
+                    >
+                        <i class="fa-solid fa-receipt"></i>
+                        Voir les commandes
+                    </a>
+
+                    <a
+                        href="{% url 'zendo:livraison_ajouter' %}"
+                        class="admin-button admin-delivery-button"
+                    >
+                        <i class="fa-solid fa-box-open"></i>
+                        Ajouter une livraison
+                    </a>
+
+                </div>
+
+            </section>
+        {% endif %}
+
+        <!-- GESTION DES PRODUITS -->
+
+        <section id="gestion-produits" class="admin-card">
+
+            <header class="admin-card-header">
+
+                <div class="admin-card-title">
+                    <span class="admin-card-icon">
+                        <i class="fa-solid fa-shirt"></i>
+                    </span>
+
+                    <div>
+                        <h2>Gestion des produits</h2>
+
+                        <p>
+                            Ajouter, consulter, modifier ou supprimer
+                            un produit
+                        </p>
+                    </div>
+                </div>
+
+                <a
+                    href="{% url 'zendo:produit_ajouter' %}"
+                    class="admin-button"
+                >
+                    <i class="fa-solid fa-plus"></i>
+                    Ajouter un produit
+                </a>
+
+            </header>
+
+            {% if produits_gestion %}
+
+                <div class="admin-table-wrapper">
+                    <table class="admin-table">
+
+                        <thead>
+                            <tr>
+                                <th>Produit</th>
+                                <th>Catégorie</th>
+                                <th>Prix</th>
+                                <th>Stock total</th>
+                                <th>État</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for produit in produits_gestion %}
+                                <tr>
+
+                                    <td>
+                                        <div class="admin-product">
+
+                                            <span class="admin-product-image">
+                                                {% with image=produit.images.first %}
+                                                    {% if image %}
+                                                        <img
+                                                            src="{{ image.image.url }}"
+                                                            alt="{{ produit.nom }}"
+                                                        >
+                                                    {% else %}
+                                                        <i class="fa-solid fa-shirt"></i>
+                                                    {% endif %}
+                                                {% endwith %}
+                                            </span>
+
+                                            <span>
+                                                <strong>{{ produit.nom }}</strong>
+
+                                                <small>
+                                                    SKU :
+                                                    {{ produit.sku|default:"—" }}
+                                                </small>
+                                            </span>
+
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        {% if produit.categorie %}
+                                            {{ produit.categorie.nom }}
+                                        {% else %}
+                                            Sans catégorie
+                                        {% endif %}
+                                    </td>
+
+                                    <td>
+                                        <strong class="admin-strong">
+                                            {% if produit.prix_promotionnel %}
+                                                {{ produit.prix_promotionnel|floatformat:2 }} $
+                                            {% else %}
+                                                {{ produit.prix|floatformat:2 }} $
+                                            {% endif %}
+                                        </strong>
+                                    </td>
+
+                                    <td>
+                                        {% if produit.stock_dashboard > 0 %}
+                                            <strong class="admin-strong">
+                                                {{ produit.stock_dashboard }}
+                                            </strong>
+                                        {% else %}
+                                            <span class="admin-state inactive">
+                                                <i class="fa-solid fa-circle-xmark"></i>
+                                                Stock vide
+                                            </span>
+                                        {% endif %}
+                                    </td>
+
+                                    <td>
+                                        <span
+                                            class="
+                                                admin-state
+                                                {% if not produit.actif %}
+                                                    inactive
+                                                {% endif %}
+                                            "
+                                        >
+                                            {% if produit.actif %}
+                                                <i class="fa-solid fa-check"></i>
+                                                Publié
+                                            {% else %}
+                                                <i class="fa-solid fa-ban"></i>
+                                                Désactivé
+                                            {% endif %}
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <div class="admin-table-actions">
+
+                                            <a
+                                                href="{{ produit.get_absolute_url }}"
+                                                class="admin-table-action"
+                                                title="Voir le produit"
+                                            >
+                                                <i class="fa-solid fa-eye"></i>
+                                            </a>
+
+                                            <a
+                                                href="{% url 'zendo:produit_modifier' produit.pk %}"
+                                                class="admin-table-action"
+                                                title="Modifier le produit"
+                                            >
+                                                <i class="fa-solid fa-pen"></i>
+                                            </a>
+
+                                            <a
+                                                href="{% url 'zendo:produit_supprimer' produit.pk %}"
+                                                class="admin-table-action delete"
+                                                title="Supprimer le produit"
+                                            >
+                                                <i class="fa-solid fa-trash"></i>
+                                            </a>
+
+                                        </div>
+                                    </td>
+
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+
+                    </table>
+                </div>
+
+            {% else %}
+
+                <div class="admin-empty">
+                    <span class="admin-empty-icon">
+                        <i class="fa-solid fa-shirt"></i>
+                    </span>
+
+                    <h3>Aucun produit enregistré</h3>
+
+                    <p>
+                        Ajoutez votre premier produit pour commencer
+                        à vendre sur Zendo Afrique.
+                    </p>
+
+                    <a
+                        href="{% url 'zendo:produit_ajouter' %}"
+                        class="admin-button"
+                        style="margin-top: 17px;"
+                    >
+                        <i class="fa-solid fa-plus"></i>
+                        Ajouter le premier produit
+                    </a>
+                </div>
+
+            {% endif %}
+
+        </section>
+
+        <!-- GESTION DES LIVRAISONS -->
+
+        <section id="gestion-livraisons" class="admin-card">
+
+            <header class="admin-card-header">
+
+                <div class="admin-card-title">
+                    <span class="admin-card-icon">
+                        <i class="fa-solid fa-truck-fast"></i>
+                    </span>
+
+                    <div>
+                        <h2>Gestion des livraisons</h2>
+
+                        <p>
+                            Préparation, expédition et suivi
+                            professionnel des commandes
+                        </p>
+                    </div>
+                </div>
+
+                <div class="admin-card-actions">
+
+                    <span class="admin-count">
+                        <i class="fa-solid fa-box"></i>
+
+                        {{ livraisons_recentes|length }}
+                        livraison(s)
+                    </span>
+
+                    <a
+                        href="{% url 'zendo:livraison_ajouter' %}"
+                        class="admin-button admin-delivery-button"
+                    >
+                        <i class="fa-solid fa-plus"></i>
+                        Ajouter une livraison
+                    </a>
+
+                </div>
+
+            </header>
+
+            <div class="admin-delivery-summary">
+
+                <article class="admin-delivery-stat">
+                    <span class="admin-delivery-icon">
+                        <i class="fa-solid fa-box-open"></i>
+                    </span>
+
+                    <div>
+                        <strong>
+                            {{ nb_livraisons_preparation|default:"0" }}
+                        </strong>
+
+                        <small>À préparer</small>
+                    </div>
+                </article>
+
+                <article class="admin-delivery-stat transit">
+                    <span class="admin-delivery-icon">
+                        <i class="fa-solid fa-route"></i>
+                    </span>
+
+                    <div>
+                        <strong>
+                            {{ nb_livraisons_transit|default:"0" }}
+                        </strong>
+
+                        <small>En transit</small>
+                    </div>
+                </article>
+
+                <article class="admin-delivery-stat delivered">
+                    <span class="admin-delivery-icon">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </span>
+
+                    <div>
+                        <strong>
+                            {{ nb_livraisons_livrees|default:"0" }}
+                        </strong>
+
+                        <small>Livrées</small>
+                    </div>
+                </article>
+
+                <article class="admin-delivery-stat problem">
+                    <span class="admin-delivery-icon">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                    </span>
+
+                    <div>
+                        <strong>
+                            {{ nb_livraisons_probleme|default:"0" }}
+                        </strong>
+
+                        <small>Avec problème</small>
+                    </div>
+                </article>
+
+            </div>
+
+            {% if livraisons_recentes %}
+
+                <div class="admin-table-wrapper">
+                    <table class="admin-table">
+
+                        <thead>
+                            <tr>
+                                <th>Commande</th>
+                                <th>Client</th>
+                                <th>Transporteur</th>
+                                <th>Numéro de suivi</th>
+                                <th>Statut</th>
+                                <th>Date prévue</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for livraison in livraisons_recentes %}
+                                <tr>
+
+                                    <td>
+                                        <strong class="admin-strong">
+                                            {{ livraison.commande.numero }}
+                                        </strong>
+                                    </td>
+
+                                    <td>
+                                        <span class="admin-customer">
+
+                                            <strong>
+                                                {% if livraison.commande.client.get_full_name %}
+                                                    {{ livraison.commande.client.get_full_name }}
+                                                {% else %}
+                                                    {{ livraison.commande.client.username }}
+                                                {% endif %}
+                                            </strong>
+
+                                            <small>
+                                                {{ livraison.commande.client.email }}
+                                            </small>
+
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        {{ livraison.transporteur|default:"À attribuer" }}
+                                    </td>
+
+                                    <td>
+                                        <strong class="admin-strong">
+                                            {{ livraison.numero_suivi|default:"—" }}
+                                        </strong>
+                                    </td>
+
+                                    <td>
+                                        <span
+                                            class="
+                                                admin-delivery-badge
+                                                {{ livraison.statut }}
+                                            "
+                                        >
+                                            {% if livraison.statut == "preparation" or livraison.statut == "en_attente" or livraison.statut == "a_preparer" %}
+
+                                                <i class="fa-solid fa-box-open"></i>
+
+                                            {% elif livraison.statut == "expediee" or livraison.statut == "expedie" %}
+
+                                                <i class="fa-solid fa-paper-plane"></i>
+
+                                            {% elif livraison.statut == "transit" or livraison.statut == "en_transit" %}
+
+                                                <i class="fa-solid fa-truck"></i>
+
+                                            {% elif livraison.statut == "livree" or livraison.statut == "livre" %}
+
+                                                <i class="fa-solid fa-check"></i>
+
+                                            {% else %}
+
+                                                <i class="fa-solid fa-circle-exclamation"></i>
+
+                                            {% endif %}
+
+                                            {{ livraison.get_statut_display }}
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        {% if livraison.livraison_prevue %}
+                                            {{ livraison.livraison_prevue|date:"d/m/Y" }}
+                                        {% else %}
+                                            À confirmer
+                                        {% endif %}
+                                    </td>
+
+                                    <td>
+                                        <div class="admin-table-actions">
+
+                                            <a
+                                                href="{% url 'zendo:livraison_modifier' livraison.pk %}"
+                                                class="admin-table-action"
+                                                title="Modifier la livraison"
+                                            >
+                                                <i class="fa-solid fa-pen-to-square"></i>
+                                            </a>
+
+                                        </div>
+                                    </td>
+
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+
+                    </table>
+                </div>
+
+            {% else %}
+
+                <div class="admin-empty">
+                    <span class="admin-empty-icon">
+                        <i class="fa-solid fa-truck-ramp-box"></i>
+                    </span>
+
+                    <h3>Aucune livraison enregistrée</h3>
+
+                    <p>
+                        Ajoutez une livraison pour préparer un colis,
+                        attribuer un transporteur et enregistrer son suivi.
+                    </p>
+
+                    <a
+                        href="{% url 'zendo:livraison_ajouter' %}"
+                        class="admin-button admin-delivery-button"
+                        style="margin-top: 17px;"
+                    >
+                        <i class="fa-solid fa-plus"></i>
+                        Ajouter une livraison
+                    </a>
+                </div>
+
+            {% endif %}
+
+        </section>
+
+        <!-- ACTIVITÉ ET ALERTES -->
+
+        <div class="admin-bottom-grid">
+
+            <!-- ACTIVITÉ MENSUELLE -->
+
+            <section class="admin-card">
+
+                <header class="admin-card-header">
+
+                    <div class="admin-card-title">
+                        <span class="admin-card-icon">
+                            <i class="fa-solid fa-chart-line"></i>
+                        </span>
+
+                        <div>
+                            <h2>Activité mensuelle</h2>
+
+                            <p>
+                                Commandes et chiffre d’affaires
+                            </p>
+                        </div>
+                    </div>
+
+                    <span class="admin-count">
+                        {{ donnees|length }} période(s)
+                    </span>
+
+                </header>
+
+                {% if donnees %}
+
+                    <div class="admin-month-list">
+
+                        {% for ligne in donnees %}
+                            <div class="admin-month">
+
+                                <div class="admin-month-date">
+                                    <span class="admin-month-icon">
+                                        <i class="fa-regular fa-calendar"></i>
+                                    </span>
+
+                                    <div>
+                                        <strong>
+                                            {{ ligne.mois|date:"F Y" }}
+                                        </strong>
+
+                                        <small>Activité mensuelle</small>
+                                    </div>
+                                </div>
+
+                                <span class="admin-month-orders">
+                                    {{ ligne.commandes }}
+                                    commande(s)
+                                </span>
+
+                                <strong class="admin-month-total">
+                                    {{ ligne.total|floatformat:2 }} $
+                                </strong>
+
+                            </div>
+                        {% endfor %}
+
+                    </div>
+
+                {% else %}
+
+                    <div class="admin-empty">
+                        <span class="admin-empty-icon">
+                            <i class="fa-regular fa-calendar-xmark"></i>
+                        </span>
+
+                        <h3>Aucune donnée mensuelle</h3>
+
+                        <p>
+                            Les statistiques apparaîtront après
+                            les premières ventes.
+                        </p>
+                    </div>
+
+                {% endif %}
+
+            </section>
+
+            <!-- ALERTES DE STOCK -->
+
+            <aside class="admin-card">
+
+                <header class="admin-card-header">
+
+                    <div class="admin-card-title">
+                        <span class="admin-card-icon warning">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                        </span>
+
+                        <div>
+                            <h2>Alertes de stock</h2>
+
+                            <p>
+                                Ruptures et stocks inférieurs
+                                ou égaux à cinq
+                            </p>
+                        </div>
+                    </div>
+
+                    <span class="admin-count">
+                        {{ nb_alertes_stock|default:"0" }}
+                    </span>
+
+                </header>
+
+                {% if variantes_stock_vide or stock_faible %}
+
+                    <div class="admin-stock-list">
+
+                        {% for variante in variantes_stock_vide %}
+
+                            <div class="admin-stock-item">
+
+                                <div class="admin-stock-product">
+                                    <span class="admin-stock-icon">
+                                        <i class="fa-solid fa-circle-xmark"></i>
+                                    </span>
+
+                                    <div>
+                                        <strong>
+                                            {{ variante.produit.nom }}
+                                        </strong>
+
+                                        <small>
+                                            {% if variante.sku %}
+                                                SKU {{ variante.sku }}
+                                            {% endif %}
+
+                                            {% if variante.taille %}
+                                                · Taille {{ variante.taille }}
+                                            {% endif %}
+
+                                            {% if variante.couleur %}
+                                                · {{ variante.couleur }}
+                                            {% endif %}
+
+                                            {% if variante.modele %}
+                                                · {{ variante.modele }}
+                                            {% endif %}
+                                        </small>
+                                    </div>
+                                </div>
+
+                                <span class="admin-stock-quantity zero">
+                                    Rupture
+                                </span>
+
+                            </div>
+
+                        {% endfor %}
+
+                        {% for variante in stock_faible %}
+
+                            <div class="admin-stock-item">
+
+                                <div class="admin-stock-product">
+                                    <span class="admin-stock-icon">
+                                        <i class="fa-solid fa-box"></i>
+                                    </span>
+
+                                    <div>
+                                        <strong>
+                                            {{ variante.produit.nom }}
+                                        </strong>
+
+                                        <small>
+                                            {% if variante.sku %}
+                                                SKU {{ variante.sku }}
+                                            {% endif %}
+
+                                            {% if variante.taille %}
+                                                · Taille {{ variante.taille }}
+                                            {% endif %}
+
+                                            {% if variante.couleur %}
+                                                · {{ variante.couleur }}
+                                            {% endif %}
+
+                                            {% if variante.modele %}
+                                                · {{ variante.modele }}
+                                            {% endif %}
+                                        </small>
+                                    </div>
+                                </div>
+
+                                <span class="admin-stock-quantity">
+                                    {{ variante.stock }}
+                                    restant(s)
+                                </span>
+
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                {% else %}
+
+                    <div class="admin-empty">
+                        <span class="admin-empty-icon">
+                            <i class="fa-solid fa-circle-check"></i>
+                        </span>
+
+                        <h3>Inventaire en bon état</h3>
+
+                        <p>
+                            Aucun produit ne présente actuellement
+                            un stock faible ou une rupture.
+                        </p>
+                    </div>
+
+                {% endif %}
+
+            </aside>
+
+        </div>
+
+    </div>
+
+</main>
+
+{% endblock %}

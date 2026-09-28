@@ -1,0 +1,800 @@
+{% extends "zendo/base.html" %}
+{% load static %}
+
+{% block title %}Mon compte — Zendo Afrique{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --account-primary: #124c3b;
+        --account-dark: #071f19;
+        --account-soft: #e9f4ef;
+        --account-gold: #d9a441;
+        --account-white: #ffffff;
+        --account-page: #f4f8f6;
+        --account-text: #17211e;
+        --account-muted: #6a7772;
+        --account-border: #dfe8e4;
+        --account-shadow: 0 18px 48px rgba(7, 31, 25, .08);
+    }
+
+    html {
+        scroll-behavior: smooth;
+    }
+
+    .account-page {
+        min-height: 100vh;
+        padding-bottom: 80px;
+        background:
+            radial-gradient(circle at 95% 5%, rgba(217, 164, 65, .11), transparent 25%),
+            var(--account-page);
+    }
+
+    .account-container {
+        width: min(1220px, calc(100% - 40px));
+        margin: 0 auto;
+    }
+
+    .account-hero {
+        position: relative;
+        overflow: hidden;
+        padding: 54px 0 88px;
+        color: var(--account-white);
+        background: linear-gradient(135deg, var(--account-dark), var(--account-primary));
+    }
+
+    .account-hero::before,
+    .account-hero::after {
+        content: "";
+        position: absolute;
+        border-radius: 50%;
+        pointer-events: none;
+    }
+
+    .account-hero::before {
+        top: -190px;
+        right: -90px;
+        width: 430px;
+        height: 430px;
+        border: 1px solid rgba(255, 255, 255, .1);
+    }
+
+    .account-hero::after {
+        right: 14%;
+        bottom: -170px;
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(circle, rgba(217, 164, 65, .25), transparent 66%);
+    }
+
+    .account-hero-content {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 36px;
+    }
+
+    .account-identity {
+        display: flex;
+        align-items: center;
+        gap: 22px;
+    }
+
+    .account-avatar {
+        width: 84px;
+        height: 84px;
+        display: grid;
+        place-items: center;
+        flex: 0 0 auto;
+        color: var(--account-dark);
+        background: linear-gradient(145deg, #f0d28e, var(--account-gold));
+        border: 4px solid rgba(255, 255, 255, .17);
+        border-radius: 24px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, .18);
+        font-size: 28px;
+        font-weight: 900;
+        text-transform: uppercase;
+    }
+
+    .account-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 10px;
+        color: #f2d898;
+        font-size: 12px;
+        font-weight: 850;
+        text-transform: uppercase;
+        letter-spacing: 1.1px;
+    }
+
+    .account-hero h1 {
+        margin: 0;
+        color: var(--account-white);
+        font-size: clamp(32px, 5vw, 51px);
+        line-height: 1.08;
+        letter-spacing: -1.5px;
+    }
+
+    .account-hero p {
+        margin: 12px 0 0;
+        color: rgba(255, 255, 255, .68);
+        font-size: 15px;
+    }
+
+    .account-security {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        max-width: 260px;
+        padding: 15px 17px;
+        color: rgba(255, 255, 255, .82);
+        background: rgba(255, 255, 255, .08);
+        border: 1px solid rgba(255, 255, 255, .11);
+        border-radius: 15px;
+        backdrop-filter: blur(12px);
+        font-size: 12px;
+        line-height: 1.5;
+        font-weight: 700;
+    }
+
+    .account-security i {
+        color: var(--account-gold);
+        font-size: 20px;
+    }
+
+    .account-main {
+        position: relative;
+        z-index: 2;
+        margin-top: -48px;
+    }
+
+    .account-stats {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 18px;
+        margin-bottom: 25px;
+    }
+
+    .account-stat {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 21px;
+        background: var(--account-white);
+        border: 1px solid var(--account-border);
+        border-radius: 18px;
+        box-shadow: var(--account-shadow);
+    }
+
+    .account-stat-icon {
+        width: 47px;
+        height: 47px;
+        display: grid;
+        place-items: center;
+        flex: 0 0 auto;
+        color: var(--account-primary);
+        background: var(--account-soft);
+        border-radius: 14px;
+        font-size: 18px;
+    }
+
+    .account-stat-value {
+        display: block;
+        color: var(--account-dark);
+        font-size: 22px;
+        line-height: 1;
+        font-weight: 900;
+    }
+
+    .account-stat-label {
+        display: block;
+        margin-top: 6px;
+        color: var(--account-muted);
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .account-layout {
+        display: grid;
+        grid-template-columns: 250px minmax(0, 1fr);
+        align-items: start;
+        gap: 24px;
+    }
+
+    .account-navigation {
+        position: sticky;
+        top: 20px;
+        overflow: hidden;
+        padding: 10px;
+        background: var(--account-white);
+        border: 1px solid var(--account-border);
+        border-radius: 19px;
+        box-shadow: var(--account-shadow);
+    }
+
+    .account-navigation-title {
+        display: block;
+        padding: 12px 13px 8px;
+        color: #8a9791;
+        font-size: 10px;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .account-navigation a {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 13px 14px;
+        color: var(--account-muted);
+        border-radius: 12px;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 800;
+        transition: .2s ease;
+    }
+
+    .account-navigation a + a {
+        margin-top: 3px;
+    }
+
+    .account-navigation a:hover,
+    .account-navigation a.active {
+        color: var(--account-primary);
+        background: var(--account-soft);
+    }
+
+    .account-navigation a i {
+        width: 22px;
+        text-align: center;
+        font-size: 16px;
+    }
+
+    .account-content {
+        min-width: 0;
+    }
+
+    .account-section {
+        scroll-margin-top: 25px;
+        padding: 28px;
+        background: var(--account-white);
+        border: 1px solid var(--account-border);
+        border-radius: 22px;
+        box-shadow: var(--account-shadow);
+    }
+
+    .account-section + .account-section {
+        margin-top: 25px;
+    }
+
+    .section-heading {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 23px;
+    }
+
+    .section-heading h2 {
+        margin: 0;
+        color: var(--account-dark);
+        font-size: 25px;
+        font-weight: 900;
+        letter-spacing: -.5px;
+    }
+
+    .section-heading p {
+        margin: 6px 0 0;
+        color: var(--account-muted);
+        font-size: 12px;
+    }
+
+    .section-count {
+        padding: 7px 11px;
+        color: var(--account-primary);
+        background: var(--account-soft);
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 900;
+    }
+
+    .responsive-table {
+        overflow-x: auto;
+        border: 1px solid var(--account-border);
+        border-radius: 16px;
+    }
+
+    .professional-table {
+        width: 100%;
+        border-collapse: collapse;
+        white-space: nowrap;
+    }
+
+    .professional-table th {
+        padding: 14px 17px;
+        color: #798680;
+        background: #f7faf8;
+        border-bottom: 1px solid var(--account-border);
+        text-align: left;
+        font-size: 10px;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: .7px;
+    }
+
+    .professional-table td {
+        padding: 17px;
+        color: var(--account-muted);
+        border-bottom: 1px solid #edf1ef;
+        font-size: 13px;
+    }
+
+    .professional-table tbody tr:last-child td {
+        border-bottom: 0;
+    }
+
+    .professional-table tbody tr:hover {
+        background: #fbfdfc;
+    }
+
+    .order-number {
+        color: var(--account-dark);
+        font-weight: 900;
+    }
+
+    .order-total {
+        color: var(--account-dark);
+        font-weight: 900;
+    }
+
+    .order-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 7px 10px;
+        color: #63520c;
+        background: #fff6d8;
+        border: 1px solid #f4e2a6;
+        border-radius: 999px;
+        font-size: 10px;
+        font-weight: 900;
+    }
+
+    .order-status::before {
+        content: "";
+        width: 6px;
+        height: 6px;
+        background: currentColor;
+        border-radius: 50%;
+    }
+
+    .status-livree,
+    .status-livre,
+    .status-complete,
+    .status-payee,
+    .status-paye {
+        color: #12613e;
+        background: #e7f7ee;
+        border-color: #bce7cf;
+    }
+
+    .status-annulee,
+    .status-annule,
+    .status-remboursee,
+    .status-rembourse {
+        color: #9b2c24;
+        background: #fff0ee;
+        border-color: #ffd1cb;
+    }
+
+    .status-expediee,
+    .status-expedie,
+    .status-en_livraison {
+        color: #155b87;
+        background: #eaf5fc;
+        border-color: #c8e5f6;
+    }
+
+    .table-action {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        color: var(--account-primary);
+        font-size: 12px;
+        font-weight: 900;
+        text-decoration: none;
+    }
+
+    .table-action:hover i {
+        transform: translateX(3px);
+    }
+
+    .table-action i {
+        transition: transform .2s ease;
+    }
+
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 19px;
+    }
+
+    .empty-state,
+    .empty-table {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 260px;
+        padding: 35px 20px;
+        text-align: center;
+    }
+
+    .empty-state {
+        grid-column: 1 / -1;
+        background: #f9fbfa;
+        border: 1px dashed #cbd8d2;
+        border-radius: 17px;
+    }
+
+    .empty-state i,
+    .empty-table i {
+        width: 60px;
+        height: 60px;
+        display: grid;
+        place-items: center;
+        margin-bottom: 17px;
+        color: var(--account-primary);
+        background: var(--account-soft);
+        border-radius: 18px;
+        font-size: 24px;
+    }
+
+    .empty-state h3 {
+        margin: 0 0 8px;
+        color: var(--account-dark);
+        font-size: 20px;
+    }
+
+    .empty-state p,
+    .empty-table p {
+        max-width: 390px;
+        margin: 0 0 18px;
+        color: var(--account-muted);
+        line-height: 1.65;
+        white-space: normal;
+    }
+
+    .primary-button,
+    .empty-table a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 12px 17px;
+        color: var(--account-white);
+        background: var(--account-primary);
+        border-radius: 11px;
+        text-decoration: none;
+        font-size: 12px;
+        font-weight: 900;
+    }
+
+    @media (max-width: 1000px) {
+        .account-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .account-navigation {
+            position: static;
+            display: flex;
+            overflow-x: auto;
+            padding: 8px;
+        }
+
+        .account-navigation-title {
+            display: none;
+        }
+
+        .account-navigation a {
+            flex: 0 0 auto;
+        }
+
+        .account-navigation a + a {
+            margin: 0 0 0 3px;
+        }
+
+        .products-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 720px) {
+        .account-container {
+            width: min(100% - 24px, 1220px);
+        }
+
+        .account-hero {
+            padding: 37px 0 76px;
+        }
+
+        .account-identity {
+            align-items: flex-start;
+        }
+
+        .account-avatar {
+            width: 58px;
+            height: 58px;
+            border-radius: 17px;
+            font-size: 20px;
+        }
+
+        .account-hero h1 {
+            font-size: 30px;
+        }
+
+        .account-security {
+            display: none;
+        }
+
+        .account-stats {
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+
+        .account-stat {
+            padding: 15px;
+        }
+
+        .account-section {
+            padding: 19px;
+            border-radius: 18px;
+        }
+
+        .responsive-table {
+            overflow: visible;
+            border: 0;
+        }
+
+        .professional-table,
+        .professional-table tbody {
+            display: block;
+        }
+
+        .professional-table thead {
+            display: none;
+        }
+
+        .professional-table tr {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 13px;
+            padding: 16px;
+            background: #f9fbfa;
+            border: 1px solid var(--account-border);
+            border-radius: 14px;
+        }
+
+        .professional-table td {
+            display: block;
+            padding: 0;
+            border: 0;
+            white-space: normal;
+        }
+
+        .professional-table td:first-child,
+        .professional-table td:last-child {
+            grid-column: 1 / -1;
+        }
+
+        .professional-table td:last-child {
+            padding-top: 11px;
+            border-top: 1px solid var(--account-border);
+        }
+
+        .professional-table tr:has(.empty-table) {
+            display: block;
+        }
+
+        .products-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .section-heading h2 {
+            font-size: 22px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="account-page">
+    <header class="account-hero">
+        <div class="account-container account-hero-content">
+            <div class="account-identity">
+                <div class="account-avatar" aria-hidden="true">
+                    {{ user.first_name|default:user.username|first }}
+                </div>
+
+                <div>
+                    <span class="account-label">
+                        <i class="fa-solid fa-circle-check"></i>
+                        Espace client
+                    </span>
+                    <h1>Bonjour, {{ user.first_name|default:user.username }}</h1>
+                    <p>Gérez vos achats et retrouvez vos produits préférés.</p>
+                </div>
+            </div>
+
+            <div class="account-security">
+                <i class="fa-solid fa-shield-halved"></i>
+                <span>Votre espace personnel est sécurisé et confidentiel.</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="account-container account-main">
+        <section class="account-stats" aria-label="Résumé du compte">
+            <div class="account-stat">
+                <span class="account-stat-icon"><i class="fa-solid fa-box"></i></span>
+                <span>
+                    <strong class="account-stat-value">{{ commandes|length }}</strong>
+                    <small class="account-stat-label">Commande{{ commandes|length|pluralize }}</small>
+                </span>
+            </div>
+
+            <div class="account-stat">
+                <span class="account-stat-icon"><i class="fa-solid fa-heart"></i></span>
+                <span>
+                    <strong class="account-stat-value">{{ favoris|length }}</strong>
+                    <small class="account-stat-label">Produit{{ favoris|length|pluralize }} favori{{ favoris|length|pluralize }}</small>
+                </span>
+            </div>
+
+            <div class="account-stat">
+                <span class="account-stat-icon"><i class="fa-solid fa-headset"></i></span>
+                <span>
+                    <strong class="account-stat-value">Support</strong>
+                    <small class="account-stat-label">Assistance à votre écoute</small>
+                </span>
+            </div>
+        </section>
+
+        <div class="account-layout">
+            <nav class="account-navigation" aria-label="Navigation du compte">
+                <span class="account-navigation-title">Mon espace</span>
+                <a href="#commandes" class="active">
+                    <i class="fa-solid fa-box"></i>
+                    Mes commandes
+                </a>
+                <a href="#favoris">
+                    <i class="fa-regular fa-heart"></i>
+                    Mes favoris
+                </a>
+                <a href="{% url 'zendo:support' %}">
+                    <i class="fa-regular fa-message"></i>
+                    Support
+                </a>
+                <a href="{% url 'zendo:catalogue' %}">
+                    <i class="fa-solid fa-store"></i>
+                    Boutique
+                </a>
+            </nav>
+
+            <div class="account-content">
+                <section id="commandes" class="account-section">
+                    <div class="section-heading">
+                        <div>
+                            <h2>Mes commandes</h2>
+                            <p>Consultez l’historique et le statut de vos achats.</p>
+                        </div>
+                        <span class="section-count">{{ commandes|length }} au total</span>
+                    </div>
+
+                    <div class="responsive-table">
+                        <table class="professional-table">
+                            <thead>
+                                <tr>
+                                    <th>Numéro</th>
+                                    <th>Date</th>
+                                    <th>Statut</th>
+                                    <th>Total</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for commande in commandes %}
+                                    <tr>
+                                        <td><strong class="order-number">#{{ commande.numero }}</strong></td>
+                                        <td>{{ commande.cree_le|date:"d/m/Y" }}</td>
+                                        <td>
+                                            <span class="order-status status-{{ commande.statut }}">
+                                                {{ commande.get_statut_display }}
+                                            </span>
+                                        </td>
+                                        <td><strong class="order-total">{{ commande.total|floatformat:2 }} $ CA</strong></td>
+                                        <td>
+                                            <a href="{% url 'zendo:commande_detail' commande.pk %}" class="table-action">
+                                                Voir les détails
+                                                <i class="fa-solid fa-arrow-right"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="5">
+                                            <div class="empty-table">
+                                                <i class="fa-solid fa-box-open"></i>
+                                                <p>Vous n’avez encore passé aucune commande.</p>
+                                                <a href="{% url 'zendo:catalogue' %}">
+                                                    <i class="fa-solid fa-store"></i>
+                                                    Visiter la boutique
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section id="favoris" class="account-section">
+                    <div class="section-heading">
+                        <div>
+                            <h2>Mes favoris</h2>
+                            <p>Les produits enregistrés pour plus tard.</p>
+                        </div>
+                        <span class="section-count">{{ favoris|length }} produit{{ favoris|length|pluralize }}</span>
+                    </div>
+
+                    <div class="products-grid">
+                        {% for favori in favoris %}
+                            {% with produit=favori.produit %}
+                                {% include "zendo/produit_card.html" %}
+                            {% endwith %}
+                        {% empty %}
+                            <div class="empty-state">
+                                <i class="fa-regular fa-heart"></i>
+                                <h3>Aucun produit favori</h3>
+                                <p>
+                                    Enregistrez les produits que vous aimez pour
+                                    les retrouver rapidement dans votre compte.
+                                </p>
+                                <a href="{% url 'zendo:catalogue' %}" class="primary-button">
+                                    <i class="fa-solid fa-store"></i>
+                                    Découvrir la boutique
+                                </a>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const navigationLinks = document.querySelectorAll(
+            '.account-navigation a[href^="#"]'
+        );
+
+        navigationLinks.forEach(function (link) {
+            link.addEventListener("click", function () {
+                navigationLinks.forEach(function (item) {
+                    item.classList.remove("active");
+                });
+                link.classList.add("active");
+            });
+        });
+    });
+</script>
+{% endblock %}

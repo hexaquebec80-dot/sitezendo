@@ -1,0 +1,2148 @@
+{% extends "zendo/base.html" %}
+{% load static %}
+
+{% block title %}
+    Commande {{ commande.numero }} — Zendo Afrique
+{% endblock %}
+
+{% block extra_css %}
+
+<style>
+    :root {
+        --primary: #124c3b;
+        --primary-dark: #071f19;
+        --primary-soft: #e9f4ef;
+        --gold: #d6a84f;
+        --white: #ffffff;
+        --page: #f5f9f7;
+        --text: #17211e;
+        --muted: #68756f;
+        --border: #dde7e3;
+        --success: #198754;
+        --danger: #b42318;
+        --shadow: 0 18px 50px rgba(7, 31, 25, .08);
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    .order-page {
+        min-height: 100vh;
+        padding-bottom: 85px;
+
+        background:
+            radial-gradient(
+                circle at 94% 7%,
+                rgba(214, 168, 79, .12),
+                transparent 25%
+            ),
+            var(--page);
+    }
+
+    .order-container {
+        width: min(1180px, calc(100% - 40px));
+        margin: 0 auto;
+    }
+
+    /* =====================================================
+       HERO
+       ===================================================== */
+
+    .order-hero {
+        position: relative;
+        overflow: hidden;
+
+        padding: 55px 0 100px;
+
+        color: var(--white);
+
+        background:
+            linear-gradient(
+                135deg,
+                var(--primary-dark),
+                var(--primary)
+            );
+    }
+
+    .order-hero::before {
+        content: "";
+
+        position: absolute;
+        top: -240px;
+        right: -100px;
+
+        width: 520px;
+        height: 520px;
+
+        border: 1px solid rgba(255,255,255,.10);
+        border-radius: 50%;
+    }
+
+    .order-hero::after {
+        content: "";
+
+        position: absolute;
+        right: 17%;
+        bottom: -190px;
+
+        width: 340px;
+        height: 340px;
+
+        border-radius: 50%;
+
+        background:
+            radial-gradient(
+                circle,
+                rgba(214,168,79,.30),
+                transparent 67%
+            );
+    }
+
+    .order-hero-content {
+        position: relative;
+        z-index: 2;
+
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        gap: 35px;
+    }
+
+    .order-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+
+        margin-bottom: 13px;
+
+        color: #f1d28d;
+
+        font-size: 11px;
+        font-weight: 900;
+        letter-spacing: 1.2px;
+
+        text-transform: uppercase;
+    }
+
+    .order-hero h1 {
+        margin: 0;
+
+        color: #ffffff;
+
+        font-size: clamp(34px, 6vw, 57px);
+        font-weight: 900;
+        line-height: 1.05;
+
+        letter-spacing: -1.7px;
+
+        overflow-wrap: anywhere;
+    }
+
+    .order-number-prefix {
+        color: rgba(255,255,255,.40);
+    }
+
+    .order-created {
+        display: flex;
+        align-items: center;
+
+        gap: 8px;
+
+        margin-top: 15px;
+
+        color: rgba(255,255,255,.68);
+
+        font-size: 12px;
+    }
+
+    .order-created i {
+        color: var(--gold);
+    }
+
+    .order-status {
+        display: inline-flex;
+        align-items: center;
+
+        gap: 8px;
+
+        padding: 10px 14px;
+
+        color: #f8e7b8;
+
+        background: rgba(255,255,255,.09);
+
+        border: 1px solid rgba(255,255,255,.14);
+        border-radius: 999px;
+
+        font-size: 10px;
+        font-weight: 900;
+
+        text-transform: uppercase;
+    }
+
+    .order-status::before {
+        content: "";
+
+        width: 8px;
+        height: 8px;
+
+        background: currentColor;
+
+        border-radius: 50%;
+    }
+
+    /* =====================================================
+       CONTENU
+       ===================================================== */
+
+    .order-main {
+        position: relative;
+        z-index: 3;
+
+        margin-top: -50px;
+    }
+
+    /* =====================================================
+       PROGRESSION
+       ===================================================== */
+
+    .order-progress {
+        display: grid;
+
+        grid-template-columns:
+            repeat(4, minmax(0,1fr));
+
+        overflow: hidden;
+
+        margin-bottom: 24px;
+
+        background: #ffffff;
+
+        border: 1px solid var(--border);
+        border-radius: 18px;
+
+        box-shadow: var(--shadow);
+    }
+
+    .progress-step {
+        min-height: 84px;
+
+        display: flex;
+        align-items: center;
+
+        gap: 12px;
+
+        padding: 16px;
+    }
+
+    .progress-step + .progress-step {
+        border-left: 1px solid var(--border);
+    }
+
+    .progress-icon {
+        width: 42px;
+        height: 42px;
+
+        display: grid;
+        place-items: center;
+
+        flex-shrink: 0;
+
+        color: var(--primary);
+
+        background: var(--primary-soft);
+
+        border-radius: 13px;
+    }
+
+    .progress-step strong,
+    .progress-step small {
+        display: block;
+    }
+
+    .progress-step strong {
+        color: var(--primary-dark);
+
+        font-size: 11px;
+    }
+
+    .progress-step small {
+        margin-top: 3px;
+
+        color: var(--muted);
+
+        font-size: 8px;
+        line-height: 1.4;
+    }
+
+    /* =====================================================
+       LAYOUT
+       ===================================================== */
+
+    .order-layout {
+        display: grid;
+
+        grid-template-columns:
+            minmax(0, 1.45fr)
+            minmax(340px, .55fr);
+
+        align-items: start;
+
+        gap: 25px;
+    }
+
+    .main-column {
+        display: grid;
+        gap: 22px;
+
+        min-width: 0;
+    }
+
+    .order-card,
+    .order-summary {
+        background: #ffffff;
+
+        border: 1px solid var(--border);
+        border-radius: 22px;
+
+        box-shadow: var(--shadow);
+    }
+
+    .order-card {
+        overflow: hidden;
+    }
+
+    /* =====================================================
+       EN-TÊTE CARTES
+       ===================================================== */
+
+    .card-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        gap: 18px;
+
+        padding: 22px 25px;
+
+        border-bottom: 1px solid var(--border);
+    }
+
+    .card-heading-main {
+        display: flex;
+        align-items: center;
+
+        gap: 13px;
+    }
+
+    .card-heading-icon {
+        width: 43px;
+        height: 43px;
+
+        display: grid;
+        place-items: center;
+
+        flex-shrink: 0;
+
+        color: var(--primary);
+
+        background: var(--primary-soft);
+
+        border-radius: 13px;
+    }
+
+    .card-heading h2 {
+        margin: 0;
+
+        color: var(--primary-dark);
+
+        font-size: 19px;
+        font-weight: 900;
+    }
+
+    .card-heading p {
+        margin: 4px 0 0;
+
+        color: var(--muted);
+
+        font-size: 9px;
+    }
+
+    .article-count {
+        padding: 7px 11px;
+
+        color: var(--primary);
+
+        background: var(--primary-soft);
+
+        border-radius: 999px;
+
+        font-size: 9px;
+        font-weight: 900;
+    }
+
+    /* =====================================================
+       ARTICLES
+       ===================================================== */
+
+    .products-list {
+        padding: 0 25px;
+    }
+
+    .product-row {
+        display: grid;
+
+        grid-template-columns:
+            minmax(0,1fr)
+            100px
+            125px;
+
+        align-items: center;
+
+        gap: 20px;
+
+        padding: 21px 0;
+    }
+
+    .product-row + .product-row {
+        border-top: 1px solid #eaf0ed;
+    }
+
+    .product-name {
+        display: block;
+
+        color: var(--primary-dark);
+
+        font-size: 13px;
+        font-weight: 900;
+    }
+
+    .product-detail {
+        display: flex;
+        align-items: flex-start;
+
+        gap: 7px;
+
+        margin-top: 6px;
+
+        color: var(--muted);
+
+        font-size: 9px;
+        line-height: 1.5;
+    }
+
+    .product-detail i {
+        margin-top: 2px;
+
+        color: var(--primary);
+    }
+
+    .product-customization {
+        display: inline-flex;
+        align-items: flex-start;
+
+        gap: 7px;
+
+        margin-top: 8px;
+        padding: 7px 9px;
+
+        color: #65521a;
+
+        background: #fff8e6;
+
+        border: 1px solid #f1dfa9;
+        border-radius: 8px;
+
+        font-size: 9px;
+    }
+
+    .product-quantity {
+        color: var(--muted);
+
+        text-align: center;
+
+        font-size: 10px;
+        font-weight: 800;
+    }
+
+    .product-total {
+        color: var(--primary-dark);
+
+        text-align: right;
+
+        font-size: 14px;
+        font-weight: 900;
+
+        white-space: nowrap;
+    }
+
+    /* =====================================================
+       ADRESSE
+       ===================================================== */
+
+    .address-content,
+    .shipping-content {
+        padding: 25px;
+    }
+
+    .delivery-address {
+        display: grid;
+
+        gap: 8px;
+
+        margin: 0;
+        padding: 20px;
+
+        color: var(--muted);
+
+        background: #f8faf9;
+
+        border: 1px solid var(--border);
+        border-radius: 15px;
+
+        font-size: 11px;
+        line-height: 1.6;
+
+        font-style: normal;
+    }
+
+    .delivery-address > strong {
+        margin-bottom: 4px;
+
+        color: var(--primary-dark);
+
+        font-size: 13px;
+        font-weight: 900;
+    }
+
+    .address-line {
+        display: flex;
+        align-items: flex-start;
+
+        gap: 9px;
+    }
+
+    .address-line i {
+        width: 16px;
+
+        margin-top: 3px;
+
+        color: var(--primary);
+
+        text-align: center;
+    }
+
+    /* =====================================================
+       LIVRAISON
+       ===================================================== */
+
+    .shipping-box {
+        padding: 19px;
+
+        background: #f8faf9;
+
+        border: 1px solid var(--border);
+        border-radius: 15px;
+    }
+
+    .shipping-info {
+        display: grid;
+        gap: 12px;
+    }
+
+    .shipping-info p {
+        display: flex;
+        justify-content: space-between;
+
+        gap: 20px;
+
+        margin: 0;
+        padding-bottom: 12px;
+
+        color: var(--muted);
+
+        border-bottom: 1px solid #e6ece9;
+
+        font-size: 10px;
+    }
+
+    .shipping-info p:last-child {
+        padding-bottom: 0;
+
+        border-bottom: 0;
+    }
+
+    .shipping-info strong {
+        color: var(--primary-dark);
+
+        text-align: right;
+    }
+
+    .tracking-button {
+        width: 100%;
+
+        min-height: 47px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        gap: 8px;
+
+        margin-top: 16px;
+
+        color: #ffffff;
+
+        background: var(--primary);
+
+        border-radius: 11px;
+
+        text-decoration: none;
+
+        font-size: 10px;
+        font-weight: 900;
+    }
+
+    /* =====================================================
+       RÉSUMÉ
+       ===================================================== */
+
+    .order-summary {
+        position: sticky;
+        top: 110px;
+
+        padding: 27px;
+    }
+
+    .summary-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        margin-bottom: 21px;
+    }
+
+    .summary-heading h2 {
+        margin: 0;
+
+        color: var(--primary-dark);
+
+        font-size: 22px;
+        font-weight: 900;
+    }
+
+    .summary-heading i {
+        width: 42px;
+        height: 42px;
+
+        display: grid;
+        place-items: center;
+
+        color: var(--primary);
+
+        background: var(--primary-soft);
+
+        border-radius: 13px;
+    }
+
+    .summary-line {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        gap: 18px;
+
+        padding: 10px 0;
+
+        color: var(--muted);
+
+        font-size: 10px;
+    }
+
+    .summary-line strong {
+        color: var(--text);
+
+        font-size: 11px;
+
+        white-space: nowrap;
+    }
+
+    .summary-discount strong {
+        color: var(--success);
+    }
+
+    .tax-name {
+        display: flex;
+        align-items: center;
+
+        gap: 5px;
+    }
+
+    .tax-name small {
+        color: #98a39e;
+
+        font-size: 8px;
+    }
+
+    .summary-total {
+        margin-top: 9px;
+
+        padding: 17px 0;
+
+        color: var(--primary-dark);
+
+        border-top: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
+
+        font-size: 13px;
+        font-weight: 900;
+    }
+
+    .summary-total strong {
+        color: var(--primary);
+
+        font-size: 22px;
+    }
+
+    /* =====================================================
+       STRIPE
+       ===================================================== */
+
+    .payment-box {
+        margin-top: 20px;
+
+        padding: 18px;
+
+        background:
+            linear-gradient(
+                145deg,
+                #f8fcfa,
+                #edf7f2
+            );
+
+        border: 1px solid #cde2d7;
+        border-radius: 16px;
+    }
+
+    .payment-header {
+        display: flex;
+        align-items: center;
+
+        gap: 11px;
+
+        margin-bottom: 13px;
+    }
+
+    .payment-icon {
+        width: 43px;
+        height: 43px;
+
+        display: grid;
+        place-items: center;
+
+        flex-shrink: 0;
+
+        color: var(--primary);
+
+        background: #ffffff;
+
+        border: 1px solid #d7e8df;
+        border-radius: 12px;
+
+        box-shadow:
+            0 5px 15px rgba(18,76,59,.07);
+    }
+
+    .payment-header strong,
+    .payment-header small {
+        display: block;
+    }
+
+    .payment-header strong {
+        color: var(--primary-dark);
+
+        font-size: 12px;
+        font-weight: 900;
+    }
+
+    .payment-header small {
+        margin-top: 3px;
+
+        color: var(--muted);
+
+        font-size: 8px;
+        line-height: 1.5;
+    }
+
+    .payment-amount {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        gap: 15px;
+
+        padding: 13px 0;
+
+        border-top: 1px solid #dbe8e1;
+    }
+
+    .payment-amount span {
+        color: var(--muted);
+
+        font-size: 10px;
+    }
+
+    .payment-amount strong {
+        color: var(--primary);
+
+        font-size: 19px;
+        font-weight: 900;
+
+        white-space: nowrap;
+    }
+
+    .stripe-payment-form {
+        margin: 0;
+    }
+
+    /* =====================================================
+       BOUTON STRIPE
+       ===================================================== */
+
+    .pay-now-button {
+        width: 100%;
+        min-height: 59px;
+
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        gap: 12px;
+
+        margin-top: 4px;
+        padding: 11px 15px;
+
+        color: #ffffff;
+
+        background:
+            linear-gradient(
+                135deg,
+                #17634c,
+                #0c3c30 55%,
+                #071f19
+            );
+
+        border: 0;
+        border-radius: 13px;
+
+        box-shadow:
+            0 13px 29px rgba(18,76,59,.26);
+
+        cursor: pointer;
+
+        font: inherit;
+
+        transition: .2s ease;
+    }
+
+    .pay-now-button:hover {
+        transform: translateY(-2px);
+
+        box-shadow:
+            0 18px 37px rgba(18,76,59,.34);
+    }
+
+    .pay-now-button:disabled {
+        opacity: .72;
+
+        cursor: wait;
+        transform: none;
+    }
+
+    .pay-now-left {
+        display: flex;
+        align-items: center;
+
+        gap: 10px;
+    }
+
+    .pay-now-left > i {
+        font-size: 15px;
+    }
+
+    .pay-now-text {
+        display: flex;
+        flex-direction: column;
+
+        align-items: flex-start;
+    }
+
+    .pay-now-text strong {
+        color: #ffffff;
+
+        font-size: 12px;
+        font-weight: 900;
+    }
+
+    .pay-now-text small {
+        margin-top: 2px;
+
+        color: rgba(255,255,255,.65);
+
+        font-size: 8px;
+    }
+
+    .pay-now-price {
+        padding-left: 13px;
+
+        color: #f1d28d;
+
+        border-left:
+            1px solid rgba(255,255,255,.18);
+
+        font-size: 12px;
+        font-weight: 900;
+
+        white-space: nowrap;
+    }
+
+    .payment-security {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        gap: 6px;
+
+        margin-top: 10px;
+
+        color: var(--muted);
+
+        font-size: 8px;
+        font-weight: 700;
+    }
+
+    .payment-security i {
+        color: var(--primary);
+    }
+
+    /* =====================================================
+       PAIEMENT RÉUSSI
+       ===================================================== */
+
+    .payment-success-box {
+        display: flex;
+        align-items: center;
+
+        gap: 11px;
+
+        margin-top: 14px;
+        padding: 15px;
+
+        color: #12613e;
+
+        background: #e7f7ee;
+
+        border: 1px solid #bce7cf;
+        border-radius: 13px;
+    }
+
+    .payment-success-box > i {
+        font-size: 22px;
+    }
+
+    .payment-success-box strong,
+    .payment-success-box small {
+        display: block;
+    }
+
+    .payment-success-box strong {
+        font-size: 12px;
+        font-weight: 900;
+    }
+
+    .payment-success-box small {
+        margin-top: 3px;
+
+        font-size: 9px;
+        line-height: 1.45;
+    }
+
+    .payment-unavailable {
+        display: flex;
+        align-items: flex-start;
+
+        gap: 9px;
+
+        margin-top: 18px;
+        padding: 13px;
+
+        color: #8d332b;
+
+        background: #fff3f1;
+
+        border: 1px solid #f1d3cf;
+        border-radius: 12px;
+
+        font-size: 9px;
+        line-height: 1.5;
+    }
+
+    /* =====================================================
+       INFO TAXES
+       ===================================================== */
+
+    .summary-tax-note {
+        display: flex;
+        align-items: flex-start;
+
+        gap: 8px;
+
+        margin: 16px 0;
+
+        color: var(--muted);
+
+        font-size: 9px;
+        line-height: 1.5;
+    }
+
+    .summary-tax-note i {
+        margin-top: 2px;
+
+        color: var(--primary);
+    }
+
+    /* =====================================================
+       FACTURE
+       ===================================================== */
+
+    .invoice-button {
+        width: 100%;
+        min-height: 49px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        gap: 9px;
+
+        padding: 12px 16px;
+
+        color: #ffffff;
+
+        background:
+            linear-gradient(
+                135deg,
+                var(--primary),
+                var(--primary-dark)
+            );
+
+        border-radius: 12px;
+
+        text-decoration: none;
+
+        font-size: 10px;
+        font-weight: 900;
+    }
+
+    .secure-document-note {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        gap: 6px;
+
+        margin-top: 10px;
+
+        color: var(--muted);
+
+        font-size: 8px;
+    }
+
+    .back-account-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        gap: 7px;
+
+        margin-top: 18px;
+
+        color: var(--primary);
+
+        text-decoration: none;
+
+        font-size: 10px;
+        font-weight: 900;
+    }
+
+    /* =====================================================
+       RESPONSIVE
+       ===================================================== */
+
+    @media (max-width: 980px) {
+
+        .order-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .order-summary {
+            position: static;
+        }
+
+        .order-progress {
+            grid-template-columns:
+                repeat(2, minmax(0,1fr));
+        }
+    }
+
+    @media (max-width: 700px) {
+
+        .order-container {
+            width: min(100% - 24px, 1180px);
+        }
+
+        .order-hero {
+            padding: 40px 0 82px;
+        }
+
+        .order-hero-content {
+            align-items: flex-start;
+
+            flex-direction: column;
+        }
+
+        .order-hero h1 {
+            font-size: 34px;
+        }
+
+        .order-progress {
+            grid-template-columns: 1fr;
+        }
+
+        .progress-step + .progress-step {
+            border-top: 1px solid var(--border);
+            border-left: 0;
+        }
+
+        .product-row {
+            grid-template-columns:
+                minmax(0,1fr)
+                70px;
+        }
+
+        .product-total {
+            grid-column: 1 / -1;
+
+            padding-top: 10px;
+
+            border-top:
+                1px dashed var(--border);
+        }
+
+        .shipping-info p {
+            flex-direction: column;
+
+            gap: 5px;
+        }
+
+        .shipping-info strong {
+            text-align: left;
+        }
+    }
+
+    @media (max-width: 430px) {
+
+        .pay-now-button {
+            align-items: flex-start;
+
+            flex-direction: column;
+        }
+
+        .pay-now-price {
+            width: 100%;
+
+            padding:
+                9px 0 0;
+
+            border-top:
+                1px solid rgba(255,255,255,.18);
+
+            border-left: 0;
+        }
+
+        .payment-amount {
+            align-items: flex-start;
+
+            flex-direction: column;
+        }
+    }
+</style>
+
+{% endblock %}
+
+
+{% block content %}
+
+<main class="order-page">
+
+    <!-- =====================================================
+         HERO
+         ===================================================== -->
+
+    <header class="order-hero">
+
+        <div class="order-container order-hero-content">
+
+            <div>
+
+                <span class="order-label">
+                    <i class="fa-solid fa-bag-shopping"></i>
+                    Détails de la commande
+                </span>
+
+                <h1>
+                    <span class="order-number-prefix">#</span>
+                    {{ commande.numero }}
+                </h1>
+
+                <p class="order-created">
+
+                    <i class="fa-regular fa-calendar"></i>
+
+                    Créée le
+                    {{ commande.cree_le|date:"d/m/Y à H:i" }}
+
+                </p>
+
+            </div>
+
+            <span class="order-status">
+
+                {{ commande.get_statut_display }}
+
+            </span>
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+         CONTENU
+         ===================================================== -->
+
+    <div class="order-container order-main">
+
+
+        <!-- =================================================
+             PROGRESSION
+             ================================================= -->
+
+        <section class="order-progress">
+
+            <div class="progress-step">
+
+                <span class="progress-icon">
+                    <i class="fa-solid fa-receipt"></i>
+                </span>
+
+                <span>
+                    <strong>Commande reçue</strong>
+                    <small>Votre commande est enregistrée</small>
+                </span>
+
+            </div>
+
+
+            <div class="progress-step">
+
+                <span class="progress-icon">
+                    <i class="fa-solid fa-box"></i>
+                </span>
+
+                <span>
+                    <strong>Préparation</strong>
+                    <small>Vérification et emballage</small>
+                </span>
+
+            </div>
+
+
+            <div class="progress-step">
+
+                <span class="progress-icon">
+                    <i class="fa-solid fa-truck-fast"></i>
+                </span>
+
+                <span>
+                    <strong>Expédition</strong>
+                    <small>Remise au transporteur</small>
+                </span>
+
+            </div>
+
+
+            <div class="progress-step">
+
+                <span class="progress-icon">
+                    <i class="fa-solid fa-house-circle-check"></i>
+                </span>
+
+                <span>
+                    <strong>Livraison</strong>
+                    <small>Réception de votre colis</small>
+                </span>
+
+            </div>
+
+        </section>
+
+
+        <div class="order-layout">
+
+
+            <!-- =================================================
+                 COLONNE GAUCHE
+                 ================================================= -->
+
+            <div class="main-column">
+
+
+                <!-- ARTICLES -->
+
+                <section class="order-card">
+
+                    <header class="card-heading">
+
+                        <div class="card-heading-main">
+
+                            <span class="card-heading-icon">
+                                <i class="fa-solid fa-box-open"></i>
+                            </span>
+
+                            <div>
+
+                                <h2>
+                                    Articles commandés
+                                </h2>
+
+                                <p>
+                                    Produits inclus dans cette commande
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                        <span class="article-count">
+
+                            {{ commande.lignes.count }}
+
+                            article{{ commande.lignes.count|pluralize }}
+
+                        </span>
+
+                    </header>
+
+
+                    <div class="products-list">
+
+                        {% for ligne in commande.lignes.all %}
+
+                            <article class="product-row">
+
+                                <div>
+
+                                    <strong class="product-name">
+                                        {{ ligne.produit_nom }}
+                                    </strong>
+
+
+                                    {% if ligne.details_variante %}
+
+                                        <small class="product-detail">
+
+                                            <i class="fa-solid fa-layer-group"></i>
+
+                                            {{ ligne.details_variante }}
+
+                                        </small>
+
+                                    {% endif %}
+
+
+                                    {% if ligne.personnalisation %}
+
+                                        <small class="product-customization">
+
+                                            <i class="fa-solid fa-pen-ruler"></i>
+
+                                            <span>
+
+                                                <strong>
+                                                    Personnalisation :
+                                                </strong>
+
+                                                {{ ligne.personnalisation }}
+
+                                            </span>
+
+                                        </small>
+
+                                    {% endif %}
+
+                                </div>
+
+
+                                <span class="product-quantity">
+
+                                    Quantité × {{ ligne.quantite }}
+
+                                </span>
+
+
+                                <strong class="product-total">
+
+                                    {{ ligne.total|floatformat:2 }} $ CA
+
+                                </strong>
+
+                            </article>
+
+                        {% empty %}
+
+                            <article class="product-row">
+
+                                <strong class="product-name">
+                                    Aucun article trouvé.
+                                </strong>
+
+                            </article>
+
+                        {% endfor %}
+
+                    </div>
+
+                </section>
+
+
+                <!-- =================================================
+                     ADRESSE
+                     ================================================= -->
+
+                <section class="order-card">
+
+                    <header class="card-heading">
+
+                        <div class="card-heading-main">
+
+                            <span class="card-heading-icon">
+
+                                <i class="fa-solid fa-location-dot"></i>
+
+                            </span>
+
+                            <div>
+
+                                <h2>
+                                    Adresse de livraison
+                                </h2>
+
+                                <p>
+                                    Destination de la commande
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </header>
+
+
+                    <div class="address-content">
+
+                        <address class="delivery-address">
+
+                            {% if commande.adresse_livraison.nom_complet %}
+
+                                <strong>
+
+                                    {{ commande.adresse_livraison.nom_complet }}
+
+                                </strong>
+
+                            {% endif %}
+
+
+                            <span class="address-line">
+
+                                <i class="fa-solid fa-location-dot"></i>
+
+                                <span>
+
+                                    {{ commande.adresse_livraison.adresse1 }}
+
+                                    {% if commande.adresse_livraison.adresse2 %}
+
+                                        <br>
+
+                                        {{ commande.adresse_livraison.adresse2 }}
+
+                                    {% endif %}
+
+                                </span>
+
+                            </span>
+
+
+                            <span class="address-line">
+
+                                <i class="fa-solid fa-city"></i>
+
+                                <span>
+
+                                    {{ commande.adresse_livraison.ville }}
+
+                                    {% if commande.adresse_livraison.province %}
+                                        ,
+                                        {{ commande.adresse_livraison.province }}
+                                    {% endif %}
+
+                                    {{ commande.adresse_livraison.code_postal }}
+
+                                </span>
+
+                            </span>
+
+
+                            {% if commande.adresse_livraison.pays %}
+
+                                <span class="address-line">
+
+                                    <i class="fa-solid fa-earth-americas"></i>
+
+                                    {{ commande.adresse_livraison.pays }}
+
+                                </span>
+
+                            {% endif %}
+
+
+                            {% if commande.adresse_livraison.telephone %}
+
+                                <span class="address-line">
+
+                                    <i class="fa-solid fa-phone"></i>
+
+                                    {{ commande.adresse_livraison.telephone }}
+
+                                </span>
+
+                            {% endif %}
+
+                        </address>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =================================================
+                     LIVRAISON
+                     ================================================= -->
+
+                {% if commande.suivi_livraison %}
+
+                    <section class="order-card">
+
+                        <header class="card-heading">
+
+                            <div class="card-heading-main">
+
+                                <span class="card-heading-icon">
+
+                                    <i class="fa-solid fa-truck-fast"></i>
+
+                                </span>
+
+                                <div>
+
+                                    <h2>
+                                        Suivi de la livraison
+                                    </h2>
+
+                                    <p>
+                                        Informations du transporteur
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                        </header>
+
+
+                        <div class="shipping-content">
+
+                            <div class="shipping-box">
+
+                                <div class="shipping-info">
+
+                                    <p>
+
+                                        <span>
+                                            Statut
+                                        </span>
+
+                                        <strong>
+
+                                            {{ commande.suivi_livraison.get_statut_display }}
+
+                                        </strong>
+
+                                    </p>
+
+
+                                    {% if commande.suivi_livraison.transporteur %}
+
+                                        <p>
+
+                                            <span>
+                                                Transporteur
+                                            </span>
+
+                                            <strong>
+
+                                                {{ commande.suivi_livraison.transporteur }}
+
+                                            </strong>
+
+                                        </p>
+
+                                    {% endif %}
+
+
+                                    {% if commande.suivi_livraison.numero_suivi %}
+
+                                        <p>
+
+                                            <span>
+                                                Numéro de suivi
+                                            </span>
+
+                                            <strong>
+
+                                                {{ commande.suivi_livraison.numero_suivi }}
+
+                                            </strong>
+
+                                        </p>
+
+                                    {% endif %}
+
+
+                                    {% if commande.suivi_livraison.livraison_prevue %}
+
+                                        <p>
+
+                                            <span>
+                                                Livraison prévue
+                                            </span>
+
+                                            <strong>
+
+                                                {{ commande.suivi_livraison.livraison_prevue|date:"d/m/Y" }}
+
+                                            </strong>
+
+                                        </p>
+
+                                    {% endif %}
+
+                                </div>
+
+
+                                {% if commande.suivi_livraison.url_suivi %}
+
+                                    <a
+                                        href="{{ commande.suivi_livraison.url_suivi }}"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        class="tracking-button"
+                                    >
+
+                                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+
+                                        Suivre la livraison
+
+                                    </a>
+
+                                {% endif %}
+
+                            </div>
+
+                        </div>
+
+                    </section>
+
+                {% endif %}
+
+
+            </div>
+
+
+            <!-- =================================================
+                 RÉSUMÉ
+                 ================================================= -->
+
+            <aside class="order-summary">
+
+
+                <div class="summary-heading">
+
+                    <h2>
+                        Résumé
+                    </h2>
+
+                    <i class="fa-solid fa-receipt"></i>
+
+                </div>
+
+
+                <!-- SOUS TOTAL -->
+
+                <div class="summary-line">
+
+                    <span>
+                        Sous-total
+                    </span>
+
+                    <strong>
+
+                        {{ commande.sous_total|floatformat:2 }} $ CA
+
+                    </strong>
+
+                </div>
+
+
+                <!-- REMISE -->
+
+                {% if commande.remise %}
+
+                    <div class="summary-line summary-discount">
+
+                        <span>
+                            Remise
+                        </span>
+
+                        <strong>
+
+                            − {{ commande.remise|floatformat:2 }} $ CA
+
+                        </strong>
+
+                    </div>
+
+                {% endif %}
+
+
+                <!-- LIVRAISON -->
+
+                <div class="summary-line">
+
+                    <span>
+                        Livraison
+                    </span>
+
+                    <strong>
+
+                        {{ commande.livraison|floatformat:2 }} $ CA
+
+                    </strong>
+
+                </div>
+
+
+                <!-- TPS -->
+
+                <div class="summary-line">
+
+                    <span class="tax-name">
+
+                        TPS
+
+                        <small>
+                            5 %
+                        </small>
+
+                    </span>
+
+                    <strong>
+
+                        {{ commande.tps|floatformat:2 }} $ CA
+
+                    </strong>
+
+                </div>
+
+
+                <!-- TVQ -->
+
+                <div class="summary-line">
+
+                    <span class="tax-name">
+
+                        TVQ
+
+                        <small>
+                            9,975 %
+                        </small>
+
+                    </span>
+
+                    <strong>
+
+                        {{ commande.tvq|floatformat:2 }} $ CA
+
+                    </strong>
+
+                </div>
+
+
+                <!-- =================================================
+                     TOTAL
+                     ================================================= -->
+
+                <div class="summary-line summary-total">
+
+                    <span>
+                        Total
+                    </span>
+
+                    <strong>
+
+                        {{ commande.total|floatformat:2 }} $ CA
+
+                    </strong>
+
+                </div>
+
+
+                <!-- =================================================
+                     STRIPE
+                     ================================================= -->
+
+                {% if commande.statut != "annulee" and commande.statut != "remboursee" %}
+
+                    <div class="payment-box">
+
+
+                        <div class="payment-header">
+
+                            <span class="payment-icon">
+
+                                <i class="fa-solid fa-credit-card"></i>
+
+                            </span>
+
+                            <div>
+
+                                <strong>
+                                    Paiement de la commande
+                                </strong>
+
+                                <small>
+
+                                    Paiement sécurisé avec Stripe.
+                                    Le montant sera versé dans le
+                                    compte Stripe de la boutique.
+
+                                </small>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="payment-amount">
+
+                            <span>
+                                Montant à payer
+                            </span>
+
+                            <strong>
+
+                                {{ commande.total|floatformat:2 }} $ CA
+
+                            </strong>
+
+                        </div>
+
+
+                        <!-- =========================================
+                             DÉJÀ PAYÉ
+                             ========================================= -->
+
+                        {% if paiement_reussi %}
+
+                            <div class="payment-success-box">
+
+                                <i class="fa-solid fa-circle-check"></i>
+
+                                <div>
+
+                                    <strong>
+                                        Paiement reçu
+                                    </strong>
+
+                                    <small>
+
+                                        Cette commande a été payée
+                                        avec succès.
+
+                                    </small>
+
+                                </div>
+
+                            </div>
+
+
+                        {% else %}
+
+
+                            <!-- =====================================
+                                 VRAI FORMULAIRE STRIPE
+                                 ===================================== -->
+
+                            <form
+                                method="post"
+                                action="{% url 'zendo:payer_commande_stripe' commande.pk %}"
+                                class="stripe-payment-form"
+                                id="stripePaymentForm"
+                            >
+
+                                {% csrf_token %}
+
+
+                                <button
+                                    type="submit"
+                                    class="pay-now-button"
+                                    id="stripePaymentButton"
+                                >
+
+                                    <span class="pay-now-left">
+
+                                        <i class="fa-solid fa-lock"></i>
+
+
+                                        <span class="pay-now-text">
+
+                                            <strong id="stripeButtonTitle">
+
+                                                Payer maintenant
+
+                                            </strong>
+
+                                            <small id="stripeButtonSubtitle">
+
+                                                Paiement sécurisé avec Stripe
+
+                                            </small>
+
+                                        </span>
+
+                                    </span>
+
+
+                                    <span class="pay-now-price">
+
+                                        {{ commande.total|floatformat:2 }} $ CA
+
+                                    </span>
+
+                                </button>
+
+                            </form>
+
+
+                            <div class="payment-security">
+
+                                <i class="fa-solid fa-shield-halved"></i>
+
+                                Transaction sécurisée par Stripe
+
+                            </div>
+
+
+                        {% endif %}
+
+
+                    </div>
+
+
+                {% else %}
+
+
+                    <div class="payment-unavailable">
+
+                        <i class="fa-solid fa-circle-exclamation"></i>
+
+                        <span>
+
+                            Cette commande ne peut plus être payée
+                            car elle est annulée ou remboursée.
+
+                        </span>
+
+                    </div>
+
+
+                {% endif %}
+
+
+                <!-- =================================================
+                     INFO TAXES
+                     ================================================= -->
+
+                <p class="summary-tax-note">
+
+                    <i class="fa-solid fa-circle-info"></i>
+
+                    <span>
+
+                        Le total comprend la TPS,
+                        la TVQ, la livraison
+                        et les remises applicables.
+
+                    </span>
+
+                </p>
+
+
+                <!-- =================================================
+                     FACTURE
+                     ================================================= -->
+
+                {% if commande.facture %}
+
+                    <a
+                        href="{% url 'zendo:facture_pdf' commande.facture.pk %}"
+                        class="invoice-button"
+                    >
+
+                        <i class="fa-solid fa-file-pdf"></i>
+
+                        Télécharger la facture
+
+                    </a>
+
+
+                    <span class="secure-document-note">
+
+                        <i class="fa-solid fa-lock"></i>
+
+                        Document sécurisé
+
+                    </span>
+
+                {% endif %}
+
+
+                <!-- RETOUR COMPTE -->
+
+                <a
+                    href="{% url 'zendo:compte' %}"
+                    class="back-account-link"
+                >
+
+                    <i class="fa-solid fa-arrow-left"></i>
+
+                    Retour à mon compte
+
+                </a>
+
+
+            </aside>
+
+
+        </div>
+
+    </div>
+
+</main>
+
+{% endblock %}
+
+
+{% block extra_js %}
+
+<script>
+    document.addEventListener(
+        "DOMContentLoaded",
+        function () {
+
+            const form =
+                document.getElementById(
+                    "stripePaymentForm"
+                );
+
+            const button =
+                document.getElementById(
+                    "stripePaymentButton"
+                );
+
+            const title =
+                document.getElementById(
+                    "stripeButtonTitle"
+                );
+
+            const subtitle =
+                document.getElementById(
+                    "stripeButtonSubtitle"
+                );
+
+
+            if (!form || !button) {
+                return;
+            }
+
+
+            form.addEventListener(
+                "submit",
+                function () {
+
+                    /*
+                     * Empêche le client de cliquer
+                     * plusieurs fois pendant la
+                     * création de la session Stripe.
+                     */
+
+                    button.disabled = true;
+
+
+                    if (title) {
+
+                        title.textContent =
+                            "Ouverture de Stripe...";
+
+                    }
+
+
+                    if (subtitle) {
+
+                        subtitle.textContent =
+                            "Veuillez patienter";
+
+                    }
+
+                }
+            );
+
+        }
+    );
+</script>
+
+{% endblock %}

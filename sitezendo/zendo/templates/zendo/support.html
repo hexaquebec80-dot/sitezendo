@@ -1,0 +1,760 @@
+{% extends "zendo/base.html" %}
+{% load static %}
+
+{% block title %}Support — Zendo Afrique{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --support-primary: #124c3b;
+        --support-dark: #071f19;
+        --support-soft: #e9f4ef;
+        --support-gold: #d9a441;
+        --support-white: #ffffff;
+        --support-page: #f5f9f7;
+        --support-text: #17211e;
+        --support-muted: #68756f;
+        --support-border: #dde7e3;
+        --support-danger: #b42318;
+        --support-shadow: 0 18px 50px rgba(7, 31, 25, .08);
+    }
+
+    .support-page {
+        min-height: 100vh;
+        padding-bottom: 80px;
+        background:
+            radial-gradient(circle at 92% 8%, rgba(217, 164, 65, .12), transparent 25%),
+            var(--support-page);
+    }
+
+    .support-container {
+        width: min(1180px, calc(100% - 40px));
+        margin: 0 auto;
+    }
+
+    .support-hero {
+        position: relative;
+        overflow: hidden;
+        padding: 64px 0 100px;
+        color: var(--support-white);
+        background: linear-gradient(135deg, var(--support-dark), var(--support-primary));
+    }
+
+    .support-hero::before {
+        content: "";
+        position: absolute;
+        top: -240px;
+        right: -90px;
+        width: 520px;
+        height: 520px;
+        border: 1px solid rgba(255, 255, 255, .1);
+        border-radius: 50%;
+    }
+
+    .support-hero::after {
+        content: "";
+        position: absolute;
+        right: 17%;
+        bottom: -190px;
+        width: 330px;
+        height: 330px;
+        background: radial-gradient(circle, rgba(217, 164, 65, .28), transparent 66%);
+        border-radius: 50%;
+    }
+
+    .support-hero-content {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 45px;
+    }
+
+    .support-hero-copy {
+        max-width: 680px;
+    }
+
+    .support-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 15px;
+        color: #f1d38e;
+        font-size: 12px;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 1.1px;
+    }
+
+    .support-hero h1 {
+        margin: 0;
+        color: var(--support-white);
+        font-size: clamp(38px, 6vw, 62px);
+        line-height: 1.04;
+        letter-spacing: -2px;
+    }
+
+    .support-hero p {
+        max-width: 620px;
+        margin: 18px 0 0;
+        color: rgba(255, 255, 255, .7);
+        font-size: 16px;
+        line-height: 1.75;
+    }
+
+    .support-availability {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        max-width: 260px;
+        padding: 16px 18px;
+        background: rgba(255, 255, 255, .08);
+        border: 1px solid rgba(255, 255, 255, .12);
+        border-radius: 17px;
+        backdrop-filter: blur(12px);
+    }
+
+    .availability-indicator {
+        position: relative;
+        width: 12px;
+        height: 12px;
+        flex: 0 0 auto;
+        background: #51d88a;
+        border: 3px solid rgba(81, 216, 138, .25);
+        border-radius: 50%;
+        box-shadow: 0 0 0 4px rgba(81, 216, 138, .1);
+    }
+
+    .support-availability strong,
+    .support-availability small {
+        display: block;
+    }
+
+    .support-availability strong {
+        color: var(--support-white);
+        font-size: 13px;
+    }
+
+    .support-availability small {
+        margin-top: 4px;
+        color: rgba(255, 255, 255, .6);
+        font-size: 10px;
+        line-height: 1.4;
+    }
+
+    .support-main {
+        position: relative;
+        z-index: 2;
+        margin-top: -52px;
+    }
+
+    .support-assurances {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 17px;
+        margin-bottom: 25px;
+    }
+
+    .support-assurance {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 19px;
+        background: var(--support-white);
+        border: 1px solid var(--support-border);
+        border-radius: 17px;
+        box-shadow: var(--support-shadow);
+    }
+
+    .support-assurance i {
+        width: 43px;
+        height: 43px;
+        display: grid;
+        place-items: center;
+        flex: 0 0 auto;
+        color: var(--support-primary);
+        background: var(--support-soft);
+        border-radius: 13px;
+        font-size: 17px;
+    }
+
+    .support-assurance strong,
+    .support-assurance small {
+        display: block;
+    }
+
+    .support-assurance strong {
+        color: var(--support-dark);
+        font-size: 13px;
+    }
+
+    .support-assurance small {
+        margin-top: 4px;
+        color: var(--support-muted);
+        font-size: 10px;
+        line-height: 1.45;
+    }
+
+    .support-layout {
+        display: grid;
+        grid-template-columns: minmax(360px, .9fr) minmax(0, 1.1fr);
+        align-items: start;
+        gap: 25px;
+    }
+
+    .support-card {
+        padding: 29px;
+        background: var(--support-white);
+        border: 1px solid var(--support-border);
+        border-radius: 22px;
+        box-shadow: var(--support-shadow);
+    }
+
+    .support-form-card {
+        position: sticky;
+        top: 20px;
+    }
+
+    .card-heading {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 18px;
+        margin-bottom: 25px;
+    }
+
+    .card-heading-icon {
+        width: 46px;
+        height: 46px;
+        display: grid;
+        place-items: center;
+        flex: 0 0 auto;
+        color: var(--support-primary);
+        background: var(--support-soft);
+        border-radius: 14px;
+        font-size: 18px;
+    }
+
+    .card-heading h2 {
+        margin: 0;
+        color: var(--support-dark);
+        font-size: 24px;
+        font-weight: 900;
+        letter-spacing: -.4px;
+    }
+
+    .card-heading p {
+        margin: 7px 0 0;
+        color: var(--support-muted);
+        font-size: 12px;
+        line-height: 1.55;
+    }
+
+    .ticket-count {
+        padding: 7px 11px;
+        color: var(--support-primary);
+        background: var(--support-soft);
+        border-radius: 999px;
+        font-size: 10px;
+        font-weight: 900;
+        white-space: nowrap;
+    }
+
+    .form-errors {
+        margin-bottom: 18px;
+        padding: 13px 15px;
+        color: #8a1c14;
+        background: #fff0ee;
+        border: 1px solid #ffd1cb;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 750;
+    }
+
+    .form-errors p {
+        margin: 0;
+    }
+
+    .form-group {
+        margin-bottom: 18px;
+    }
+
+    .form-group label {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        color: var(--support-text);
+        font-size: 12px;
+        font-weight: 850;
+    }
+
+    .required-star {
+        color: var(--support-danger);
+    }
+
+    .support-form input,
+    .support-form select,
+    .support-form textarea {
+        width: 100%;
+        min-height: 50px;
+        padding: 12px 14px;
+        color: var(--support-text);
+        background: #fbfcfc;
+        border: 1px solid #d6e0dc;
+        border-radius: 12px;
+        outline: none;
+        box-sizing: border-box;
+        font: inherit;
+        transition: .2s ease;
+    }
+
+    .support-form textarea {
+        min-height: 145px;
+        resize: vertical;
+        line-height: 1.6;
+    }
+
+    .support-form input:focus,
+    .support-form select:focus,
+    .support-form textarea:focus {
+        background: var(--support-white);
+        border-color: var(--support-primary);
+        box-shadow: 0 0 0 4px rgba(18, 76, 59, .1);
+    }
+
+    .help-text,
+    .field-error {
+        display: block;
+        margin-top: 7px;
+        font-size: 10px;
+        line-height: 1.5;
+    }
+
+    .help-text {
+        color: var(--support-muted);
+    }
+
+    .field-error {
+        color: var(--support-danger);
+        font-weight: 800;
+    }
+
+    .primary-button {
+        width: 100%;
+        min-height: 53px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        padding: 13px 20px;
+        color: var(--support-white);
+        background: linear-gradient(135deg, var(--support-primary), var(--support-dark));
+        border: 0;
+        border-radius: 13px;
+        box-shadow: 0 13px 28px rgba(18, 76, 59, .22);
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 900;
+        transition: .2s ease;
+    }
+
+    .primary-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 17px 34px rgba(18, 76, 59, .29);
+    }
+
+    .form-security {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        margin: 14px 0 0;
+        color: var(--support-muted);
+        font-size: 10px;
+        font-weight: 700;
+    }
+
+    .form-security i {
+        color: var(--support-primary);
+    }
+
+    .tickets-list {
+        display: grid;
+        gap: 14px;
+    }
+
+    .ticket-card {
+        position: relative;
+        padding: 20px;
+        overflow: hidden;
+        background: #fbfdfc;
+        border: 1px solid var(--support-border);
+        border-radius: 16px;
+        transition: .2s ease;
+    }
+
+    .ticket-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: 4px;
+        background: var(--support-gold);
+    }
+
+    .ticket-card:hover {
+        background: var(--support-white);
+        border-color: rgba(18, 76, 59, .28);
+        box-shadow: 0 12px 28px rgba(7, 31, 25, .07);
+        transform: translateY(-2px);
+    }
+
+    .ticket-heading {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 11px;
+    }
+
+    .ticket-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--support-dark);
+        font-size: 14px;
+        line-height: 1.45;
+        font-weight: 900;
+    }
+
+    .ticket-title i {
+        color: var(--support-primary);
+    }
+
+    .ticket-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        flex: 0 0 auto;
+        padding: 6px 9px;
+        color: #64520e;
+        background: #fff6d7;
+        border: 1px solid #f3dfa1;
+        border-radius: 999px;
+        font-size: 9px;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: .3px;
+    }
+
+    .ticket-status::before {
+        content: "";
+        width: 6px;
+        height: 6px;
+        background: currentColor;
+        border-radius: 50%;
+    }
+
+    .ticket-status.status-ferme,
+    .ticket-status.status-fermee,
+    .ticket-status.status-resolu,
+    .ticket-status.status-resolue {
+        color: #12613e;
+        background: #e7f7ee;
+        border-color: #bce7cf;
+    }
+
+    .ticket-status.status-en_cours,
+    .ticket-status.status-traitement {
+        color: #155b87;
+        background: #eaf5fc;
+        border-color: #c8e5f6;
+    }
+
+    .ticket-card > p {
+        margin: 0 0 14px;
+        color: var(--support-muted);
+        font-size: 12px;
+        line-height: 1.65;
+    }
+
+    .ticket-meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        padding-top: 12px;
+        color: #89958f;
+        border-top: 1px solid #e9efec;
+        font-size: 9px;
+        font-weight: 700;
+    }
+
+    .ticket-meta span {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 290px;
+        padding: 35px 20px;
+        text-align: center;
+        background: #f9fbfa;
+        border: 1px dashed #cad7d1;
+        border-radius: 17px;
+    }
+
+    .empty-state i {
+        width: 62px;
+        height: 62px;
+        display: grid;
+        place-items: center;
+        margin-bottom: 17px;
+        color: var(--support-primary);
+        background: var(--support-soft);
+        border-radius: 19px;
+        font-size: 24px;
+    }
+
+    .empty-state h3 {
+        margin: 0 0 8px;
+        color: var(--support-dark);
+        font-size: 19px;
+    }
+
+    .empty-state p {
+        max-width: 350px;
+        margin: 0;
+        color: var(--support-muted);
+        font-size: 12px;
+        line-height: 1.6;
+    }
+
+    @media (max-width: 960px) {
+        .support-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .support-form-card {
+            position: static;
+        }
+    }
+
+    @media (max-width: 720px) {
+        .support-container {
+            width: min(100% - 24px, 1180px);
+        }
+
+        .support-hero {
+            padding: 43px 0 85px;
+        }
+
+        .support-hero h1 {
+            font-size: 37px;
+        }
+
+        .support-availability {
+            display: none;
+        }
+
+        .support-assurances {
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+
+        .support-assurance {
+            padding: 14px;
+        }
+
+        .support-card {
+            padding: 19px;
+            border-radius: 18px;
+        }
+
+        .ticket-heading {
+            flex-direction: column;
+        }
+
+        .ticket-meta {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="support-page">
+    <header class="support-hero">
+        <div class="support-container support-hero-content">
+            <div class="support-hero-copy">
+                <span class="support-label">
+                    <i class="fa-solid fa-headset"></i>
+                    Assistance Zendo Afrique
+                </span>
+                <h1>Centre de support</h1>
+                <p>
+                    Une question sur une commande ou un produit? Envoyez votre
+                    demande à notre équipe et suivez son traitement ici.
+                </p>
+            </div>
+
+            <div class="support-availability">
+                <span class="availability-indicator"></span>
+                <span>
+                    <strong>Équipe disponible</strong>
+                    <small>Nous répondons à chaque demande avec attention.</small>
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <div class="support-container support-main">
+        <section class="support-assurances" aria-label="Nos engagements">
+            <div class="support-assurance">
+                <i class="fa-solid fa-bolt"></i>
+                <span>
+                    <strong>Traitement rapide</strong>
+                    <small>Votre demande est transmise directement à notre équipe.</small>
+                </span>
+            </div>
+            <div class="support-assurance">
+                <i class="fa-solid fa-shield-halved"></i>
+                <span>
+                    <strong>Échanges confidentiels</strong>
+                    <small>Vos informations restent protégées.</small>
+                </span>
+            </div>
+            <div class="support-assurance">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+                <span>
+                    <strong>Historique accessible</strong>
+                    <small>Retrouvez toutes vos demandes au même endroit.</small>
+                </span>
+            </div>
+        </section>
+
+        <div class="support-layout">
+            <section class="support-card support-form-card">
+                <div class="card-heading">
+                    <div>
+                        <h2>Nouvelle demande</h2>
+                        <p>Décrivez clairement votre question afin de faciliter son traitement.</p>
+                    </div>
+                    <span class="card-heading-icon">
+                        <i class="fa-regular fa-paper-plane"></i>
+                    </span>
+                </div>
+
+                <form method="post" class="support-form" novalidate>
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                        <div class="form-errors" role="alert">
+                            {% for error in form.non_field_errors %}
+                                <p>
+                                    <i class="fa-solid fa-circle-exclamation"></i>
+                                    {{ error }}
+                                </p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    {% for field in form %}
+                        <div class="form-group{% if field.errors %} has-error{% endif %}">
+                            <label for="{{ field.id_for_label }}">
+                                <span>{{ field.label }}</span>
+                                {% if field.field.required %}
+                                    <span class="required-star" aria-label="Obligatoire">*</span>
+                                {% endif %}
+                            </label>
+
+                            {{ field }}
+
+                            {% if field.help_text %}
+                                <small class="help-text">{{ field.help_text|safe }}</small>
+                            {% endif %}
+
+                            {% for error in field.errors %}
+                                <small class="field-error">
+                                    <i class="fa-solid fa-circle-exclamation"></i>
+                                    {{ error }}
+                                </small>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+
+                    <button type="submit" class="primary-button">
+                        <i class="fa-regular fa-paper-plane"></i>
+                        Envoyer ma demande
+                    </button>
+
+                    <p class="form-security">
+                        <i class="fa-solid fa-lock"></i>
+                        Votre message est transmis de façon sécurisée
+                    </p>
+                </form>
+            </section>
+
+            <section class="support-card">
+                <div class="card-heading">
+                    <div>
+                        <h2>Mes demandes</h2>
+                        <p>Consultez vos messages envoyés et leur état actuel.</p>
+                    </div>
+                    <span class="ticket-count">
+                        {{ tickets|length }} demande{{ tickets|length|pluralize }}
+                    </span>
+                </div>
+
+                <div class="tickets-list">
+                    {% for ticket in tickets %}
+                        <article class="ticket-card">
+                            <div class="ticket-heading">
+                                <strong class="ticket-title">
+                                    <i class="fa-regular fa-message"></i>
+                                    {{ ticket.sujet }}
+                                </strong>
+
+                                <span class="ticket-status status-{{ ticket.statut }}">
+                                    {{ ticket.get_statut_display }}
+                                </span>
+                            </div>
+
+                            <p>{{ ticket.message|truncatechars:180 }}</p>
+
+                            <div class="ticket-meta">
+                                <span>
+                                    <i class="fa-regular fa-calendar"></i>
+                                    Envoyée le {{ ticket.cree_le|date:"d/m/Y à H:i" }}
+                                </span>
+                                <span>
+                                    <i class="fa-solid fa-hashtag"></i>
+                                    Demande {{ forloop.counter }}
+                                </span>
+                            </div>
+                        </article>
+                    {% empty %}
+                        <div class="empty-state">
+                            <i class="fa-regular fa-message"></i>
+                            <h3>Aucune demande</h3>
+                            <p>
+                                Vous n’avez encore contacté le support.
+                                Vos prochaines demandes apparaîtront ici.
+                            </p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </section>
+        </div>
+    </div>
+</main>
+{% endblock %}

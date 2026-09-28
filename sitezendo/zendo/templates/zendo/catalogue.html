@@ -1,0 +1,2518 @@
+{% extends "zendo/base.html" %}
+
+{% block title %}
+    Boutique — Zendo Afrique
+{% endblock %}
+
+
+{% block extra_css %}
+
+<style>
+
+    /* =========================================================
+       PAGE CATALOGUE
+       ========================================================= */
+
+    .catalogue-page {
+        min-height: 100vh;
+
+        background:
+            linear-gradient(
+                180deg,
+                #ffffff 0%,
+                #fbf8f3 45%,
+                #ffffff 100%
+            );
+    }
+
+
+    /* =========================================================
+       BANDEAU
+       ========================================================= */
+
+    .catalogue-page .page-banner {
+        position: relative;
+
+        display: flex;
+
+        min-height: 390px;
+
+        padding: 85px 30px;
+
+        align-items: center;
+        justify-content: center;
+
+        overflow: hidden;
+
+        color: #ffffff;
+
+        text-align: center;
+
+        background:
+            radial-gradient(
+                circle at 75% 20%,
+                rgba(216, 166, 46, 0.25),
+                transparent 30%
+            ),
+            radial-gradient(
+                circle at 20% 85%,
+                rgba(216, 166, 46, 0.14),
+                transparent 28%
+            ),
+            linear-gradient(
+                135deg,
+                #321211 0%,
+                #642624 60%,
+                #7e342f 100%
+            );
+    }
+
+
+    .catalogue-page .page-banner::before {
+        content: "";
+
+        position: absolute;
+
+        top: -210px;
+        right: -150px;
+
+        width: 540px;
+        height: 540px;
+
+        border: 1px solid rgba(216, 166, 46, 0.31);
+
+        border-radius: 50%;
+    }
+
+
+    .catalogue-page .page-banner::after {
+        content: "";
+
+        position: absolute;
+
+        bottom: -190px;
+        left: -120px;
+
+        width: 430px;
+        height: 430px;
+
+        background:
+            rgba(255, 255, 255, 0.035);
+
+        border:
+            1px solid rgba(255, 255, 255, 0.1);
+
+        border-radius: 50%;
+    }
+
+
+    .catalogue-page .page-banner-content {
+        position: relative;
+
+        z-index: 2;
+
+        width: min(100%, 800px);
+
+        margin-inline: auto;
+
+        animation:
+            catalogueEntrance 0.7s ease both;
+    }
+
+
+    .catalogue-page .section-label {
+        display: inline-flex;
+
+        align-items: center;
+
+        gap: 10px;
+
+        margin-bottom: 17px;
+
+        padding: 8px 15px;
+
+        color: #f0d181;
+
+        background:
+            rgba(255, 255, 255, 0.08);
+
+        border:
+            1px solid rgba(216, 166, 46, 0.42);
+
+        border-radius: 999px;
+
+        font-size: 0.75rem;
+
+        font-weight: 800;
+
+        letter-spacing: 0.18em;
+
+        text-transform: uppercase;
+    }
+
+
+    .catalogue-page .section-label::before {
+        content: "";
+
+        width: 7px;
+        height: 7px;
+
+        background:
+            #d8a62e;
+
+        border-radius: 50%;
+    }
+
+
+    .catalogue-page .page-banner h1 {
+        margin: 0 0 18px;
+
+        color: #ffffff;
+
+        font-family:
+            "Playfair Display",
+            Georgia,
+            serif;
+
+        font-size:
+            clamp(2.8rem, 6vw, 5.4rem);
+
+        font-weight: 800;
+
+        letter-spacing: -0.04em;
+
+        line-height: 1;
+    }
+
+
+    .catalogue-page .page-banner p {
+        max-width: 650px;
+
+        margin: 0 auto;
+
+        color:
+            rgba(255, 255, 255, 0.78);
+
+        font-size: 1.08rem;
+
+        line-height: 1.75;
+    }
+
+
+    /* =========================================================
+       CONTENU
+       ========================================================= */
+
+    .catalogue-page .content-section {
+        width:
+            min(calc(100% - 40px), 1280px);
+
+        margin-inline: auto;
+
+        padding-block:
+            70px 95px;
+    }
+
+
+    /* =========================================================
+       BARRE DE RECHERCHE
+       ========================================================= */
+
+    .catalogue-page .catalogue-toolbar {
+        display: flex;
+
+        align-items: center;
+
+        justify-content: space-between;
+
+        gap: 25px;
+
+        margin-bottom: 30px;
+
+        padding: 18px;
+
+        background: #ffffff;
+
+        border:
+            1px solid #e8e0d9;
+
+        border-radius: 16px;
+
+        box-shadow:
+            0 12px 38px rgba(47, 27, 21, 0.08);
+    }
+
+
+    .catalogue-page .search-form {
+        display: flex;
+
+        width:
+            min(100%, 720px);
+
+        align-items: stretch;
+
+        gap: 11px;
+    }
+
+
+    .catalogue-page .search-field {
+        position: relative;
+
+        display: flex;
+
+        flex: 1;
+
+        align-items: center;
+    }
+
+
+    .catalogue-page .search-field i {
+        position: absolute;
+
+        z-index: 2;
+
+        left: 17px;
+
+        color: #8c837e;
+
+        font-size: 0.95rem;
+
+        pointer-events: none;
+    }
+
+
+    .catalogue-page .search-field input {
+        width: 100%;
+
+        min-height: 52px;
+
+        padding:
+            13px 17px 13px 47px;
+
+        color: #25201e;
+
+        background: #faf7f1;
+
+        border:
+            1px solid #ded6cf;
+
+        border-radius: 10px;
+
+        outline: none;
+
+        font-size: 0.96rem;
+
+        transition:
+            border-color 0.25s ease,
+            box-shadow 0.25s ease,
+            background 0.25s ease;
+    }
+
+
+    .catalogue-page .search-field input::placeholder {
+        color: #98908b;
+    }
+
+
+    .catalogue-page .search-field input:focus {
+        background: #ffffff;
+
+        border-color:
+            #d8a62e;
+
+        box-shadow:
+            0 0 0 4px rgba(216, 166, 46, 0.14);
+    }
+
+
+    /* =========================================================
+       RECHERCHE INTELLIGENTE
+       ========================================================= */
+
+    .catalogue-page .catalogue-live-search {
+        position: relative;
+
+        z-index: 60;
+
+        width: min(100%, 720px);
+    }
+
+
+    .catalogue-page .catalogue-live-search .search-form {
+        width: 100%;
+    }
+
+
+    .catalogue-page .catalogue-search-results {
+        position: absolute;
+
+        top: calc(100% + 9px);
+        left: 0;
+        right: 0;
+
+        z-index: 9999;
+
+        display: none;
+
+        overflow: hidden;
+
+        max-height: 500px;
+
+        overflow-y: auto;
+
+        background: #ffffff;
+
+        border:
+            1px solid #e4dcd5;
+
+        border-radius: 15px;
+
+        box-shadow:
+            0 24px 60px rgba(48, 29, 23, 0.18);
+    }
+
+
+    .catalogue-page .catalogue-search-results.active {
+        display: block;
+    }
+
+
+    .catalogue-page .search-results-title {
+        padding: 11px 15px;
+
+        color: #8c837e;
+
+        background: #faf7f1;
+
+        border-bottom:
+            1px solid #eee7e1;
+
+        font-size: 0.67rem;
+
+        font-weight: 900;
+
+        letter-spacing: 0.08em;
+
+        text-transform: uppercase;
+    }
+
+
+    .catalogue-page .catalogue-search-product {
+        display: flex;
+
+        padding: 11px 14px;
+
+        align-items: center;
+
+        gap: 13px;
+
+        color: inherit;
+
+        border-bottom:
+            1px solid #f0eae5;
+
+        text-decoration: none;
+
+        transition:
+            background 0.2s ease,
+            transform 0.2s ease;
+    }
+
+
+    .catalogue-page .catalogue-search-product:last-child {
+        border-bottom: 0;
+    }
+
+
+    .catalogue-page .catalogue-search-product:hover {
+        background: #fffaf2;
+
+        transform:
+            translateX(3px);
+    }
+
+
+    .catalogue-page .catalogue-search-image {
+        width: 56px;
+        height: 63px;
+
+        flex-shrink: 0;
+
+        display: grid;
+
+        place-items: center;
+
+        overflow: hidden;
+
+        color: #642624;
+
+        background:
+            linear-gradient(
+                145deg,
+                #faf7f1,
+                #eee4d8
+            );
+
+        border-radius: 10px;
+    }
+
+
+    .catalogue-page .catalogue-search-image img {
+        width: 100%;
+        height: 100%;
+
+        object-fit: cover;
+    }
+
+
+    .catalogue-page .catalogue-search-info {
+        flex: 1;
+
+        min-width: 0;
+    }
+
+
+    .catalogue-page .catalogue-search-name {
+        display: block;
+
+        overflow: hidden;
+
+        color: #25201e;
+
+        font-size: 0.86rem;
+
+        font-weight: 900;
+
+        white-space: nowrap;
+
+        text-overflow: ellipsis;
+    }
+
+
+    .catalogue-page .catalogue-search-category {
+        display: block;
+
+        margin-top: 4px;
+
+        color: #a97612;
+
+        font-size: 0.62rem;
+
+        font-weight: 800;
+
+        letter-spacing: 0.05em;
+
+        text-transform: uppercase;
+    }
+
+
+    .catalogue-page .catalogue-search-price {
+        flex-shrink: 0;
+
+        color: #642624;
+
+        font-size: 0.82rem;
+
+        font-weight: 900;
+
+        white-space: nowrap;
+    }
+
+
+    .catalogue-page .catalogue-search-arrow {
+        flex-shrink: 0;
+
+        color: #b7ada7;
+
+        font-size: 0.65rem;
+    }
+
+
+    .catalogue-page .catalogue-search-message {
+        padding: 25px 18px;
+
+        color: #756d68;
+
+        text-align: center;
+
+        font-size: 0.8rem;
+    }
+
+
+    .catalogue-page .catalogue-search-message i {
+        display: block;
+
+        margin-bottom: 10px;
+
+        color: #d8a62e;
+
+        font-size: 1.5rem;
+    }
+
+
+    .catalogue-page .catalogue-search-all {
+        display: flex;
+
+        padding: 14px;
+
+        align-items: center;
+
+        justify-content: center;
+
+        gap: 8px;
+
+        color: #642624;
+
+        background: #faf7f1;
+
+        border-top:
+            1px solid #eee7e1;
+
+        text-decoration: none;
+
+        font-size: 0.72rem;
+
+        font-weight: 900;
+    }
+
+
+    .catalogue-page .catalogue-search-all:hover {
+        color: #251d0d;
+
+        background: #f6e8c6;
+    }
+
+
+    /* =========================================================
+       BOUTON PRINCIPAL
+       ========================================================= */
+
+    .catalogue-page .primary-button {
+        display: inline-flex;
+
+        min-height: 50px;
+
+        padding: 12px 23px;
+
+        align-items: center;
+
+        justify-content: center;
+
+        gap: 9px;
+
+        color: #251d0d;
+
+        background:
+            linear-gradient(
+                135deg,
+                #e4b63c,
+                #d29c1f
+            );
+
+        border: 0;
+
+        border-radius: 10px;
+
+        box-shadow:
+            0 8px 22px rgba(216, 166, 46, 0.23);
+
+        font-weight: 800;
+
+        text-decoration: none;
+
+        cursor: pointer;
+
+        transition:
+            transform 0.25s ease,
+            background 0.25s ease,
+            color 0.25s ease,
+            box-shadow 0.25s ease;
+    }
+
+
+    .catalogue-page .primary-button:hover {
+        color: #ffffff;
+
+        background: #642624;
+
+        transform:
+            translateY(-2px);
+
+        box-shadow:
+            0 13px 30px rgba(100, 38, 36, 0.24);
+    }
+
+
+    /* =========================================================
+       NOMBRE DE PRODUITS
+       ========================================================= */
+
+    .catalogue-page .products-count {
+        flex-shrink: 0;
+
+        margin: 0;
+
+        padding: 9px 14px;
+
+        color: #642624;
+
+        background: #f7eee9;
+
+        border-radius: 999px;
+
+        font-size: 0.86rem;
+
+        font-weight: 800;
+
+        white-space: nowrap;
+    }
+
+
+    /* =========================================================
+       CATÉGORIES
+       ========================================================= */
+
+    .catalogue-page .category-navigation-wrapper {
+        position: relative;
+
+        margin-bottom: 42px;
+    }
+
+
+    .catalogue-page .category-navigation {
+        display: flex;
+
+        align-items: center;
+
+        gap: 10px;
+
+        padding:
+            5px 2px 12px;
+
+        overflow-x: auto;
+
+        scrollbar-width: thin;
+
+        scrollbar-color:
+            #d8a62e #f3ede7;
+    }
+
+
+    .catalogue-page .category-navigation::-webkit-scrollbar {
+        height: 5px;
+    }
+
+
+    .catalogue-page .category-navigation::-webkit-scrollbar-track {
+        background: #f3ede7;
+
+        border-radius: 999px;
+    }
+
+
+    .catalogue-page .category-navigation::-webkit-scrollbar-thumb {
+        background: #d8a62e;
+
+        border-radius: 999px;
+    }
+
+
+    .catalogue-page .category-navigation a {
+        display: inline-flex;
+
+        min-height: 42px;
+
+        padding: 9px 18px;
+
+        flex-shrink: 0;
+
+        align-items: center;
+
+        justify-content: center;
+
+        gap: 7px;
+
+        color: #625a56;
+
+        background: #ffffff;
+
+        border:
+            1px solid #e4dcd5;
+
+        border-radius: 999px;
+
+        font-size: 0.88rem;
+
+        font-weight: 700;
+
+        text-decoration: none;
+
+        transition:
+            0.25s ease;
+    }
+
+
+    .catalogue-page .category-navigation a:hover {
+        color: #642624;
+
+        background: #fffaf2;
+
+        border-color: #d8a62e;
+
+        transform:
+            translateY(-2px);
+    }
+
+
+    .catalogue-page .category-navigation a.active {
+        color: #ffffff;
+
+        background:
+            linear-gradient(
+                135deg,
+                #642624,
+                #7e332f
+            );
+
+        border-color:
+            #642624;
+
+        box-shadow:
+            0 8px 21px rgba(100, 38, 36, 0.21);
+    }
+
+
+    /* =========================================================
+       GRILLE PRODUITS
+       ========================================================= */
+
+    .catalogue-page .products-grid {
+        display: grid;
+
+        grid-template-columns:
+            repeat(4, minmax(0, 1fr));
+
+        gap: 27px;
+    }
+
+
+    /* =========================================================
+       CARTE PRODUIT
+       ========================================================= */
+
+    .catalogue-page .product-card {
+        position: relative;
+
+        display: flex;
+
+        min-width: 0;
+
+        height: 100%;
+
+        flex-direction: column;
+
+        overflow: hidden;
+
+        background: #ffffff;
+
+        border:
+            1px solid #e7dfd8;
+
+        border-radius: 18px;
+
+        box-shadow:
+            0 8px 28px rgba(48, 29, 23, 0.075);
+
+        animation:
+            productEntrance 0.55s ease both;
+
+        transition:
+            transform 0.3s ease,
+            box-shadow 0.3s ease,
+            border-color 0.3s ease;
+    }
+
+
+    .catalogue-page .product-card:hover {
+        border-color:
+            rgba(216, 166, 46, 0.65);
+
+        transform:
+            translateY(-7px);
+
+        box-shadow:
+            0 22px 50px rgba(48, 29, 23, 0.15);
+    }
+
+
+    /* =========================================================
+       IMAGE PRODUIT
+       ========================================================= */
+
+    .catalogue-page .product-image-container {
+        position: relative;
+
+        width: 100%;
+
+        height: 330px;
+
+        overflow: hidden;
+
+        background: #f5f2ee;
+    }
+
+
+    .catalogue-page .product-image-container > a {
+        position: absolute;
+
+        inset: 0;
+
+        z-index: 1;
+
+        display: block;
+
+        width: 100%;
+        height: 100%;
+
+        overflow: hidden;
+    }
+
+
+    .catalogue-page .product-image {
+        position: absolute;
+
+        z-index: 1;
+
+        top: 50%;
+        left: 50%;
+
+        display: block;
+
+        width: 100%;
+        height: 100%;
+
+        object-fit: cover;
+
+        object-position: center center;
+
+        transform:
+            translate(-50%, -50%)
+            scale(1.03);
+
+        transition:
+            transform 0.55s ease,
+            filter 0.35s ease;
+    }
+
+
+    .catalogue-page .product-card:hover .product-image {
+        transform:
+            translate(-50%, -50%)
+            scale(1.08);
+
+        filter:
+            saturate(1.03)
+            contrast(1.015);
+    }
+
+
+    .catalogue-page .product-image-container::after {
+        content: "";
+
+        position: absolute;
+
+        z-index: 2;
+
+        left: 0;
+        right: 0;
+        bottom: 0;
+
+        height: 14%;
+
+        pointer-events: none;
+
+        background:
+            linear-gradient(
+                to top,
+                rgba(30, 20, 18, 0.07),
+                transparent
+            );
+    }
+
+
+    /* =========================================================
+       IMAGE ABSENTE
+       ========================================================= */
+
+    .catalogue-page .product-placeholder {
+        position: absolute;
+
+        inset: 0;
+
+        display: flex;
+
+        width: 100%;
+        height: 100%;
+
+        flex-direction: column;
+
+        align-items: center;
+
+        justify-content: center;
+
+        gap: 13px;
+
+        color: #642624;
+
+        background:
+            linear-gradient(
+                145deg,
+                #faf7f1,
+                #eee4d8
+            );
+    }
+
+
+    .catalogue-page .product-placeholder i {
+        font-size: 3rem;
+    }
+
+
+    .catalogue-page .product-placeholder span {
+        font-size: 0.8rem;
+
+        font-weight: 900;
+
+        letter-spacing: 0.13em;
+
+        text-transform: uppercase;
+    }
+
+
+    /* =========================================================
+       BADGES
+       ========================================================= */
+
+    .catalogue-page .product-badges {
+        position: absolute;
+
+        z-index: 5;
+
+        top: 12px;
+        left: 12px;
+
+        display: flex;
+
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 6px;
+
+        pointer-events: none;
+    }
+
+
+    .catalogue-page .sale-badge,
+    .catalogue-page .custom-badge {
+        padding:
+            5px 9px;
+
+        border-radius: 7px;
+
+        font-size: 0.62rem;
+
+        font-weight: 900;
+
+        letter-spacing: 0.05em;
+
+        text-transform: uppercase;
+
+        box-shadow:
+            0 5px 14px rgba(31, 19, 15, 0.13);
+    }
+
+
+    .catalogue-page .sale-badge {
+        color: #ffffff;
+
+        background:
+            linear-gradient(
+                135deg,
+                #642624,
+                #85342f
+            );
+    }
+
+
+    .catalogue-page .custom-badge {
+        color: #2b210b;
+
+        background:
+            linear-gradient(
+                135deg,
+                #efc75b,
+                #d8a62e
+            );
+    }
+
+
+    /* =========================================================
+       FAVORI
+       ========================================================= */
+
+    .catalogue-page .favorite-button {
+        position: absolute;
+
+        z-index: 7;
+
+        top: 14px;
+        right: 14px;
+
+        display: flex;
+
+        width: auto;
+        height: auto;
+
+        padding: 0;
+
+        align-items: center;
+
+        justify-content: center;
+
+        color: #ffffff;
+
+        background: transparent;
+
+        border: none;
+
+        border-radius: 0;
+
+        box-shadow: none;
+
+        text-decoration: none;
+
+        filter:
+            drop-shadow(
+                0 2px 5px rgba(0, 0, 0, 0.52)
+            );
+
+        transition:
+            color 0.25s ease,
+            transform 0.25s ease,
+            filter 0.25s ease;
+    }
+
+
+    .catalogue-page .favorite-button i {
+        font-size: 1.35rem;
+
+        transition:
+            transform 0.25s ease;
+    }
+
+
+    .catalogue-page .favorite-button:hover {
+        color: #efc75b;
+
+        background: transparent;
+
+        box-shadow: none;
+
+        transform:
+            scale(1.15);
+    }
+
+
+    /* =========================================================
+       CONTENU PRODUIT
+       ========================================================= */
+
+    .catalogue-page .product-card-content {
+        display: flex;
+
+        min-width: 0;
+
+        flex: 1;
+
+        flex-direction: column;
+
+        padding: 18px;
+    }
+
+
+    .catalogue-page .product-category {
+        display: inline-block;
+
+        align-self: flex-start;
+
+        color: #a97612;
+
+        font-size: 0.68rem;
+
+        font-weight: 900;
+
+        letter-spacing: 0.1em;
+
+        text-decoration: none;
+
+        text-transform: uppercase;
+    }
+
+
+    .catalogue-page .product-category:hover {
+        color: #642624;
+    }
+
+
+    .catalogue-page .product-card h3 {
+        margin:
+            7px 0 6px;
+
+        font-family:
+            "DM Sans",
+            Arial,
+            sans-serif;
+
+        font-size: 1.05rem;
+
+        line-height: 1.35;
+    }
+
+
+    .catalogue-page .product-card h3 a {
+        display: -webkit-box;
+
+        overflow: hidden;
+
+        color: #25201e;
+
+        text-decoration: none;
+
+        -webkit-box-orient: vertical;
+
+        -webkit-line-clamp: 2;
+
+        transition:
+            color 0.25s ease;
+    }
+
+
+    .catalogue-page .product-card h3 a:hover {
+        color: #642624;
+    }
+
+
+    .catalogue-page .product-description {
+        display: -webkit-box;
+
+        min-height: 41px;
+
+        margin: 0;
+
+        overflow: hidden;
+
+        color: #756d68;
+
+        font-size: 0.82rem;
+
+        line-height: 1.5;
+
+        -webkit-box-orient: vertical;
+
+        -webkit-line-clamp: 2;
+    }
+
+
+    /* =========================================================
+       NOTES ET J'AIME
+       ========================================================= */
+
+    .catalogue-page .product-social-proof {
+        display: flex;
+
+        align-items: center;
+
+        flex-wrap: wrap;
+
+        gap: 7px;
+
+        margin-top: 12px;
+    }
+
+
+    .catalogue-page .product-rating,
+    .catalogue-page .product-likes {
+        display: inline-flex;
+
+        min-height: 31px;
+
+        align-items: center;
+
+        gap: 5px;
+
+        padding:
+            6px 8px;
+
+        border-radius: 8px;
+
+        font-size: 0.68rem;
+
+        font-weight: 800;
+
+        white-space: nowrap;
+    }
+
+
+    .catalogue-page .product-rating {
+        color: #72500a;
+
+        background: #fff6dc;
+
+        border:
+            1px solid #f0dda1;
+    }
+
+
+    .catalogue-page .product-rating i {
+        color: #d8a62e;
+    }
+
+
+    .catalogue-page .product-rating strong {
+        color: #604409;
+    }
+
+
+    .catalogue-page .product-likes {
+        color: #642624;
+
+        background: #fbefef;
+
+        border:
+            1px solid #efd4d3;
+    }
+
+
+    .catalogue-page .product-likes i {
+        color: #b63a43;
+    }
+
+
+    .catalogue-page .rating-count {
+        color: #8c817b;
+
+        font-weight: 600;
+    }
+
+
+    /* =========================================================
+       PRIX
+       ========================================================= */
+
+    .catalogue-page .product-card-footer {
+        display: flex;
+
+        margin-top: auto;
+
+        padding-top: 13px;
+
+        align-items: flex-end;
+
+        justify-content: space-between;
+
+        gap: 15px;
+
+        border-top:
+            1px solid #eee7e1;
+    }
+
+
+    .catalogue-page .product-price {
+        display: flex;
+
+        flex-direction: column;
+
+        gap: 2px;
+    }
+
+
+    .catalogue-page .product-price strong {
+        color: #642624;
+
+        font-size: 1.15rem;
+
+        font-weight: 900;
+    }
+
+
+    .catalogue-page .product-price del {
+        color: #99918c;
+
+        font-size: 0.78rem;
+    }
+
+
+    /* =========================================================
+       BOUTON VOIR PRODUIT
+       ========================================================= */
+
+    .catalogue-page .view-product-button {
+        display: grid;
+
+        width: 40px;
+        height: 40px;
+
+        flex-shrink: 0;
+
+        place-items: center;
+
+        color: #ffffff;
+
+        background:
+            linear-gradient(
+                135deg,
+                #642624,
+                #81332f
+            );
+
+        border-radius: 10px;
+
+        box-shadow:
+            0 7px 17px rgba(100, 38, 36, 0.20);
+
+        text-decoration: none;
+    }
+
+
+    .catalogue-page .view-product-button:hover {
+        color: #271e0d;
+
+        background:
+            linear-gradient(
+                135deg,
+                #edc45a,
+                #d8a62e
+            );
+
+        transform:
+            translateY(-2px);
+    }
+
+
+    /* =========================================================
+       ÉTAT VIDE
+       ========================================================= */
+
+    .catalogue-page .empty-state {
+        grid-column:
+            1 / -1;
+
+        width:
+            min(100%, 660px);
+
+        margin:
+            35px auto;
+
+        padding:
+            65px 35px;
+
+        color: #706762;
+
+        text-align: center;
+
+        background: #ffffff;
+
+        border:
+            1px dashed #d7cec7;
+
+        border-radius: 22px;
+
+        box-shadow:
+            0 12px 38px rgba(48, 29, 23, 0.07);
+    }
+
+
+    .catalogue-page .empty-state > i {
+        display: grid;
+
+        width: 82px;
+        height: 82px;
+
+        margin:
+            0 auto 22px;
+
+        place-items: center;
+
+        color: #d8a62e;
+
+        background: #642624;
+
+        border-radius: 50%;
+
+        font-size: 1.9rem;
+    }
+
+
+    .catalogue-page .empty-state h2 {
+        margin-bottom: 11px;
+
+        color: #25201e;
+
+        font-family:
+            "Playfair Display",
+            Georgia,
+            serif;
+
+        font-size: 2rem;
+    }
+
+
+    .catalogue-page .empty-state p {
+        max-width: 460px;
+
+        margin:
+            0 auto 24px;
+
+        line-height: 1.7;
+    }
+
+
+    /* =========================================================
+       ANIMATIONS
+       ========================================================= */
+
+    @keyframes catalogueEntrance {
+
+        from {
+            opacity: 0;
+
+            transform:
+                translateY(22px);
+        }
+
+        to {
+            opacity: 1;
+
+            transform:
+                translateY(0);
+        }
+    }
+
+
+    @keyframes productEntrance {
+
+        from {
+            opacity: 0;
+
+            transform:
+                translateY(18px);
+        }
+
+        to {
+            opacity: 1;
+
+            transform:
+                translateY(0);
+        }
+    }
+
+
+    /* =========================================================
+       RESPONSIVE
+       ========================================================= */
+
+    @media (max-width: 1150px) {
+
+        .catalogue-page .products-grid {
+            grid-template-columns:
+                repeat(3, minmax(0, 1fr));
+        }
+    }
+
+
+    @media (max-width: 850px) {
+
+        .catalogue-page .page-banner {
+            min-height: 330px;
+
+            padding-block:
+                70px;
+        }
+
+
+        .catalogue-page .catalogue-toolbar {
+            align-items: stretch;
+
+            flex-direction: column;
+        }
+
+
+        .catalogue-page .catalogue-live-search {
+            width: 100%;
+        }
+
+
+        .catalogue-page .search-form {
+            width: 100%;
+        }
+
+
+        .catalogue-page .products-count {
+            align-self: flex-end;
+        }
+
+
+        .catalogue-page .products-grid {
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
+            gap: 18px;
+        }
+
+
+        .catalogue-page .product-image-container {
+            height: 300px;
+        }
+    }
+
+
+    @media (max-width: 600px) {
+
+        .catalogue-page .page-banner {
+            min-height: 290px;
+
+            padding:
+                58px 20px;
+        }
+
+
+        .catalogue-page .page-banner h1 {
+            font-size:
+                clamp(2.45rem, 13vw, 3.8rem);
+        }
+
+
+        .catalogue-page .page-banner p {
+            font-size: 0.95rem;
+        }
+
+
+        .catalogue-page .content-section {
+            width:
+                calc(100% - 28px);
+
+            padding-block:
+                42px 65px;
+        }
+
+
+        .catalogue-page .catalogue-toolbar {
+            padding: 14px;
+        }
+
+
+        .catalogue-page .search-form {
+            flex-direction: column;
+        }
+
+
+        .catalogue-page .search-form .primary-button {
+            width: 100%;
+        }
+
+
+        .catalogue-page .catalogue-search-results {
+            top: calc(100% + 7px);
+        }
+
+
+        .catalogue-page .catalogue-search-image {
+            width: 48px;
+            height: 54px;
+        }
+
+
+        .catalogue-page .catalogue-search-price {
+            font-size: 0.72rem;
+        }
+
+
+        .catalogue-page .products-grid {
+            gap: 13px;
+        }
+
+
+        .catalogue-page .product-image-container {
+            height: 270px;
+        }
+
+
+        .catalogue-page .product-card-content {
+            padding: 13px;
+        }
+
+
+        .catalogue-page .product-card h3 {
+            font-size: 0.92rem;
+        }
+
+
+        .catalogue-page .product-description {
+            display: none;
+        }
+
+
+        .catalogue-page .product-price strong {
+            font-size: 0.98rem;
+        }
+    }
+
+
+    @media (max-width: 420px) {
+
+        .catalogue-page .products-grid {
+            grid-template-columns:
+                1fr;
+        }
+
+
+        .catalogue-page .product-image-container {
+            height: 360px;
+        }
+
+
+        .catalogue-page .product-description {
+            display: -webkit-box;
+        }
+
+
+        .catalogue-page .empty-state {
+            padding:
+                45px 20px;
+        }
+    }
+
+</style>
+
+{% endblock %}
+
+
+
+{% block content %}
+
+<div class="catalogue-page">
+
+
+    <!-- =====================================================
+         BANDEAU
+         ===================================================== -->
+
+    <section class="page-banner">
+
+        <div class="page-banner-content">
+
+            <span class="section-label">
+                Zendo Afrique
+            </span>
+
+
+            <h1>
+
+                {% if categorie %}
+
+                    {{ categorie.nom }}
+
+                {% else %}
+
+                    Notre boutique
+
+                {% endif %}
+
+            </h1>
+
+
+            <p>
+                Découvrez des collections authentiques,
+                modernes et personnalisables qui mettent
+                en valeur l’élégance africaine.
+            </p>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         CONTENU
+         ===================================================== -->
+
+    <section class="content-section">
+
+
+        <!-- =================================================
+             RECHERCHE
+             ================================================= -->
+
+        <div class="catalogue-toolbar">
+
+
+            <div class="catalogue-live-search">
+
+
+                <form
+                    method="get"
+                    action="{% url 'zendo:catalogue' %}"
+                    class="search-form"
+                    id="catalogue-search-form"
+                    autocomplete="off"
+                >
+
+
+                    <div class="search-field">
+
+                        <i class="fa-solid fa-magnifying-glass"></i>
+
+
+                        <input
+                            type="search"
+                            name="q"
+                            id="catalogue-search-input"
+                            value="{{ q }}"
+                            placeholder="Rechercher un produit, une catégorie..."
+                            aria-label="Rechercher un produit"
+                        >
+
+                    </div>
+
+
+                    <button
+                        type="submit"
+                        class="primary-button"
+                    >
+
+                        <i class="fa-solid fa-magnifying-glass"></i>
+
+                        Rechercher
+
+                    </button>
+
+                </form>
+
+
+                <!-- SUGGESTIONS AUTOMATIQUES -->
+
+                <div
+                    id="catalogue-search-results"
+                    class="catalogue-search-results"
+                >
+                </div>
+
+
+            </div>
+
+
+
+            <p class="products-count">
+
+                <i class="fa-solid fa-shirt"></i>
+
+                {{ produits|length }}
+
+                produit{{ produits|length|pluralize }}
+
+            </p>
+
+
+        </div>
+
+
+
+        <!-- =================================================
+             CATÉGORIES
+             ================================================= -->
+
+        <div class="category-navigation-wrapper">
+
+
+            <div class="category-navigation">
+
+
+                <a
+                    href="{% url 'zendo:catalogue' %}"
+                    class="{% if not categorie %}active{% endif %}"
+                >
+
+                    <i class="fa-solid fa-border-all"></i>
+
+                    Tous
+
+                </a>
+
+
+                {% for cat in categories_menu %}
+
+                    <a
+                        href="{% url 'zendo:categorie' cat.slug %}"
+                        class="{% if categorie and categorie.pk == cat.pk %}active{% endif %}"
+                    >
+
+                        {{ cat.nom }}
+
+                    </a>
+
+                {% endfor %}
+
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             PRODUITS
+             ================================================= -->
+
+        <div class="products-grid">
+
+
+            {% for produit in produits %}
+
+
+                {% include "zendo/produit_card.html" %}
+
+
+            {% empty %}
+
+
+                <div class="empty-state">
+
+
+                    <i class="fa-solid fa-magnifying-glass"></i>
+
+
+                    <h2>
+                        Aucun produit trouvé
+                    </h2>
+
+
+                    {% if q %}
+
+                        <p>
+                            Aucun résultat ne correspond à votre
+                            recherche « {{ q }} ».
+
+                            Essayez un autre mot,
+                            une catégorie ou consultez
+                            tous nos produits.
+                        </p>
+
+                    {% else %}
+
+                        <p>
+                            Aucun produit n’est actuellement
+                            disponible dans cette catégorie.
+                        </p>
+
+                    {% endif %}
+
+
+                    <a
+                        href="{% url 'zendo:catalogue' %}"
+                        class="primary-button"
+                    >
+
+                        <i class="fa-solid fa-arrow-left"></i>
+
+                        Voir tous les produits
+
+                    </a>
+
+
+                </div>
+
+
+            {% endfor %}
+
+
+        </div>
+
+
+    </section>
+
+
+</div>
+
+
+
+<!-- =========================================================
+     RECHERCHE AUTOMATIQUE
+     ========================================================= -->
+
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const input =
+            document.getElementById(
+                "catalogue-search-input"
+            );
+
+
+        const results =
+            document.getElementById(
+                "catalogue-search-results"
+            );
+
+
+        if (!input || !results) {
+            return;
+        }
+
+
+        let searchTimer = null;
+
+        let controller = null;
+
+
+
+        /* =====================================================
+           SÉCURISER LE TEXTE
+           ===================================================== */
+
+        function escapeHTML(value) {
+
+            const element =
+                document.createElement(
+                    "div"
+                );
+
+            element.textContent =
+                value || "";
+
+            return element.innerHTML;
+
+        }
+
+
+
+        /* =====================================================
+           FERMER
+           ===================================================== */
+
+        function closeResults() {
+
+            results.classList.remove(
+                "active"
+            );
+
+            results.innerHTML = "";
+
+        }
+
+
+
+        /* =====================================================
+           CHARGEMENT
+           ===================================================== */
+
+        function showLoading() {
+
+            results.innerHTML = `
+
+                <div
+                    class="catalogue-search-message"
+                >
+
+                    <i
+                        class="fa-solid fa-spinner fa-spin"
+                    ></i>
+
+                    Recherche dans la boutique...
+
+                </div>
+
+            `;
+
+
+            results.classList.add(
+                "active"
+            );
+
+        }
+
+
+
+        /* =====================================================
+           RECHERCHER LES PRODUITS
+           ===================================================== */
+
+        async function searchProducts(
+            searchValue
+        ) {
+
+
+            if (controller) {
+                controller.abort();
+            }
+
+
+            controller =
+                new AbortController();
+
+
+            showLoading();
+
+
+            try {
+
+
+                const url =
+                    new URL(
+                        "{% url 'zendo:recherche_produits_api' %}",
+                        window.location.origin
+                    );
+
+
+                url.searchParams.set(
+                    "q",
+                    searchValue
+                );
+
+
+                const response =
+                    await fetch(
+                        url.toString(),
+                        {
+                            method: "GET",
+
+                            headers: {
+                                "X-Requested-With":
+                                    "XMLHttpRequest"
+                            },
+
+                            signal:
+                                controller.signal
+                        }
+                    );
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        "Erreur de recherche"
+                    );
+
+                }
+
+
+                const data =
+                    await response.json();
+
+
+                const products =
+                    data.produits || [];
+
+
+
+                /* =============================================
+                   AUCUN PRODUIT
+                   ============================================= */
+
+                if (
+                    products.length === 0
+                ) {
+
+
+                    results.innerHTML = `
+
+                        <div
+                            class="catalogue-search-message"
+                        >
+
+                            <i
+                                class="fa-solid fa-box-open"
+                            ></i>
+
+                            Aucun produit trouvé pour
+
+                            <strong>
+                                "${escapeHTML(searchValue)}"
+                            </strong>
+
+                        </div>
+
+
+                        <a
+                            href="{% url 'zendo:catalogue' %}?q=${encodeURIComponent(searchValue)}"
+                            class="catalogue-search-all"
+                        >
+
+                            <i
+                                class="fa-solid fa-store"
+                            ></i>
+
+                            Voir tous les résultats
+
+                        </a>
+
+                    `;
+
+
+                    results.classList.add(
+                        "active"
+                    );
+
+
+                    return;
+
+                }
+
+
+
+                /* =============================================
+                   PRODUITS TROUVÉS
+                   ============================================= */
+
+                let html = `
+
+                    <div
+                        class="search-results-title"
+                    >
+
+                        Produits correspondants
+
+                    </div>
+
+                `;
+
+
+
+                products.forEach(
+                    function (product) {
+
+
+                        let imageHTML = `
+
+                            <i
+                                class="fa-solid fa-shirt"
+                            ></i>
+
+                        `;
+
+
+                        if (product.image) {
+
+                            imageHTML = `
+
+                                <img
+                                    src="${escapeHTML(product.image)}"
+                                    alt="${escapeHTML(product.nom)}"
+                                    loading="lazy"
+                                >
+
+                            `;
+
+                        }
+
+
+
+                        let priceHTML = "";
+
+
+                        if (product.prix) {
+
+                            priceHTML = `
+
+                                <span
+                                    class="catalogue-search-price"
+                                >
+
+                                    ${escapeHTML(product.prix)}
+                                    $ CA
+
+                                </span>
+
+                            `;
+
+                        }
+
+
+
+                        html += `
+
+                            <a
+                                href="${escapeHTML(product.url)}"
+                                class="catalogue-search-product"
+                            >
+
+
+                                <div
+                                    class="catalogue-search-image"
+                                >
+
+                                    ${imageHTML}
+
+                                </div>
+
+
+                                <div
+                                    class="catalogue-search-info"
+                                >
+
+
+                                    <span
+                                        class="catalogue-search-name"
+                                    >
+
+                                        ${escapeHTML(product.nom)}
+
+                                    </span>
+
+
+                                    <span
+                                        class="catalogue-search-category"
+                                    >
+
+                                        ${escapeHTML(
+                                            product.categorie
+                                            || "Zendo Afrique"
+                                        )}
+
+                                    </span>
+
+
+                                </div>
+
+
+                                ${priceHTML}
+
+
+                                <i
+                                    class="
+                                        fa-solid
+                                        fa-chevron-right
+                                        catalogue-search-arrow
+                                    "
+                                ></i>
+
+
+                            </a>
+
+                        `;
+
+                    }
+                );
+
+
+
+                /* =============================================
+                   VOIR TOUS
+                   ============================================= */
+
+                html += `
+
+                    <a
+                        href="{% url 'zendo:catalogue' %}?q=${encodeURIComponent(searchValue)}"
+                        class="catalogue-search-all"
+                    >
+
+                        <i
+                            class="fa-solid fa-magnifying-glass"
+                        ></i>
+
+                        Voir tous les résultats pour
+
+                        "${escapeHTML(searchValue)}"
+
+                    </a>
+
+                `;
+
+
+                results.innerHTML =
+                    html;
+
+
+                results.classList.add(
+                    "active"
+                );
+
+
+            } catch (error) {
+
+
+                if (
+                    error.name ===
+                    "AbortError"
+                ) {
+
+                    return;
+
+                }
+
+
+                results.innerHTML = `
+
+                    <div
+                        class="catalogue-search-message"
+                    >
+
+                        <i
+                            class="fa-solid fa-triangle-exclamation"
+                        ></i>
+
+                        Impossible de charger
+                        les suggestions.
+
+                    </div>
+
+                `;
+
+
+                results.classList.add(
+                    "active"
+                );
+
+            }
+
+        }
+
+
+
+        /* =====================================================
+           QUAND LE CLIENT ÉCRIT
+           ===================================================== */
+
+        input.addEventListener(
+            "input",
+            function () {
+
+
+                const searchValue =
+                    input.value.trim();
+
+
+                clearTimeout(
+                    searchTimer
+                );
+
+
+                if (
+                    searchValue.length < 1
+                ) {
+
+
+                    closeResults();
+
+                    return;
+
+                }
+
+
+                searchTimer =
+                    setTimeout(
+                        function () {
+
+
+                            searchProducts(
+                                searchValue
+                            );
+
+
+                        },
+                        250
+                    );
+
+            }
+        );
+
+
+
+        /* =====================================================
+           AU FOCUS
+           ===================================================== */
+
+        input.addEventListener(
+            "focus",
+            function () {
+
+
+                const searchValue =
+                    input.value.trim();
+
+
+                if (
+                    searchValue.length > 0
+                ) {
+
+
+                    searchProducts(
+                        searchValue
+                    );
+
+                }
+
+            }
+        );
+
+
+
+        /* =====================================================
+           TOUCHE ESC
+           ===================================================== */
+
+        input.addEventListener(
+            "keydown",
+            function (event) {
+
+
+                if (
+                    event.key === "Escape"
+                ) {
+
+
+                    closeResults();
+
+                }
+
+            }
+        );
+
+
+
+        /* =====================================================
+           CLIC EN DEHORS
+           ===================================================== */
+
+        document.addEventListener(
+            "click",
+            function (event) {
+
+
+                if (
+                    !event.target.closest(
+                        ".catalogue-live-search"
+                    )
+                ) {
+
+
+                    closeResults();
+
+                }
+
+            }
+        );
+
+
+    }
+);
+
+</script>
+
+
+{% endblock %}

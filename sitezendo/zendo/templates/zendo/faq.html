@@ -1,0 +1,66 @@
+{% extends "zendo/base.html" %}
+
+{% block title %}
+    Questions fréquentes — Zendo Afrique
+{% endblock %}
+
+{% block content %}
+
+<section class="page-banner">
+    <div class="page-banner-content">
+        <span class="section-label">
+            Besoin d’aide?
+        </span>
+
+        <h1>Questions fréquentes</h1>
+
+        <p>
+            Retrouvez les réponses aux questions concernant
+            les commandes, les paiements, la personnalisation
+            et la livraison.
+        </p>
+    </div>
+</section>
+
+
+<section class="content-section faq-container">
+
+    {% for question in questions %}
+        <details class="faq-item">
+            <summary>
+                <span>
+                    {{ question.question }}
+                </span>
+
+                <i class="fa-solid fa-plus"></i>
+            </summary>
+
+            <div class="faq-answer">
+                {{ question.reponse|linebreaks }}
+            </div>
+        </details>
+    {% empty %}
+        <div class="empty-state">
+            <i class="fa-regular fa-circle-question"></i>
+
+            <h2>La FAQ sera bientôt disponible</h2>
+
+            <p>
+                Vous pouvez communiquer avec notre équipe
+                pour obtenir de l’aide.
+            </p>
+
+            {% if user.is_authenticated %}
+                <a
+                    href="{% url 'zendo:support' %}"
+                    class="primary-button"
+                >
+                    Contacter le support
+                </a>
+            {% endif %}
+        </div>
+    {% endfor %}
+
+</section>
+
+{% endblock %}

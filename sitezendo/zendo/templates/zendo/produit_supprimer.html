@@ -1,0 +1,172 @@
+{% extends "zendo/base.html" %}
+
+{% block title %}
+    Supprimer {{ produit.nom }} — Zendo Afrique
+{% endblock %}
+
+{% block content %}
+
+<style>
+    .delete-page {
+        display: grid;
+        min-height: 75vh;
+        padding: 60px 20px;
+        place-items: center;
+        background:
+            radial-gradient(circle at top, rgba(163, 35, 54, 0.1), transparent 40%),
+            #f7f5f1;
+    }
+
+    .delete-card {
+        width: min(100%, 620px);
+        padding: 42px;
+        text-align: center;
+        background: #ffffff;
+        border: 1px solid #eadde0;
+        border-radius: 25px;
+        box-shadow: 0 24px 60px rgba(54, 28, 35, 0.12);
+    }
+
+    .delete-icon {
+        display: grid;
+        width: 85px;
+        height: 85px;
+        margin: 0 auto 24px;
+        place-items: center;
+        color: #a32336;
+        background: #fff0f2;
+        border-radius: 50%;
+        font-size: 34px;
+    }
+
+    .delete-card h1 {
+        margin: 0 0 14px;
+        color: #332429;
+        font-size: clamp(27px, 5vw, 40px);
+    }
+
+    .delete-card p {
+        margin: 0 auto;
+        color: #71656a;
+        line-height: 1.7;
+    }
+
+    .product-to-delete {
+        margin: 26px 0;
+        padding: 20px;
+        color: #651b32;
+        background: #faf6f7;
+        border: 1px solid #eadde0;
+        border-radius: 15px;
+        font-size: 18px;
+    }
+
+    .warning-text {
+        color: #a32336 !important;
+        font-weight: 700;
+    }
+
+    .delete-actions {
+        display: flex;
+        justify-content: center;
+        gap: 13px;
+        margin-top: 30px;
+    }
+
+    .cancel-button,
+    .confirm-delete-button {
+        display: inline-flex;
+        min-height: 52px;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        padding: 0 23px;
+        border: 0;
+        border-radius: 13px;
+        font: inherit;
+        font-weight: 800;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .cancel-button {
+        color: #4d4145;
+        background: #ebe7e8;
+    }
+
+    .confirm-delete-button {
+        color: #ffffff;
+        background: linear-gradient(135deg, #a32336, #741424);
+        box-shadow: 0 12px 25px rgba(163, 35, 54, 0.25);
+    }
+
+    @media (max-width: 600px) {
+        .delete-card {
+            padding: 30px 20px;
+        }
+
+        .delete-actions {
+            flex-direction: column-reverse;
+        }
+
+        .cancel-button,
+        .confirm-delete-button {
+            width: 100%;
+        }
+    }
+</style>
+
+<section class="delete-page">
+
+    <div class="delete-card">
+
+        <div class="delete-icon">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+
+        <h1>Supprimer ce produit?</h1>
+
+        <p>
+            Vous êtes sur le point de supprimer définitivement :
+        </p>
+
+        <div class="product-to-delete">
+            <strong>{{ produit.nom }}</strong>
+
+            {% if produit.sku %}
+                <br>
+                <small>SKU : {{ produit.sku }}</small>
+            {% endif %}
+        </div>
+
+        <p class="warning-text">
+            Cette action est définitive et ne peut pas être annulée.
+        </p>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="delete-actions">
+                <a
+                    href="{% url 'zendo:produit_modifier' produit.pk %}"
+                    class="cancel-button"
+                >
+                    <i class="fa-solid fa-arrow-left"></i>
+                    Non, annuler
+                </a>
+
+                <button
+                    type="submit"
+                    class="confirm-delete-button"
+                >
+                    <i class="fa-solid fa-trash"></i>
+                    Oui, supprimer
+                </button>
+            </div>
+        </form>
+
+    </div>
+
+</section>
+
+{% endblock %}
