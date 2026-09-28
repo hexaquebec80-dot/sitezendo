@@ -38,25 +38,24 @@ DEBUG = os.environ.get(
     "True",
 ).lower() == "true"
 
-
 ALLOWED_HOSTS = [
     domaine.strip()
     for domaine in os.environ.get(
         "ALLOWED_HOSTS",
-        "127.0.0.1,localhost",
+        "127.0.0.1,localhost,sitezendo.onrender.com",
     ).split(",")
     if domaine.strip()
 ]
-
 
 CSRF_TRUSTED_ORIGINS = [
-    domaine.strip()
-    for domaine in os.environ.get(
+    origine.strip()
+    for origine in os.environ.get(
         "CSRF_TRUSTED_ORIGINS",
-        "",
+        "https://sitezendo.onrender.com",
     ).split(",")
-    if domaine.strip()
+    if origine.strip()
 ]
+
 
 
 # ============================================================
