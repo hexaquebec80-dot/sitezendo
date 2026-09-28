@@ -232,7 +232,6 @@ VarianteProduitFormSet = inlineformset_factory(
 )
 
 
-
 from django import forms
 
 from .models import DemandePersonnalisation
@@ -263,6 +262,7 @@ class DemandePersonnalisationForm(forms.ModelForm):
             "type_client": forms.Select(
                 attrs={
                     "class": "form-control",
+                    "required": True,
                 }
             ),
 
@@ -270,6 +270,7 @@ class DemandePersonnalisationForm(forms.ModelForm):
                 attrs={
                     "class": "form-control",
                     "placeholder": "Votre nom complet",
+                    "required": True,
                 }
             ),
 
@@ -277,95 +278,221 @@ class DemandePersonnalisationForm(forms.ModelForm):
                 attrs={
                     "class": "form-control",
                     "placeholder": "Nom de votre entreprise",
+                    "required": True,
                 }
             ),
 
             "telephone": forms.TextInput(
                 attrs={
                     "class": "form-control",
-                    "placeholder": "Ex. +1 514 000 0000",
+                    "placeholder": "Ex. +1 418 000 0000",
+                    "required": True,
                 }
             ),
 
             "email": forms.EmailInput(
                 attrs={
                     "class": "form-control",
-                    "placeholder": "vous@exemple.com",
+                    "placeholder": "exemple@email.com",
+                    "required": True,
                 }
             ),
 
             "code_postal": forms.TextInput(
                 attrs={
                     "class": "form-control",
-                    "placeholder": "Ex. G7H 0A1",
+                    "placeholder": "Votre code postal",
+                    "required": True,
                 }
             ),
 
             "quantite": forms.NumberInput(
                 attrs={
                     "class": "form-control",
-                    "min": "1",
-                    "placeholder": "Nombre de pièces",
+                    "min": 1,
+                    "required": True,
                 }
             ),
 
             "couleur": forms.TextInput(
                 attrs={
                     "class": "form-control",
-                    "placeholder": "Ex. Noir, blanc, rouge...",
+                    "placeholder": "Ex. Noir, blanc, vert...",
+                    "required": True,
                 }
             ),
 
             "taille": forms.TextInput(
                 attrs={
                     "class": "form-control",
-                    "placeholder": "Ex. S, M, L, XL...",
+                    "placeholder": "Ex. 10 × M, 10 × L, 5 × XL",
+                    "required": True,
                 }
             ),
 
             "description": forms.Textarea(
                 attrs={
                     "class": "form-control",
-                    "rows": 6,
-                    "placeholder": (
-                        "Expliquez votre projet : type de tenue, "
-                        "emplacement du logo, texte à imprimer, "
-                        "couleurs, dimensions, etc."
-                    ),
+                    "placeholder": "Décrivez votre projet de personnalisation...",
+                    "required": True,
                 }
             ),
 
             "fichier": forms.ClearableFileInput(
                 attrs={
                     "class": "form-control",
-                    "accept": (
-                        ".jpg,.jpeg,.png,.webp,.pdf,"
-                        ".svg,.ai,.eps"
-                    ),
+                    "required": True,
+                    "accept": "image/*,.pdf",
                 }
             ),
         }
 
-    def clean(self):
 
-        cleaned_data = super().clean()
+    def __init__(self, *args, **kwargs):
 
-        type_client = cleaned_data.get(
-            "type_client"
-        )
+        super().__init__(*args, **kwargs)
 
-        nom_entreprise = cleaned_data.get(
-            "nom_entreprise"
-        )
+        # ==============================================
+        # TOUS LES CHAMPS SONT OBLIGATOIRES
+        # ==============================================
 
-        if (
-            type_client == "entreprise"
-            and not nom_entreprise
-        ):
+        for field_name, field in self.fields.items():
 
-            self.add_error(
-                "nom_entreprise",
-                "Veuillez indiquer le nom de votre entreprise.",
+            field.required = True
+
+            field.widget.attrs["required"] = True
+
+
+    def clean_nom(self):
+
+        value = self.cleaned_data.get("nom", "").strip()
+
+        if not value:
+            raise forms.ValidationError(
+                "Veuillez renseigner votre nom complet."
             )
 
-        return cleaned_data
+        return value
+
+
+    def clean_nom_entreprise(self):
+
+        value = self.cleaned_data.get(
+            "nom_entreprise",
+            ""
+        ).strip()
+
+        if not value:
+            raise forms.ValidationError(
+                "Veuillez renseigner le nom de l’entreprise."
+            )
+
+        return value
+
+
+    def clean_telephone(self):
+
+        value = self.cleaned_data.get(
+            "telephone",
+            ""
+        ).strip()
+
+        if not value:
+            raise forms.ValidationError(
+                "Veuillez renseigner votre numéro de téléphone."
+            )
+
+        return value
+
+
+    def clean_code_postal(self):
+
+        value = self.cleaned_data.get(
+            "code_postal",
+            ""
+        ).strip()
+
+        if not value:
+            raise forms.ValidationError(
+                "Veuillez renseigner votre code postal."
+            )
+
+        return value
+
+
+    def clean_couleur(self):
+
+        value = self.cleaned_data.get(
+            "couleur",
+            ""
+        ).strip()
+
+        if not value:
+            raise forms.ValidationError(
+                "Veuillez préciser la couleur souhaitée."
+            )
+
+        return value
+
+
+    def clean_taille(self):
+
+        value = self.cleaned_data.get(
+            "taille",
+            ""
+        ).strip()
+
+        if not value:
+            raise forms.ValidationError(
+                "Veuillez préciser la ou les tailles souhaitées."
+            )
+
+        return value
+
+
+    def clean_description(self):
+
+        value = self.cleaned_data.get(
+            "description",
+            ""
+        ).strip()
+
+        if not value:
+            raise forms.ValidationError(
+                "Veuillez décrire votre demande."
+            )
+
+        return value
+
+
+    def clean_fichier(self):
+
+        fichier = self.cleaned_data.get(
+            "fichier"
+        )
+
+        if not fichier:
+            raise forms.ValidationError(
+                "Vous devez joindre un logo, une image ou un plan."
+            )
+
+        return fichier
+
+
+    def clean_quantite(self):
+
+        quantite = self.cleaned_data.get(
+            "quantite"
+        )
+
+        if not quantite:
+            raise forms.ValidationError(
+                "Veuillez préciser le nombre de pièces."
+            )
+
+        if quantite < 1:
+            raise forms.ValidationError(
+                "La quantité doit être supérieure à 0."
+            )
+
+        return quantite

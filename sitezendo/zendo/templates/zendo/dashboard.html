@@ -2098,9 +2098,386 @@ Tableau de bord — Zendo Afrique
                     </span>
                 </a>
 
+
+                <a
+    href="#demandes-personnalisation"
+    class="admin-quick-action"
+>
+
+    <span class="admin-quick-icon">
+
+        <i class="fa-solid fa-wand-magic-sparkles"></i>
+
+    </span>
+
+
+    <span>
+
+        <strong>
+            Demandes de personnalisation
+        </strong>
+
+        <small>
+
+            {{ nb_demandes_personnalisation|default:"0" }}
+            demande(s) reçue(s)
+
+        </small>
+
+    </span>
+
+</a>
             </div>
 
         </section>
+
+
+<!-- =========================================================
+     DEMANDES DE PERSONNALISATION
+========================================================== -->
+
+<section
+    id="demandes-personnalisation"
+    class="admin-card"
+>
+
+    <header class="admin-card-header">
+
+        <div class="admin-card-title">
+
+            <span class="admin-card-icon warning">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+            </span>
+
+            <div>
+
+                <h2>
+                    Demandes de personnalisation
+                </h2>
+
+                <p>
+                    Consultez les demandes envoyées
+                    par les clients.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="admin-card-actions">
+
+            <span class="admin-count">
+
+                <i class="fa-solid fa-envelope"></i>
+
+                {{ nb_demandes_personnalisation|default:"0" }}
+
+                demande(s)
+
+            </span>
+
+        </div>
+
+    </header>
+
+
+    {% if demandes_personnalisation %}
+
+        <div class="admin-table-wrapper">
+
+            <table class="admin-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>N°</th>
+
+                        <th>Client</th>
+
+                        <th>Type</th>
+
+                        <th>Entreprise</th>
+
+                        <th>Contact</th>
+
+                        <th>Code postal</th>
+
+                        <th>Quantité</th>
+
+                        <th>Couleur</th>
+
+                        <th>Taille(s)</th>
+
+                        <th>Description</th>
+
+                        <th>Fichier</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for demande in demandes_personnalisation %}
+
+                        <tr>
+
+
+                            <!-- NUMERO -->
+
+                            <td>
+
+                                <strong class="admin-strong">
+
+                                    #{{ demande.pk }}
+
+                                </strong>
+
+                            </td>
+
+
+
+                            <!-- CLIENT -->
+
+                            <td>
+
+                                <div class="admin-customer">
+
+                                    <strong>
+                                        {{ demande.nom }}
+                                    </strong>
+
+                                    <small>
+                                        {{ demande.email }}
+                                    </small>
+
+                                </div>
+
+                            </td>
+
+
+
+                            <!-- TYPE CLIENT -->
+
+                            <td>
+
+                                <span class="admin-state">
+
+                                    {{ demande.get_type_client_display }}
+
+                                </span>
+
+                            </td>
+
+
+
+                            <!-- ENTREPRISE -->
+
+                            <td>
+
+                                {% if demande.nom_entreprise %}
+
+                                    <strong class="admin-strong">
+
+                                        {{ demande.nom_entreprise }}
+
+                                    </strong>
+
+                                {% else %}
+
+                                    —
+
+                                {% endif %}
+
+                            </td>
+
+
+
+                            <!-- CONTACT -->
+
+                            <td>
+
+                                <div class="admin-customer">
+
+                                    <strong>
+
+                                        <i class="fa-solid fa-phone"></i>
+
+                                        {{ demande.telephone }}
+
+                                    </strong>
+
+                                </div>
+
+                            </td>
+
+
+
+                            <!-- CODE POSTAL -->
+
+                            <td>
+
+                                <span class="admin-strong">
+
+                                    {{ demande.code_postal }}
+
+                                </span>
+
+                            </td>
+
+
+
+                            <!-- QUANTITE -->
+
+                            <td>
+
+                                <strong class="admin-strong">
+
+                                    {{ demande.quantite }}
+
+                                </strong>
+
+                                pièce(s)
+
+                            </td>
+
+
+
+                            <!-- COULEUR -->
+
+                            <td>
+
+                                <span class="admin-strong">
+
+                                    {{ demande.couleur }}
+
+                                </span>
+
+                            </td>
+
+
+
+                            <!-- TAILLES -->
+
+                            <td>
+
+                                <span class="admin-strong">
+
+                                    {{ demande.taille }}
+
+                                </span>
+
+                            </td>
+
+
+
+                            <!-- DESCRIPTION -->
+
+                            <td>
+
+                                <div
+                                    style="
+                                        max-width: 280px;
+                                        white-space: normal;
+                                        line-height: 1.5;
+                                    "
+                                >
+
+                                    {{ demande.description }}
+
+                                </div>
+
+                            </td>
+
+
+
+                            <!-- FICHIER -->
+
+                            <td>
+
+                                {% if demande.fichier %}
+
+                                    <a
+                                        href="{{ demande.fichier.url }}"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        class="admin-button"
+                                        style="
+                                            min-height: 37px;
+                                            padding: 0 12px;
+                                            font-size: 10px;
+                                        "
+                                    >
+
+                                        <i class="fa-solid fa-eye"></i>
+
+                                        Voir le fichier
+
+                                    </a>
+
+                                {% else %}
+
+                                    <span class="admin-state inactive">
+
+                                        Aucun fichier
+
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+    {% else %}
+
+        <div class="admin-empty">
+
+            <span class="admin-empty-icon">
+
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+
+            </span>
+
+
+            <h3>
+                Aucune demande de personnalisation
+            </h3>
+
+
+            <p>
+
+                Lorsqu’un client remplira le formulaire
+                de personnalisation, sa demande apparaîtra
+                automatiquement ici.
+
+            </p>
+
+        </div>
+
+    {% endif %}
+
+</section>
+
+
+
+
+
+
+
 
         <!-- COMMANDES PAYÉES -->
 

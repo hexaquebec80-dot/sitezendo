@@ -2336,6 +2336,144 @@
 
         }
 
+        /* =========================================================
+   BOUTIQUE CERTIFIÉE
+   ========================================================= */
+
+.certified-shop-badge {
+    display: inline-flex;
+    align-items: center;
+
+    gap: 10px;
+
+    padding:
+        8px 13px;
+
+    color:
+        rgba(255, 255, 255, 0.90);
+
+    background:
+        rgba(255, 255, 255, 0.07);
+
+    border:
+        1px solid rgba(214, 168, 79, 0.30);
+
+    border-radius:
+        14px;
+
+    box-shadow:
+        0 8px 25px
+        rgba(0, 0, 0, 0.10);
+}
+
+
+.certified-shop-icon {
+    position: relative;
+
+    width: 38px;
+    height: 38px;
+
+    display: grid;
+    place-items: center;
+
+    flex-shrink: 0;
+
+    color:
+        var(--primary-deep);
+
+    background:
+        linear-gradient(
+            135deg,
+            #f5d487,
+            #d6a84f
+        );
+
+    border-radius:
+        50%;
+
+    font-size: 21px;
+
+    box-shadow:
+        0 5px 15px
+        rgba(214, 168, 79, 0.25);
+}
+
+
+.certified-shop-check {
+    position: absolute;
+
+    right: -4px;
+    bottom: -3px;
+
+    width: 17px;
+    height: 17px;
+
+    display: grid;
+    place-items: center;
+
+    color:
+        #ffffff;
+
+    background:
+        #124c3b;
+
+    border:
+        2px solid #071f19;
+
+    border-radius:
+        50%;
+
+    font-size: 7px;
+}
+
+
+.certified-shop-text {
+    display: flex;
+
+    flex-direction: column;
+
+    line-height: 1.2;
+}
+
+
+.certified-shop-text strong {
+    color:
+        #ffffff !important;
+
+    font-size: 11px;
+
+    font-weight: 900;
+
+    text-transform:
+        uppercase;
+
+    letter-spacing:
+        0.6px;
+}
+
+
+.certified-shop-text small {
+    margin-top: 3px;
+
+    color:
+        rgba(255, 255, 255, 0.55);
+
+    font-size: 8px;
+}
+
+
+/* MOBILE */
+
+@media (max-width: 700px) {
+
+    .certified-shop-badge {
+        width: 100%;
+
+        justify-content: center;
+    }
+
+}
+
     </style>
 
 
@@ -2979,26 +3117,51 @@
 
 
     </div>
+<div class="footer-bottom">
+
+    <p>
+        © {% now "Y" %} Zendo Afrique.
+        Tous droits réservés.
+    </p>
 
 
-    <div class="footer-bottom">
+    <!-- BOUTIQUE CERTIFIÉE -->
 
-        <p>
-            © {% now "Y" %} Zendo Afrique.
-            Tous droits réservés.
-        </p>
+    <div class="certified-shop-badge">
+
+        <span class="certified-shop-icon">
+            <i class="fa-solid fa-certificate"></i>
+
+            <i
+                class="fa-solid fa-check certified-shop-check"
+            ></i>
+        </span>
 
 
-        <p>
-            Une solution numérique développée par
+        <span class="certified-shop-text">
 
             <strong>
-                HexaQuébec
-            </strong>.
-        </p>
+                Boutique certifiée
+            </strong>
+
+            <small>
+                Boutique vérifiée et sécurisée
+            </small>
+
+        </span>
 
     </div>
 
+
+    <p>
+        Une solution numérique développée par
+
+        <strong>
+            HexaQuébec
+        </strong>.
+    </p>
+
+</div>
 </footer>
 
 

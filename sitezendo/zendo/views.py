@@ -651,7 +651,6 @@ from .models import (
     VarianteProduit,
 )
 
-
 @user_passes_test(_staff)
 def tableau_bord(request):
     """
@@ -665,7 +664,8 @@ def tableau_bord(request):
     - les produits vendus;
     - les ruptures de stock;
     - les livraisons;
-    - les statistiques mensuelles.
+    - les statistiques mensuelles;
+    - les demandes de personnalisation.
     """
 
     # =========================================================
@@ -688,6 +688,7 @@ def tableau_bord(request):
 
     nb_commandes = ventes.count()
 
+
     # =========================================================
     # CHIFFRE D’AFFAIRES
     # =========================================================
@@ -707,6 +708,7 @@ def tableau_bord(request):
         )["total"]
     )
 
+
     # =========================================================
     # LIGNES DE COMMANDE VALIDES
     # =========================================================
@@ -718,14 +720,15 @@ def tableau_bord(request):
         )
     )
 
-    # Nombre total de lignes de commande.
-    # Exemple : un hoodie et un t-shirt correspondent à deux lignes.
     nb_lignes_commandes = (
         lignes_commandes_valides.count()
     )
 
-    # Quantité totale de produits commandés/vendus.
-    # Exemple : 2 hoodies + 3 t-shirts = 5 produits vendus.
+
+    # =========================================================
+    # QUANTITÉ TOTALE DE PRODUITS VENDUS
+    # =========================================================
+
     quantite_produits_vendus = (
         lignes_commandes_valides.aggregate(
             total=Coalesce(
@@ -738,7 +741,11 @@ def tableau_bord(request):
         )["total"]
     )
 
-    # Nombre de produits différents ayant été vendus.
+
+    # =========================================================
+    # PRODUITS DIFFÉRENTS VENDUS
+    # =========================================================
+
     nb_produits_differents_vendus = (
         lignes_commandes_valides
         .exclude(
@@ -751,6 +758,7 @@ def tableau_bord(request):
         .distinct()
         .count()
     )
+
 
     # =========================================================
     # STATISTIQUES MENSUELLES
@@ -781,6 +789,7 @@ def tableau_bord(request):
         .order_by("mois")
     )
 
+
     # =========================================================
     # PRODUITS LES PLUS VENDUS
     # =========================================================
@@ -796,6 +805,7 @@ def tableau_bord(request):
                     output_field=IntegerField(),
                 ),
             ),
+
             revenu=Coalesce(
                 Sum(
                     F("prix_unitaire")
@@ -805,6 +815,7 @@ def tableau_bord(request):
                         decimal_places=2,
                     ),
                 ),
+
                 Value(
                     Decimal("0.00"),
                     output_field=DecimalField(
@@ -817,32 +828,33 @@ def tableau_bord(request):
         .order_by("-qte")[:10]
     )
 
+
     # =========================================================
     # NOMBRE TOTAL DE PRODUITS
     # =========================================================
 
-    nb_produits_total = Produit.objects.count()
+    nb_produits_total = (
+        Produit.objects.count()
+    )
 
-    # Nombre de produits publiés/actifs.
     nb_produits_actifs = (
         Produit.objects
-        .filter(actif=True)
+        .filter(
+            actif=True
+        )
         .count()
     )
+
 
     # =========================================================
     # STOCK TOTAL
     # =========================================================
 
-    # Somme du stock de toutes les variantes actives.
-    # Exemple :
-    # Hoodie noir M = 5
-    # Hoodie noir L = 3
-    # T-shirt blanc = 7
-    # Stock total = 15
     stock_total = (
         VarianteProduit.objects
-        .filter(active=True)
+        .filter(
+            active=True
+        )
         .aggregate(
             total=Coalesce(
                 Sum("stock"),
@@ -854,11 +866,11 @@ def tableau_bord(request):
         )["total"]
     )
 
+
     # =========================================================
-    # PRODUITS DISPONIBLES ET PRODUITS EN RUPTURE
+    # PRODUITS DISPONIBLES ET RUPTURES
     # =========================================================
 
-    # Calcule le stock total de chaque produit.
     produits_avec_stock = (
         Produit.objects
         .annotate(
@@ -869,6 +881,7 @@ def tableau_bord(request):
                         variantes__active=True
                     ),
                 ),
+
                 Value(
                     0,
                     output_field=IntegerField(),
@@ -877,7 +890,7 @@ def tableau_bord(request):
         )
     )
 
-    # Produits possédant au moins une unité en stock.
+
     nb_produits_en_stock = (
         produits_avec_stock
         .filter(
@@ -886,42 +899,55 @@ def tableau_bord(request):
         .count()
     )
 
-    # Produits dont toutes les variantes sont vides.
+
     produits_stock_vide = (
         produits_avec_stock
         .filter(
             stock_calcule=0
         )
-        .select_related("categorie")
-        .order_by("nom")
+        .select_related(
+            "categorie"
+        )
+        .order_by(
+            "nom"
+        )
     )
+
 
     nb_produits_stock_vide = (
         produits_stock_vide.count()
     )
 
-    # Message affichable dans le tableau de bord.
+
+    # =========================================================
+    # MESSAGE RUPTURE STOCK
+    # =========================================================
+
     if nb_produits_stock_vide > 0:
+
         message_stock_vide = (
-            f"Attention : {nb_produits_stock_vide} "
-            f"produit(s) sont actuellement en rupture de stock."
+            f"Attention : "
+            f"{nb_produits_stock_vide} "
+            f"produit(s) sont actuellement "
+            f"en rupture de stock."
         )
 
         alerte_stock_vide = True
 
     else:
+
         message_stock_vide = (
-            "Tous les produits possèdent actuellement du stock."
+            "Tous les produits possèdent "
+            "actuellement du stock."
         )
 
         alerte_stock_vide = False
+
 
     # =========================================================
     # STOCK FAIBLE
     # =========================================================
 
-    # Variantes actives ayant entre 1 et 5 articles.
-    # Les variantes à zéro sont gérées séparément.
     stock_faible = (
         VarianteProduit.objects
         .filter(
@@ -939,9 +965,16 @@ def tableau_bord(request):
         )[:20]
     )
 
-    nb_alertes_stock_faible = stock_faible.count()
 
-    # Variantes exactement à zéro.
+    nb_alertes_stock_faible = (
+        stock_faible.count()
+    )
+
+
+    # =========================================================
+    # VARIANTES EN RUPTURE
+    # =========================================================
+
     variantes_stock_vide = (
         VarianteProduit.objects
         .filter(
@@ -952,8 +985,11 @@ def tableau_bord(request):
             "produit",
             "produit__categorie",
         )
-        .order_by("produit__nom")[:20]
+        .order_by(
+            "produit__nom"
+        )[:20]
     )
+
 
     nb_variantes_stock_vide = (
         VarianteProduit.objects
@@ -964,12 +1000,12 @@ def tableau_bord(request):
         .count()
     )
 
-    # Toutes les alertes :
-    # stock faible + variantes complètement vides.
+
     nb_alertes_stock = (
         nb_alertes_stock_faible
         + nb_variantes_stock_vide
     )
+
 
     # =========================================================
     # PRODUITS AFFICHÉS DANS LE TABLEAU DE BORD
@@ -977,7 +1013,9 @@ def tableau_bord(request):
 
     produits_gestion = (
         Produit.objects
-        .select_related("categorie")
+        .select_related(
+            "categorie"
+        )
         .prefetch_related(
             "images",
             "variantes",
@@ -990,14 +1028,18 @@ def tableau_bord(request):
                         variantes__active=True
                     ),
                 ),
+
                 Value(
                     0,
                     output_field=IntegerField(),
                 ),
             )
         )
-        .order_by("-cree_le")[:30]
+        .order_by(
+            "-cree_le"
+        )[:30]
     )
+
 
     # =========================================================
     # COMMANDES PAYÉES
@@ -1027,11 +1069,18 @@ def tableau_bord(request):
         .exclude(
             statut__in=statuts_commandes_exclus
         )
-        .select_related("client")
-        .prefetch_related("paiements")
+        .select_related(
+            "client"
+        )
+        .prefetch_related(
+            "paiements"
+        )
         .distinct()
-        .order_by("-cree_le")[:20]
+        .order_by(
+            "-cree_le"
+        )[:20]
     )
+
 
     # =========================================================
     # LIVRAISONS
@@ -1043,14 +1092,18 @@ def tableau_bord(request):
             "commande",
             "commande__client",
         )
-        .order_by("-commande__cree_le")[:20]
+        .order_by(
+            "-commande__cree_le"
+        )[:20]
     )
+
 
     statuts_preparation = [
         "en_attente",
         "preparation",
         "a_preparer",
     ]
+
 
     statuts_transit = [
         "expediee",
@@ -1059,10 +1112,12 @@ def tableau_bord(request):
         "transit",
     ]
 
+
     statuts_livres = [
         "livree",
         "livre",
     ]
+
 
     statuts_probleme = [
         "probleme",
@@ -1070,6 +1125,7 @@ def tableau_bord(request):
         "retournee",
         "perdue",
     ]
+
 
     nb_livraisons_preparation = (
         Livraison.objects
@@ -1079,6 +1135,7 @@ def tableau_bord(request):
         .count()
     )
 
+
     nb_livraisons_transit = (
         Livraison.objects
         .filter(
@@ -1086,6 +1143,7 @@ def tableau_bord(request):
         )
         .count()
     )
+
 
     nb_livraisons_livrees = (
         Livraison.objects
@@ -1095,6 +1153,7 @@ def tableau_bord(request):
         .count()
     )
 
+
     nb_livraisons_probleme = (
         Livraison.objects
         .filter(
@@ -1102,6 +1161,7 @@ def tableau_bord(request):
         )
         .count()
     )
+
 
     nb_livraisons_en_cours = (
         Livraison.objects
@@ -1114,75 +1174,170 @@ def tableau_bord(request):
         .count()
     )
 
+
+    # =========================================================
+    # DEMANDES DE PERSONNALISATION
+    # =========================================================
+
+    demandes_personnalisation = (
+        DemandePersonnalisation.objects
+        .all()
+        .order_by("-id")
+    )
+
+
+    nb_demandes_personnalisation = (
+        demandes_personnalisation.count()
+    )
+
+
+    # Les 30 demandes les plus récentes
+    demandes_personnalisation_recentes = (
+        demandes_personnalisation[:30]
+    )
+
+
     # =========================================================
     # CONTEXTE DU TEMPLATE
     # =========================================================
 
     contexte = {
-        # Chiffre d’affaires et commandes
-        "ca": chiffre_affaires,
-        "nb_commandes": nb_commandes,
-        "commandes_payees": commandes_payees,
-        "nb_lignes_commandes": nb_lignes_commandes,
 
-        # Produits vendus et commandés
-        "quantite_produits_vendus": (
-            quantite_produits_vendus
-        ),
-        "nb_produits_differents_vendus": (
-            nb_produits_differents_vendus
-        ),
+        # =====================================================
+        # CHIFFRE D’AFFAIRES / COMMANDES
+        # =====================================================
 
-        # Produits enregistrés
-        "nb_produits_total": nb_produits_total,
-        "nb_produits_actifs": nb_produits_actifs,
-        "nb_produits_en_stock": nb_produits_en_stock,
-        "nb_produits_stock_vide": (
-            nb_produits_stock_vide
-        ),
+        "ca":
+            chiffre_affaires,
 
-        # Stock
-        "stock_total": stock_total,
-        "stock_faible": stock_faible,
-        "variantes_stock_vide": (
-            variantes_stock_vide
-        ),
-        "nb_alertes_stock_faible": (
-            nb_alertes_stock_faible
-        ),
-        "nb_variantes_stock_vide": (
-            nb_variantes_stock_vide
-        ),
-        "nb_alertes_stock": nb_alertes_stock,
-        "produits_stock_vide": produits_stock_vide,
-        "alerte_stock_vide": alerte_stock_vide,
-        "message_stock_vide": message_stock_vide,
+        "nb_commandes":
+            nb_commandes,
 
-        # Gestion des produits
-        "produits_gestion": produits_gestion,
-        "top_produits": top_produits,
+        "commandes_payees":
+            commandes_payees,
 
-        # Statistiques mensuelles
-        "donnees": donnees,
+        "nb_lignes_commandes":
+            nb_lignes_commandes,
 
-        # Livraisons
-        "livraisons_recentes": livraisons_recentes,
-        "nb_livraisons_en_cours": (
-            nb_livraisons_en_cours
-        ),
-        "nb_livraisons_preparation": (
-            nb_livraisons_preparation
-        ),
-        "nb_livraisons_transit": (
-            nb_livraisons_transit
-        ),
-        "nb_livraisons_livrees": (
-            nb_livraisons_livrees
-        ),
-        "nb_livraisons_probleme": (
-            nb_livraisons_probleme
-        ),
+
+        # =====================================================
+        # PRODUITS VENDUS
+        # =====================================================
+
+        "quantite_produits_vendus":
+            quantite_produits_vendus,
+
+        "nb_produits_differents_vendus":
+            nb_produits_differents_vendus,
+
+
+        # =====================================================
+        # PRODUITS
+        # =====================================================
+
+        "nb_produits_total":
+            nb_produits_total,
+
+        "nb_produits_actifs":
+            nb_produits_actifs,
+
+        "nb_produits_en_stock":
+            nb_produits_en_stock,
+
+        "nb_produits_stock_vide":
+            nb_produits_stock_vide,
+
+
+        # =====================================================
+        # STOCK
+        # =====================================================
+
+        "stock_total":
+            stock_total,
+
+        "stock_faible":
+            stock_faible,
+
+        "variantes_stock_vide":
+            variantes_stock_vide,
+
+        "nb_alertes_stock_faible":
+            nb_alertes_stock_faible,
+
+        "nb_variantes_stock_vide":
+            nb_variantes_stock_vide,
+
+        "nb_alertes_stock":
+            nb_alertes_stock,
+
+        "produits_stock_vide":
+            produits_stock_vide,
+
+        "alerte_stock_vide":
+            alerte_stock_vide,
+
+        "message_stock_vide":
+            message_stock_vide,
+
+
+        # =====================================================
+        # GESTION PRODUITS
+        # =====================================================
+
+        "produits_gestion":
+            produits_gestion,
+
+        "top_produits":
+            top_produits,
+
+
+        # =====================================================
+        # STATISTIQUES MENSUELLES
+        # =====================================================
+
+        "donnees":
+            donnees,
+
+
+        # =====================================================
+        # LIVRAISONS
+        # =====================================================
+
+        "livraisons_recentes":
+            livraisons_recentes,
+
+        "nb_livraisons_en_cours":
+            nb_livraisons_en_cours,
+
+        "nb_livraisons_preparation":
+            nb_livraisons_preparation,
+
+        "nb_livraisons_transit":
+            nb_livraisons_transit,
+
+        "nb_livraisons_livrees":
+            nb_livraisons_livrees,
+
+        "nb_livraisons_probleme":
+            nb_livraisons_probleme,
+
+
+        # =====================================================
+        # DEMANDES DE PERSONNALISATION
+        # =====================================================
+
+        "demandes_personnalisation":
+            demandes_personnalisation_recentes,
+
+        "nb_demandes_personnalisation":
+            nb_demandes_personnalisation,
+
     }
+
+
+    # =========================================================
+    # AFFICHAGE DU TABLEAU DE BORD
+    # =========================================================
 
     return render(
         request,
@@ -4861,7 +5016,6 @@ def faq(request):
 # =========================================================
 # TABLEAU DE BORD
 # =========================================================
-
 @user_passes_test(
     _staff
 )
@@ -4932,6 +5086,7 @@ def tableau_bord(request):
                     Decimal("0.00"),
 
                     output_field=(
+
                         DecimalField(
 
                             max_digits=14,
@@ -4939,6 +5094,7 @@ def tableau_bord(request):
                             decimal_places=2,
 
                         )
+
                     ),
 
                 ),
@@ -5067,6 +5223,7 @@ def tableau_bord(request):
                     Decimal("0.00"),
 
                     output_field=(
+
                         DecimalField(
 
                             max_digits=14,
@@ -5074,6 +5231,7 @@ def tableau_bord(request):
                             decimal_places=2,
 
                         )
+
                     ),
 
                 ),
@@ -5146,6 +5304,7 @@ def tableau_bord(request):
                     ),
 
                     output_field=(
+
                         DecimalField(
 
                             max_digits=14,
@@ -5153,6 +5312,7 @@ def tableau_bord(request):
                             decimal_places=2,
 
                         )
+
                     ),
 
                 ),
@@ -5162,6 +5322,7 @@ def tableau_bord(request):
                     Decimal("0.00"),
 
                     output_field=(
+
                         DecimalField(
 
                             max_digits=14,
@@ -5169,6 +5330,7 @@ def tableau_bord(request):
                             decimal_places=2,
 
                         )
+
                     ),
 
                 ),
@@ -5773,6 +5935,37 @@ def tableau_bord(request):
 
 
     # =====================================================
+    # DEMANDES DE PERSONNALISATION
+    # =====================================================
+
+    demandes_personnalisation = (
+
+        DemandePersonnalisation.objects
+
+        .all()
+
+        .order_by(
+            "-id"
+        )
+
+    )
+
+
+    nb_demandes_personnalisation = (
+
+        demandes_personnalisation.count()
+
+    )
+
+
+    # Affichage dans le terminal
+    print(
+        "DEMANDES PERSONNALISATION :",
+        nb_demandes_personnalisation
+    )
+
+
+    # =====================================================
     # CONTEXTE DASHBOARD
     # =====================================================
 
@@ -5916,6 +6109,2260 @@ def tableau_bord(request):
 
         "nb_livraisons_probleme": (
             nb_livraisons_probleme
+        ),
+
+
+        # =================================================
+        # DEMANDES PERSONNALISATION
+        # =================================================
+
+        "demandes_personnalisation": (
+            demandes_personnalisation
+        ),
+
+
+        "nb_demandes_personnalisation": (
+            nb_demandes_personnalisation
+        ),
+
+    }
+
+
+    return render(
+
+        request,
+
+        "zendo/dashboard.html",
+
+        contexte,
+
+    )@user_passes_test(
+    _staff
+)
+def tableau_bord(request):
+
+
+    # =====================================================
+    # STATUTS EXCLUS
+    # =====================================================
+
+    statuts_commandes_exclus = [
+
+        "annulee",
+
+        "brouillon",
+
+    ]
+
+
+    # =====================================================
+    # COMMANDES VALIDES
+    # =====================================================
+
+    ventes = (
+
+        Commande.objects
+
+        .exclude(
+
+            statut__in=(
+                statuts_commandes_exclus
+            )
+
+        )
+
+        .select_related(
+            "client"
+        )
+
+        .prefetch_related(
+            "paiements"
+        )
+
+    )
+
+
+    nb_commandes = (
+        ventes.count()
+    )
+
+
+    # =====================================================
+    # CHIFFRE AFFAIRES
+    # =====================================================
+
+    chiffre_affaires = (
+
+        ventes.aggregate(
+
+            total=Coalesce(
+
+                Sum(
+                    "total"
+                ),
+
+                Value(
+
+                    Decimal("0.00"),
+
+                    output_field=(
+
+                        DecimalField(
+
+                            max_digits=14,
+
+                            decimal_places=2,
+
+                        )
+
+                    ),
+
+                ),
+
+            )
+
+        )["total"]
+
+    )
+
+
+    # =====================================================
+    # LIGNES COMMANDES
+    # =====================================================
+
+    lignes_commandes_valides = (
+
+        LigneCommande.objects
+
+        .exclude(
+
+            commande__statut__in=(
+                statuts_commandes_exclus
+            )
+
+        )
+
+    )
+
+
+    nb_lignes_commandes = (
+        lignes_commandes_valides.count()
+    )
+
+
+    # =====================================================
+    # QUANTITÉ PRODUITS VENDUS
+    # =====================================================
+
+    quantite_produits_vendus = (
+
+        lignes_commandes_valides
+
+        .aggregate(
+
+            total=Coalesce(
+
+                Sum(
+                    "quantite"
+                ),
+
+                Value(
+
+                    0,
+
+                    output_field=(
+                        IntegerField()
+                    ),
+
+                ),
+
+            )
+
+        )["total"]
+
+    )
+
+
+    # =====================================================
+    # PRODUITS DIFFÉRENTS VENDUS
+    # =====================================================
+
+    nb_produits_differents_vendus = (
+
+        lignes_commandes_valides
+
+        .exclude(
+            produit_nom__isnull=True
+        )
+
+        .exclude(
+            produit_nom=""
+        )
+
+        .values(
+            "produit_nom"
+        )
+
+        .distinct()
+
+        .count()
+
+    )
+
+
+    # =====================================================
+    # STATISTIQUES MENSUELLES
+    # =====================================================
+
+    donnees = (
+
+        ventes
+
+        .annotate(
+
+            mois=TruncMonth(
+                "cree_le"
+            )
+
+        )
+
+        .values(
+            "mois"
+        )
+
+        .annotate(
+
+            total=Coalesce(
+
+                Sum(
+                    "total"
+                ),
+
+                Value(
+
+                    Decimal("0.00"),
+
+                    output_field=(
+
+                        DecimalField(
+
+                            max_digits=14,
+
+                            decimal_places=2,
+
+                        )
+
+                    ),
+
+                ),
+
+            ),
+
+
+            commandes=Count(
+
+                "id",
+
+                distinct=True,
+
+            ),
+
+        )
+
+        .order_by(
+            "mois"
+        )
+
+    )
+
+
+    # =====================================================
+    # TOP PRODUITS
+    # =====================================================
+
+    top_produits = (
+
+        lignes_commandes_valides
+
+        .values(
+            "produit_nom"
+        )
+
+        .annotate(
+
+            qte=Coalesce(
+
+                Sum(
+                    "quantite"
+                ),
+
+                Value(
+
+                    0,
+
+                    output_field=(
+                        IntegerField()
+                    ),
+
+                ),
+
+            ),
+
+
+            revenu=Coalesce(
+
+                Sum(
+
+                    F(
+                        "prix_unitaire"
+                    )
+
+                    *
+
+                    F(
+                        "quantite"
+                    ),
+
+                    output_field=(
+
+                        DecimalField(
+
+                            max_digits=14,
+
+                            decimal_places=2,
+
+                        )
+
+                    ),
+
+                ),
+
+                Value(
+
+                    Decimal("0.00"),
+
+                    output_field=(
+
+                        DecimalField(
+
+                            max_digits=14,
+
+                            decimal_places=2,
+
+                        )
+
+                    ),
+
+                ),
+
+            ),
+
+        )
+
+        .order_by(
+            "-qte"
+        )[:10]
+
+    )
+
+
+    # =====================================================
+    # PRODUITS
+    # =====================================================
+
+    nb_produits_total = (
+        Produit.objects.count()
+    )
+
+
+    nb_produits_actifs = (
+
+        Produit.objects
+
+        .filter(
+            actif=True
+        )
+
+        .count()
+
+    )
+
+
+    # =====================================================
+    # STOCK TOTAL
+    # =====================================================
+
+    stock_total = (
+
+        VarianteProduit.objects
+
+        .filter(
+            active=True
+        )
+
+        .aggregate(
+
+            total=Coalesce(
+
+                Sum(
+                    "stock"
+                ),
+
+                Value(
+
+                    0,
+
+                    output_field=(
+                        IntegerField()
+                    ),
+
+                ),
+
+            )
+
+        )["total"]
+
+    )
+
+
+    # =====================================================
+    # STOCK PAR PRODUIT
+    # =====================================================
+
+    produits_avec_stock = (
+
+        Produit.objects
+
+        .annotate(
+
+            stock_calcule=Coalesce(
+
+                Sum(
+
+                    "variantes__stock",
+
+                    filter=Q(
+                        variantes__active=True
+                    ),
+
+                ),
+
+                Value(
+
+                    0,
+
+                    output_field=(
+                        IntegerField()
+                    ),
+
+                ),
+
+            )
+
+        )
+
+    )
+
+
+    # =====================================================
+    # PRODUITS EN STOCK
+    # =====================================================
+
+    nb_produits_en_stock = (
+
+        produits_avec_stock
+
+        .filter(
+            stock_calcule__gt=0
+        )
+
+        .count()
+
+    )
+
+
+    # =====================================================
+    # PRODUITS RUPTURE
+    # =====================================================
+
+    produits_stock_vide = (
+
+        produits_avec_stock
+
+        .filter(
+            stock_calcule=0
+        )
+
+        .select_related(
+            "categorie"
+        )
+
+        .order_by(
+            "nom"
+        )
+
+    )
+
+
+    nb_produits_stock_vide = (
+        produits_stock_vide.count()
+    )
+
+
+    # =====================================================
+    # MESSAGE STOCK
+    # =====================================================
+
+    if nb_produits_stock_vide > 0:
+
+
+        message_stock_vide = (
+
+            f"Attention : "
+            f"{nb_produits_stock_vide} "
+            "produit(s) sont actuellement "
+            "en rupture de stock."
+
+        )
+
+
+        alerte_stock_vide = True
+
+
+    else:
+
+
+        message_stock_vide = (
+
+            "Tous les produits possèdent "
+            "actuellement du stock."
+
+        )
+
+
+        alerte_stock_vide = False
+
+
+    # =====================================================
+    # STOCK FAIBLE
+    # =====================================================
+
+    stock_faible = (
+
+        VarianteProduit.objects
+
+        .filter(
+
+            active=True,
+
+            stock__gt=0,
+
+            stock__lte=5,
+
+        )
+
+        .select_related(
+
+            "produit",
+
+            "produit__categorie",
+
+        )
+
+        .order_by(
+
+            "stock",
+
+            "produit__nom",
+
+        )[:20]
+
+    )
+
+
+    nb_alertes_stock_faible = (
+        stock_faible.count()
+    )
+
+
+    # =====================================================
+    # VARIANTES STOCK 0
+    # =====================================================
+
+    variantes_stock_vide = (
+
+        VarianteProduit.objects
+
+        .filter(
+
+            active=True,
+
+            stock=0,
+
+        )
+
+        .select_related(
+
+            "produit",
+
+            "produit__categorie",
+
+        )
+
+        .order_by(
+            "produit__nom"
+        )[:20]
+
+    )
+
+
+    nb_variantes_stock_vide = (
+
+        VarianteProduit.objects
+
+        .filter(
+
+            active=True,
+
+            stock=0,
+
+        )
+
+        .count()
+
+    )
+
+
+    # =====================================================
+    # TOTAL ALERTES STOCK
+    # =====================================================
+
+    nb_alertes_stock = (
+
+        nb_alertes_stock_faible
+
+        +
+
+        nb_variantes_stock_vide
+
+    )
+
+
+    # =====================================================
+    # PRODUITS GESTION
+    # =====================================================
+
+    produits_gestion = (
+
+        Produit.objects
+
+        .select_related(
+            "categorie"
+        )
+
+        .prefetch_related(
+
+            "images",
+
+            "variantes",
+
+        )
+
+        .annotate(
+
+            stock_dashboard=Coalesce(
+
+                Sum(
+
+                    "variantes__stock",
+
+                    filter=Q(
+                        variantes__active=True
+                    ),
+
+                ),
+
+                Value(
+
+                    0,
+
+                    output_field=(
+                        IntegerField()
+                    ),
+
+                ),
+
+            )
+
+        )
+
+        .order_by(
+            "-cree_le"
+        )[:30]
+
+    )
+
+
+    # =====================================================
+    # COMMANDES PAYÉES / CONFIRMÉES
+    # =====================================================
+
+    commandes_payees = (
+
+        Commande.objects
+
+        .filter(
+
+            Q(
+
+                paiements__statut__in=[
+
+                    "paye",
+
+                    "payee",
+
+                    "reussi",
+
+                    "complete",
+
+                    "completed",
+
+                ]
+
+            )
+
+            |
+
+            Q(
+
+                statut__in=[
+
+                    "payee",
+
+                    "paye",
+
+                    "confirmee",
+
+                ]
+
+            )
+
+        )
+
+        .exclude(
+
+            statut__in=(
+                statuts_commandes_exclus
+            )
+
+        )
+
+        .select_related(
+            "client"
+        )
+
+        .prefetch_related(
+            "paiements"
+        )
+
+        .distinct()
+
+        .order_by(
+            "-cree_le"
+        )[:20]
+
+    )
+
+
+    # =====================================================
+    # LIVRAISONS RÉCENTES
+    # =====================================================
+
+    livraisons_recentes = (
+
+        Livraison.objects
+
+        .select_related(
+
+            "commande",
+
+            "commande__client",
+
+        )
+
+        .order_by(
+            "-commande__cree_le"
+        )[:20]
+
+    )
+
+
+    statuts_preparation = [
+
+        "en_attente",
+
+        "preparation",
+
+        "a_preparer",
+
+    ]
+
+
+    statuts_transit = [
+
+        "expediee",
+
+        "expedie",
+
+        "en_transit",
+
+        "transit",
+
+    ]
+
+
+    statuts_livres = [
+
+        "livree",
+
+        "livre",
+
+    ]
+
+
+    statuts_probleme = [
+
+        "probleme",
+
+        "echec",
+
+        "retournee",
+
+        "perdue",
+
+    ]
+
+
+    # =====================================================
+    # NOMBRE LIVRAISONS PRÉPARATION
+    # =====================================================
+
+    nb_livraisons_preparation = (
+
+        Livraison.objects
+
+        .filter(
+
+            statut__in=(
+                statuts_preparation
+            )
+
+        )
+
+        .count()
+
+    )
+
+
+    # =====================================================
+    # NOMBRE LIVRAISONS TRANSIT
+    # =====================================================
+
+    nb_livraisons_transit = (
+
+        Livraison.objects
+
+        .filter(
+
+            statut__in=(
+                statuts_transit
+            )
+
+        )
+
+        .count()
+
+    )
+
+
+    # =====================================================
+    # NOMBRE LIVRAISONS LIVRÉES
+    # =====================================================
+
+    nb_livraisons_livrees = (
+
+        Livraison.objects
+
+        .filter(
+
+            statut__in=(
+                statuts_livres
+            )
+
+        )
+
+        .count()
+
+    )
+
+
+    # =====================================================
+    # PROBLÈMES LIVRAISON
+    # =====================================================
+
+    nb_livraisons_probleme = (
+
+        Livraison.objects
+
+        .filter(
+
+            statut__in=(
+                statuts_probleme
+            )
+
+        )
+
+        .count()
+
+    )
+
+
+    # =====================================================
+    # LIVRAISONS EN COURS
+    # =====================================================
+
+    nb_livraisons_en_cours = (
+
+        Livraison.objects
+
+        .filter(
+
+            statut__in=(
+
+                statuts_preparation
+
+                +
+
+                statuts_transit
+
+            )
+
+        )
+
+        .count()
+
+    )
+
+
+    # =====================================================
+    # DEMANDES DE PERSONNALISATION
+    # =====================================================
+
+    demandes_personnalisation = (
+
+        DemandePersonnalisation.objects
+
+        .all()
+
+        .order_by(
+            "-id"
+        )
+
+    )
+
+
+    nb_demandes_personnalisation = (
+
+        demandes_personnalisation.count()
+
+    )
+
+
+    # Affichage dans le terminal
+    print(
+        "DEMANDES PERSONNALISATION :",
+        nb_demandes_personnalisation
+    )
+
+
+    # =====================================================
+    # CONTEXTE DASHBOARD
+    # =====================================================
+
+    contexte = {
+
+
+        "ca": (
+            chiffre_affaires
+        ),
+
+
+        "nb_commandes": (
+            nb_commandes
+        ),
+
+
+        "commandes_payees": (
+            commandes_payees
+        ),
+
+
+        "nb_lignes_commandes": (
+            nb_lignes_commandes
+        ),
+
+
+        "quantite_produits_vendus": (
+            quantite_produits_vendus
+        ),
+
+
+        "nb_produits_differents_vendus": (
+            nb_produits_differents_vendus
+        ),
+
+
+        "nb_produits_total": (
+            nb_produits_total
+        ),
+
+
+        "nb_produits_actifs": (
+            nb_produits_actifs
+        ),
+
+
+        "nb_produits_en_stock": (
+            nb_produits_en_stock
+        ),
+
+
+        "nb_produits_stock_vide": (
+            nb_produits_stock_vide
+        ),
+
+
+        "stock_total": (
+            stock_total
+        ),
+
+
+        "stock_faible": (
+            stock_faible
+        ),
+
+
+        "variantes_stock_vide": (
+            variantes_stock_vide
+        ),
+
+
+        "nb_alertes_stock_faible": (
+            nb_alertes_stock_faible
+        ),
+
+
+        "nb_variantes_stock_vide": (
+            nb_variantes_stock_vide
+        ),
+
+
+        "nb_alertes_stock": (
+            nb_alertes_stock
+        ),
+
+
+        "produits_stock_vide": (
+            produits_stock_vide
+        ),
+
+
+        "alerte_stock_vide": (
+            alerte_stock_vide
+        ),
+
+
+        "message_stock_vide": (
+            message_stock_vide
+        ),
+
+
+        "produits_gestion": (
+            produits_gestion
+        ),
+
+
+        "top_produits": (
+            top_produits
+        ),
+
+
+        "donnees": (
+            donnees
+        ),
+
+
+        "livraisons_recentes": (
+            livraisons_recentes
+        ),
+
+
+        "nb_livraisons_en_cours": (
+            nb_livraisons_en_cours
+        ),
+
+
+        "nb_livraisons_preparation": (
+            nb_livraisons_preparation
+        ),
+
+
+        "nb_livraisons_transit": (
+            nb_livraisons_transit
+        ),
+
+
+        "nb_livraisons_livrees": (
+            nb_livraisons_livrees
+        ),
+
+
+        "nb_livraisons_probleme": (
+            nb_livraisons_probleme
+        ),
+
+
+        # =================================================
+        # DEMANDES PERSONNALISATION
+        # =================================================
+
+        "demandes_personnalisation": (
+            demandes_personnalisation
+        ),
+
+
+        "nb_demandes_personnalisation": (
+            nb_demandes_personnalisation
+        ),
+
+    }
+
+
+    return render(
+
+        request,
+
+        "zendo/dashboard.html",
+
+        contexte,
+
+    )@user_passes_test(
+    _staff
+)
+def tableau_bord(request):
+
+
+    # =====================================================
+    # STATUTS EXCLUS
+    # =====================================================
+
+    statuts_commandes_exclus = [
+
+        "annulee",
+
+        "brouillon",
+
+    ]
+
+
+    # =====================================================
+    # COMMANDES VALIDES
+    # =====================================================
+
+    ventes = (
+
+        Commande.objects
+
+        .exclude(
+
+            statut__in=(
+                statuts_commandes_exclus
+            )
+
+        )
+
+        .select_related(
+            "client"
+        )
+
+        .prefetch_related(
+            "paiements"
+        )
+
+    )
+
+
+    nb_commandes = (
+        ventes.count()
+    )
+
+
+    # =====================================================
+    # CHIFFRE AFFAIRES
+    # =====================================================
+
+    chiffre_affaires = (
+
+        ventes.aggregate(
+
+            total=Coalesce(
+
+                Sum(
+                    "total"
+                ),
+
+                Value(
+
+                    Decimal("0.00"),
+
+                    output_field=(
+
+                        DecimalField(
+
+                            max_digits=14,
+
+                            decimal_places=2,
+
+                        )
+
+                    ),
+
+                ),
+
+            )
+
+        )["total"]
+
+    )
+
+
+    # =====================================================
+    # LIGNES COMMANDES
+    # =====================================================
+
+    lignes_commandes_valides = (
+
+        LigneCommande.objects
+
+        .exclude(
+
+            commande__statut__in=(
+                statuts_commandes_exclus
+            )
+
+        )
+
+    )
+
+
+    nb_lignes_commandes = (
+        lignes_commandes_valides.count()
+    )
+
+
+    # =====================================================
+    # QUANTITÉ PRODUITS VENDUS
+    # =====================================================
+
+    quantite_produits_vendus = (
+
+        lignes_commandes_valides
+
+        .aggregate(
+
+            total=Coalesce(
+
+                Sum(
+                    "quantite"
+                ),
+
+                Value(
+
+                    0,
+
+                    output_field=(
+                        IntegerField()
+                    ),
+
+                ),
+
+            )
+
+        )["total"]
+
+    )
+
+
+    # =====================================================
+    # PRODUITS DIFFÉRENTS VENDUS
+    # =====================================================
+
+    nb_produits_differents_vendus = (
+
+        lignes_commandes_valides
+
+        .exclude(
+            produit_nom__isnull=True
+        )
+
+        .exclude(
+            produit_nom=""
+        )
+
+        .values(
+            "produit_nom"
+        )
+
+        .distinct()
+
+        .count()
+
+    )
+
+
+    # =====================================================
+    # STATISTIQUES MENSUELLES
+    # =====================================================
+
+    donnees = (
+
+        ventes
+
+        .annotate(
+
+            mois=TruncMonth(
+                "cree_le"
+            )
+
+        )
+
+        .values(
+            "mois"
+        )
+
+        .annotate(
+
+            total=Coalesce(
+
+                Sum(
+                    "total"
+                ),
+
+                Value(
+
+                    Decimal("0.00"),
+
+                    output_field=(
+
+                        DecimalField(
+
+                            max_digits=14,
+
+                            decimal_places=2,
+
+                        )
+
+                    ),
+
+                ),
+
+            ),
+
+
+            commandes=Count(
+
+                "id",
+
+                distinct=True,
+
+            ),
+
+        )
+
+        .order_by(
+            "mois"
+        )
+
+    )
+
+
+    # =====================================================
+    # TOP PRODUITS
+    # =====================================================
+
+    top_produits = (
+
+        lignes_commandes_valides
+
+        .values(
+            "produit_nom"
+        )
+
+        .annotate(
+
+            qte=Coalesce(
+
+                Sum(
+                    "quantite"
+                ),
+
+                Value(
+
+                    0,
+
+                    output_field=(
+                        IntegerField()
+                    ),
+
+                ),
+
+            ),
+
+
+            revenu=Coalesce(
+
+                Sum(
+
+                    F(
+                        "prix_unitaire"
+                    )
+
+                    *
+
+                    F(
+                        "quantite"
+                    ),
+
+                    output_field=(
+
+                        DecimalField(
+
+                            max_digits=14,
+
+                            decimal_places=2,
+
+                        )
+
+                    ),
+
+                ),
+
+                Value(
+
+                    Decimal("0.00"),
+
+                    output_field=(
+
+                        DecimalField(
+
+                            max_digits=14,
+
+                            decimal_places=2,
+
+                        )
+
+                    ),
+
+                ),
+
+            ),
+
+        )
+
+        .order_by(
+            "-qte"
+        )[:10]
+
+    )
+
+
+    # =====================================================
+    # PRODUITS
+    # =====================================================
+
+    nb_produits_total = (
+        Produit.objects.count()
+    )
+
+
+    nb_produits_actifs = (
+
+        Produit.objects
+
+        .filter(
+            actif=True
+        )
+
+        .count()
+
+    )
+
+
+    # =====================================================
+    # STOCK TOTAL
+    # =====================================================
+
+    stock_total = (
+
+        VarianteProduit.objects
+
+        .filter(
+            active=True
+        )
+
+        .aggregate(
+
+            total=Coalesce(
+
+                Sum(
+                    "stock"
+                ),
+
+                Value(
+
+                    0,
+
+                    output_field=(
+                        IntegerField()
+                    ),
+
+                ),
+
+            )
+
+        )["total"]
+
+    )
+
+
+    # =====================================================
+    # STOCK PAR PRODUIT
+    # =====================================================
+
+    produits_avec_stock = (
+
+        Produit.objects
+
+        .annotate(
+
+            stock_calcule=Coalesce(
+
+                Sum(
+
+                    "variantes__stock",
+
+                    filter=Q(
+                        variantes__active=True
+                    ),
+
+                ),
+
+                Value(
+
+                    0,
+
+                    output_field=(
+                        IntegerField()
+                    ),
+
+                ),
+
+            )
+
+        )
+
+    )
+
+
+    # =====================================================
+    # PRODUITS EN STOCK
+    # =====================================================
+
+    nb_produits_en_stock = (
+
+        produits_avec_stock
+
+        .filter(
+            stock_calcule__gt=0
+        )
+
+        .count()
+
+    )
+
+
+    # =====================================================
+    # PRODUITS RUPTURE
+    # =====================================================
+
+    produits_stock_vide = (
+
+        produits_avec_stock
+
+        .filter(
+            stock_calcule=0
+        )
+
+        .select_related(
+            "categorie"
+        )
+
+        .order_by(
+            "nom"
+        )
+
+    )
+
+
+    nb_produits_stock_vide = (
+        produits_stock_vide.count()
+    )
+
+
+    # =====================================================
+    # MESSAGE STOCK
+    # =====================================================
+
+    if nb_produits_stock_vide > 0:
+
+
+        message_stock_vide = (
+
+            f"Attention : "
+            f"{nb_produits_stock_vide} "
+            "produit(s) sont actuellement "
+            "en rupture de stock."
+
+        )
+
+
+        alerte_stock_vide = True
+
+
+    else:
+
+
+        message_stock_vide = (
+
+            "Tous les produits possèdent "
+            "actuellement du stock."
+
+        )
+
+
+        alerte_stock_vide = False
+
+
+    # =====================================================
+    # STOCK FAIBLE
+    # =====================================================
+
+    stock_faible = (
+
+        VarianteProduit.objects
+
+        .filter(
+
+            active=True,
+
+            stock__gt=0,
+
+            stock__lte=5,
+
+        )
+
+        .select_related(
+
+            "produit",
+
+            "produit__categorie",
+
+        )
+
+        .order_by(
+
+            "stock",
+
+            "produit__nom",
+
+        )[:20]
+
+    )
+
+
+    nb_alertes_stock_faible = (
+        stock_faible.count()
+    )
+
+
+    # =====================================================
+    # VARIANTES STOCK 0
+    # =====================================================
+
+    variantes_stock_vide = (
+
+        VarianteProduit.objects
+
+        .filter(
+
+            active=True,
+
+            stock=0,
+
+        )
+
+        .select_related(
+
+            "produit",
+
+            "produit__categorie",
+
+        )
+
+        .order_by(
+            "produit__nom"
+        )[:20]
+
+    )
+
+
+    nb_variantes_stock_vide = (
+
+        VarianteProduit.objects
+
+        .filter(
+
+            active=True,
+
+            stock=0,
+
+        )
+
+        .count()
+
+    )
+
+
+    # =====================================================
+    # TOTAL ALERTES STOCK
+    # =====================================================
+
+    nb_alertes_stock = (
+
+        nb_alertes_stock_faible
+
+        +
+
+        nb_variantes_stock_vide
+
+    )
+
+
+    # =====================================================
+    # PRODUITS GESTION
+    # =====================================================
+
+    produits_gestion = (
+
+        Produit.objects
+
+        .select_related(
+            "categorie"
+        )
+
+        .prefetch_related(
+
+            "images",
+
+            "variantes",
+
+        )
+
+        .annotate(
+
+            stock_dashboard=Coalesce(
+
+                Sum(
+
+                    "variantes__stock",
+
+                    filter=Q(
+                        variantes__active=True
+                    ),
+
+                ),
+
+                Value(
+
+                    0,
+
+                    output_field=(
+                        IntegerField()
+                    ),
+
+                ),
+
+            )
+
+        )
+
+        .order_by(
+            "-cree_le"
+        )[:30]
+
+    )
+
+
+    # =====================================================
+    # COMMANDES PAYÉES / CONFIRMÉES
+    # =====================================================
+
+    commandes_payees = (
+
+        Commande.objects
+
+        .filter(
+
+            Q(
+
+                paiements__statut__in=[
+
+                    "paye",
+
+                    "payee",
+
+                    "reussi",
+
+                    "complete",
+
+                    "completed",
+
+                ]
+
+            )
+
+            |
+
+            Q(
+
+                statut__in=[
+
+                    "payee",
+
+                    "paye",
+
+                    "confirmee",
+
+                ]
+
+            )
+
+        )
+
+        .exclude(
+
+            statut__in=(
+                statuts_commandes_exclus
+            )
+
+        )
+
+        .select_related(
+            "client"
+        )
+
+        .prefetch_related(
+            "paiements"
+        )
+
+        .distinct()
+
+        .order_by(
+            "-cree_le"
+        )[:20]
+
+    )
+
+
+    # =====================================================
+    # LIVRAISONS RÉCENTES
+    # =====================================================
+
+    livraisons_recentes = (
+
+        Livraison.objects
+
+        .select_related(
+
+            "commande",
+
+            "commande__client",
+
+        )
+
+        .order_by(
+            "-commande__cree_le"
+        )[:20]
+
+    )
+
+
+    statuts_preparation = [
+
+        "en_attente",
+
+        "preparation",
+
+        "a_preparer",
+
+    ]
+
+
+    statuts_transit = [
+
+        "expediee",
+
+        "expedie",
+
+        "en_transit",
+
+        "transit",
+
+    ]
+
+
+    statuts_livres = [
+
+        "livree",
+
+        "livre",
+
+    ]
+
+
+    statuts_probleme = [
+
+        "probleme",
+
+        "echec",
+
+        "retournee",
+
+        "perdue",
+
+    ]
+
+
+    # =====================================================
+    # NOMBRE LIVRAISONS PRÉPARATION
+    # =====================================================
+
+    nb_livraisons_preparation = (
+
+        Livraison.objects
+
+        .filter(
+
+            statut__in=(
+                statuts_preparation
+            )
+
+        )
+
+        .count()
+
+    )
+
+
+    # =====================================================
+    # NOMBRE LIVRAISONS TRANSIT
+    # =====================================================
+
+    nb_livraisons_transit = (
+
+        Livraison.objects
+
+        .filter(
+
+            statut__in=(
+                statuts_transit
+            )
+
+        )
+
+        .count()
+
+    )
+
+
+    # =====================================================
+    # NOMBRE LIVRAISONS LIVRÉES
+    # =====================================================
+
+    nb_livraisons_livrees = (
+
+        Livraison.objects
+
+        .filter(
+
+            statut__in=(
+                statuts_livres
+            )
+
+        )
+
+        .count()
+
+    )
+
+
+    # =====================================================
+    # PROBLÈMES LIVRAISON
+    # =====================================================
+
+    nb_livraisons_probleme = (
+
+        Livraison.objects
+
+        .filter(
+
+            statut__in=(
+                statuts_probleme
+            )
+
+        )
+
+        .count()
+
+    )
+
+
+    # =====================================================
+    # LIVRAISONS EN COURS
+    # =====================================================
+
+    nb_livraisons_en_cours = (
+
+        Livraison.objects
+
+        .filter(
+
+            statut__in=(
+
+                statuts_preparation
+
+                +
+
+                statuts_transit
+
+            )
+
+        )
+
+        .count()
+
+    )
+
+
+    # =====================================================
+    # DEMANDES DE PERSONNALISATION
+    # =====================================================
+
+    demandes_personnalisation = (
+
+        DemandePersonnalisation.objects
+
+        .all()
+
+        .order_by(
+            "-id"
+        )
+
+    )
+
+
+    nb_demandes_personnalisation = (
+
+        demandes_personnalisation.count()
+
+    )
+
+
+    # Affichage dans le terminal
+    print(
+        "DEMANDES PERSONNALISATION :",
+        nb_demandes_personnalisation
+    )
+
+
+    # =====================================================
+    # CONTEXTE DASHBOARD
+    # =====================================================
+
+    contexte = {
+
+
+        "ca": (
+            chiffre_affaires
+        ),
+
+
+        "nb_commandes": (
+            nb_commandes
+        ),
+
+
+        "commandes_payees": (
+            commandes_payees
+        ),
+
+
+        "nb_lignes_commandes": (
+            nb_lignes_commandes
+        ),
+
+
+        "quantite_produits_vendus": (
+            quantite_produits_vendus
+        ),
+
+
+        "nb_produits_differents_vendus": (
+            nb_produits_differents_vendus
+        ),
+
+
+        "nb_produits_total": (
+            nb_produits_total
+        ),
+
+
+        "nb_produits_actifs": (
+            nb_produits_actifs
+        ),
+
+
+        "nb_produits_en_stock": (
+            nb_produits_en_stock
+        ),
+
+
+        "nb_produits_stock_vide": (
+            nb_produits_stock_vide
+        ),
+
+
+        "stock_total": (
+            stock_total
+        ),
+
+
+        "stock_faible": (
+            stock_faible
+        ),
+
+
+        "variantes_stock_vide": (
+            variantes_stock_vide
+        ),
+
+
+        "nb_alertes_stock_faible": (
+            nb_alertes_stock_faible
+        ),
+
+
+        "nb_variantes_stock_vide": (
+            nb_variantes_stock_vide
+        ),
+
+
+        "nb_alertes_stock": (
+            nb_alertes_stock
+        ),
+
+
+        "produits_stock_vide": (
+            produits_stock_vide
+        ),
+
+
+        "alerte_stock_vide": (
+            alerte_stock_vide
+        ),
+
+
+        "message_stock_vide": (
+            message_stock_vide
+        ),
+
+
+        "produits_gestion": (
+            produits_gestion
+        ),
+
+
+        "top_produits": (
+            top_produits
+        ),
+
+
+        "donnees": (
+            donnees
+        ),
+
+
+        "livraisons_recentes": (
+            livraisons_recentes
+        ),
+
+
+        "nb_livraisons_en_cours": (
+            nb_livraisons_en_cours
+        ),
+
+
+        "nb_livraisons_preparation": (
+            nb_livraisons_preparation
+        ),
+
+
+        "nb_livraisons_transit": (
+            nb_livraisons_transit
+        ),
+
+
+        "nb_livraisons_livrees": (
+            nb_livraisons_livrees
+        ),
+
+
+        "nb_livraisons_probleme": (
+            nb_livraisons_probleme
+        ),
+
+
+        # =================================================
+        # DEMANDES PERSONNALISATION
+        # =================================================
+
+        "demandes_personnalisation": (
+            demandes_personnalisation
+        ),
+
+
+        "nb_demandes_personnalisation": (
+            nb_demandes_personnalisation
         ),
 
     }
