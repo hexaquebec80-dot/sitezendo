@@ -154,6 +154,8 @@ class ImageProduit(models.Model):
     ordre = models.PositiveIntegerField(default=0)
     class Meta: ordering = ["ordre", "id"]
 
+
+
 class VarianteProduit(TimeStampedModel):
     produit = models.ForeignKey(Produit, on_delete=models.CASCADE, related_name="variantes")
     sku = models.CharField(max_length=70, unique=True)
@@ -170,17 +172,48 @@ class VarianteProduit(TimeStampedModel):
     @property
     def stock_faible(self): return self.stock <= self.seuil_alerte
     def __str__(self): return " / ".join(filter(None, [self.produit.nom, self.taille, self.couleur, self.modele]))
-
 class MouvementStock(TimeStampedModel):
-    TYPES = [("entree", "Entrée"), ("vente", "Vente"), ("retour", "Retour"), ("ajustement", "Ajustement"), ("perte", "Perte")]
-    variante = models.ForeignKey(VarianteProduit, on_delete=models.PROTECT, related_name="mouvements")
-    type_mouvement = models.CharField(max_length=20, choices=TYPES)
+    TYPES = [
+        ("entree", "Entrée"),
+        ("vente", "Vente"),
+        ("retour", "Retour"),
+        ("ajustement", "Ajustement"),
+        ("perte", "Perte"),
+    ]
+
+    variante = models.ForeignKey(
+        VarianteProduit,
+        on_delete=models.CASCADE,
+        related_name="mouvements"
+    )
+
+    type_mouvement = models.CharField(
+        max_length=20,
+        choices=TYPES
+    )
+
     quantite = models.IntegerField()
+
     stock_apres = models.PositiveIntegerField()
-    reference = models.CharField(max_length=100, blank=True)
-    note = models.TextField(blank=True)
-    utilisateur = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
-    class Meta: ordering = ["-cree_le"]
+
+    reference = models.CharField(
+        max_length=100,
+        blank=True
+    )
+
+    note = models.TextField(
+        blank=True
+    )
+
+    utilisateur = models.ForeignKey(
+        User,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL
+    )
+
+    class Meta:
+        ordering = ["-cree_le"]
 
 class Coupon(TimeStampedModel):
     TYPES = [("pourcentage", "Pourcentage"), ("montant", "Montant fixe")]
