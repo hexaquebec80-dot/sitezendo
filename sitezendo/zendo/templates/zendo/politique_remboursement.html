@@ -1,0 +1,261 @@
+{% extends "zendo/base.html" %}
+
+{% block title %}
+Politique de remboursement — Zendo Afrique
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+.policy-hero {
+    padding: 70px 20px;
+    text-align: center;
+    color: #ffffff;
+    background:
+        linear-gradient(
+            135deg,
+            #071f19,
+            #124c3b
+        );
+}
+
+.policy-hero span {
+    display: inline-block;
+    margin-bottom: 12px;
+    color: #d6a84f;
+    font-size: 13px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.policy-hero h1 {
+    margin: 0 0 15px;
+    font-size: clamp(34px, 5vw, 52px);
+    font-weight: 800;
+}
+
+.policy-hero p {
+    max-width: 700px;
+    margin: auto;
+    color: rgba(255,255,255,.80);
+    font-size: 16px;
+    line-height: 1.7;
+}
+
+.policy-container {
+    width: min(900px, calc(100% - 32px));
+    margin: 55px auto 80px;
+}
+
+.policy-card {
+    padding: 45px;
+    background: #ffffff;
+    border: 1px solid #e2e8e4;
+    border-radius: 20px;
+    box-shadow: 0 12px 35px rgba(13,45,35,.08);
+}
+
+.policy-card h2 {
+    margin-top: 36px;
+    margin-bottom: 12px;
+    color: #071f19;
+    font-size: 22px;
+    font-weight: 800;
+}
+
+.policy-card h2:first-child {
+    margin-top: 0;
+}
+
+.policy-card p,
+.policy-card li {
+    color: #65716c;
+    font-size: 15px;
+    line-height: 1.8;
+}
+
+.policy-card ul {
+    margin: 15px 0;
+    padding-left: 22px;
+    list-style: disc;
+}
+
+.policy-notice {
+    margin-top: 30px;
+    padding: 20px;
+    background: #e7f3ee;
+    border-left: 4px solid #124c3b;
+    border-radius: 10px;
+}
+
+.policy-contact {
+    margin-top: 40px;
+    padding-top: 25px;
+    border-top: 1px solid #e2e8e4;
+}
+
+@media (max-width: 700px) {
+
+    .policy-card {
+        padding: 25px 20px;
+    }
+
+}
+
+</style>
+
+
+<section class="policy-hero">
+
+    <span>
+        Informations importantes
+    </span>
+
+    <h1>
+        Politique de remboursement
+    </h1>
+
+    <p>
+        Cette politique explique les conditions dans lesquelles
+        un remboursement peut être demandé et traité par
+        Zendo Afrique.
+    </p>
+
+</section>
+
+
+<section class="policy-container">
+
+    <div class="policy-card">
+
+        <h2>1. Demande de remboursement</h2>
+
+        <p>
+            Toute demande de remboursement concernant une commande
+            doit être communiquée à Zendo Afrique avec le numéro
+            de commande et les informations permettant d’examiner
+            la situation.
+        </p>
+
+
+        <h2>2. Remboursement approuvé</h2>
+
+        <p>
+            Lorsqu’un remboursement est approuvé, Zendo Afrique
+            effectue le remboursement selon le mode de paiement
+            utilisé lors de la commande lorsque cela est possible.
+        </p>
+
+        <p>
+            Le délai nécessaire pour que les fonds apparaissent
+            dans le compte du client peut dépendre de la banque,
+            de l’émetteur de la carte ou du prestataire de paiement.
+        </p>
+
+
+        <h2>3. Produits endommagés ou défectueux</h2>
+
+        <p>
+            Si un produit est reçu endommagé, défectueux ou ne
+            correspond pas à la commande, le client doit contacter
+            Zendo Afrique dans les meilleurs délais.
+        </p>
+
+        <p>
+            Nous pouvons demander :
+        </p>
+
+        <ul>
+            <li>le numéro de commande ;</li>
+            <li>des photographies du produit ;</li>
+            <li>des photographies de l’emballage ;</li>
+            <li>une description du problème ;</li>
+            <li>toute information nécessaire à l’analyse.</li>
+        </ul>
+
+
+        <h2>4. Produits personnalisés</h2>
+
+        <p>
+            Les produits fabriqués ou personnalisés selon les
+            instructions du client peuvent être soumis à des
+            conditions particulières.
+        </p>
+
+        <p>
+            Une erreur provenant des informations fournies par
+            le client, notamment la taille, la couleur, le texte,
+            le logo ou le fichier transmis, peut affecter
+            l’admissibilité à un remboursement lorsque la
+            production a déjà commencé.
+        </p>
+
+        <p>
+            Cependant, lorsqu’une erreur de personnalisation est
+            imputable à Zendo Afrique, la situation sera examinée
+            afin de proposer une solution appropriée.
+        </p>
+
+
+        <h2>5. Frais de livraison</h2>
+
+        <p>
+            Les frais de livraison ou de retour peuvent être
+            remboursables ou non selon la raison du retour,
+            les circonstances de la commande et les conditions
+            applicables.
+        </p>
+
+
+        <h2>6. Transaction refusée ou non confirmée</h2>
+
+        <p>
+            Une commande dont le paiement n’a pas été confirmé
+            peut être suspendue ou annulée.
+        </p>
+
+        <p>
+            Une transaction simplement refusée par le prestataire
+            de paiement n’est pas considérée comme un paiement
+            encaissé par Zendo Afrique.
+        </p>
+
+
+        <div class="policy-notice">
+
+            <strong>Important</strong>
+
+            <p>
+                Avant d’effectuer un retour, veuillez communiquer
+                avec Zendo Afrique afin d’obtenir les instructions
+                nécessaires.
+            </p>
+
+        </div>
+
+
+        <div class="policy-contact">
+
+            <h2>Nous contacter</h2>
+
+            <p>
+                Pour toute question concernant un remboursement :
+            </p>
+
+            <p>
+                <strong>Zendo Afrique</strong><br>
+                Courriel :
+                <a href="mailto:zendoafrique@gmail.com">
+                    zendoafrique@gmail.com
+                </a>
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

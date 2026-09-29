@@ -2,6 +2,12 @@ from django import forms
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.models import User
 from .models import Adresse, Avis, Coupon, EvenementCalendrier, Produit, TicketSupport, VarianteProduit
+import os
+
+from django import forms
+from PIL import Image, UnidentifiedImageError
+
+
 
 class InscriptionForm(UserCreationForm):
     first_name = forms.CharField(label="Prénom")
@@ -464,20 +470,180 @@ class DemandePersonnalisationForm(forms.ModelForm):
 
         return value
 
+def clean_fichier(self):
 
-    def clean_fichier(self):
+    fichier = self.cleaned_data.get("fichier")
 
-        fichier = self.cleaned_data.get(
-            "fichier"
+    if not fichier:
+        raise forms.ValidationError(
+            "Vous devez joindre un fichier original."
         )
 
-        if not fichier:
+    # ==================================================
+    # EXTENSIONS AUTORISÉES
+    # ==================================================
+
+    extensions_autorisees = [
+        ".png",
+        ".jpg",
+        ".jpeg",
+        ".pdf",
+        ".svg",
+        ".ai",
+        ".eps",
+    ]
+
+    nom_fichier = fichier.name.lower()
+
+    extension = os.path.splitext(
+        nom_fichier
+    )[1]
+
+    if extension not in extensions_autorisees:
+        raise forms.ValidationError(
+            "Format non autorisé. "
+            "Formats acceptés : PNG, JPG/JPEG, PDF, SVG, AI et EPS."
+        )
+
+    # ==================================================
+    # FICHIER VIDE
+    # ==================================================
+
+    if fichier.size == 0:
+        raise forms.ValidationError(
+            "Le fichier envoyé est vide."
+        )
+
+    # ==================================================
+    # TAILLE MAXIMALE : 20 Mo
+    # ==================================================
+
+    taille_max = 20 * 1024 * 1024
+
+    if fichier.size > taille_max:
+        raise forms.ValidationError(
+            "Le fichier est trop volumineux. "
+            "La taille maximale autorisée est de 20 Mo."
+        )
+
+    # ==================================================
+    # VÉRIFICATION DU TYPE MIME
+    # ==================================================
+
+    types_mime_autorises = [
+        "image/png",
+        "image/jpeg",
+        "application/pdf",
+        "image/svg+xml",
+        "application/postscript",
+        "application/illustrator",
+        "application/vnd.adobe.illustrator",
+        "application/octet-stream",
+    ]
+
+    content_type = getattr(
+        fichier,
+        "content_type",
+        ""
+    )
+
+    if (
+        content_type
+        and content_type not in types_mime_autorises
+    ):
+        raise forms.ValidationError(
+            "Le type de fichier envoyé n'est pas autorisé."
+        )
+
+    # ==================================================
+    # VÉRIFICATION RÉELLE PNG / JPG / JPEG
+    # ==================================================
+
+    if extension in [
+        ".png",
+        ".jpg",
+        ".jpeg",
+    ]:
+
+        try:
+
+            image = Image.open(fichier)
+
+            image.verify()
+
+            if image.format not in [
+                "PNG",
+                "JPEG",
+            ]:
+                raise forms.ValidationError(
+                    "Le fichier n'est pas réellement "
+                    "une image PNG ou JPEG valide."
+                )
+
+            fichier.seek(0)
+
+        except UnidentifiedImageError:
+
             raise forms.ValidationError(
-                "Vous devez joindre un logo, une image ou un plan."
+                "Le fichier image est invalide ou corrompu."
             )
 
-        return fichier
+        except forms.ValidationError:
+            raise
 
+        except Exception:
+
+            raise forms.ValidationError(
+                "Impossible de vérifier cette image."
+            )
+
+    # ==================================================
+    # VÉRIFICATION SIGNATURE PDF
+    # ==================================================
+
+    if extension == ".pdf":
+
+        debut = fichier.read(5)
+
+        fichier.seek(0)
+
+        if debut != b"%PDF-":
+            raise forms.ValidationError(
+                "Le fichier sélectionné n'est pas "
+                "un véritable fichier PDF."
+            )
+
+    # ==================================================
+    # VÉRIFICATION SVG
+    # ==================================================
+
+    if extension == ".svg":
+
+        try:
+
+            contenu = fichier.read(4096).decode(
+                "utf-8",
+                errors="ignore"
+            ).lower()
+
+            fichier.seek(0)
+
+            if "<svg" not in contenu:
+                raise forms.ValidationError(
+                    "Le fichier sélectionné n'est pas "
+                    "un véritable fichier SVG."
+                )
+
+        except forms.ValidationError:
+            raise
+
+        except Exception:
+
+            raise forms.ValidationError(
+                "Impossible de vérifier le fichier SVG."
+            )
+
+    return fichier
 
     def clean_quantite(self):
 

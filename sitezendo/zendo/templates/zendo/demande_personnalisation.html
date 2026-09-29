@@ -990,46 +990,42 @@ textarea.form-control {
 
                     </div>
 
+<!-- FICHIER -->
 
+<div class="form-group form-group-full">
 
-                    <!-- FICHIER -->
+    <div class="upload-box">
 
-                    <div class="form-group form-group-full">
+        <label for="{{ form.fichier.id_for_label }}">
+            <i class="fa-solid fa-cloud-arrow-up"></i>
+            Fichier original *
+        </label>
 
-                        <div class="upload-box">
+        {{ form.fichier }}
 
-                            <label for="{{ form.fichier.id_for_label }}">
+        {% for error in form.fichier.errors %}
+            <span class="form-error">
+                {{ error }}
+            </span>
+        {% endfor %}
 
-                                <i class="fa-solid fa-cloud-arrow-up"></i>
+        <span class="form-help">
+            Formats acceptés :
+            <strong>PNG, JPG/JPEG, PDF, SVG, AI et EPS.</strong>
+            <br>
 
-                                Logo, image ou plan *
+            Veuillez transmettre un fichier original de bonne qualité.
+            <br>
 
-                            </label>
+            <strong>
+                Les captures d’écran, photos d’écran et fichiers renommés
+                ne sont pas acceptés.
+            </strong>
+        </span>
 
+    </div>
 
-                            {{ form.fichier }}
-
-
-                            {% for error in form.fichier.errors %}
-                                <span class="form-error">
-                                    {{ error }}
-                                </span>
-                            {% endfor %}
-
-
-                            <span class="form-help">
-
-                                Vous devez transmettre votre logo,
-                                votre maquette, une image de référence
-                                ou votre plan.
-
-                            </span>
-
-                        </div>
-
-                    </div>
-
-
+</div>
 
                     <!-- ERREURS GENERALES -->
 

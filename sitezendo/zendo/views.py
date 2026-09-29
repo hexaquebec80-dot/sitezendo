@@ -11161,3 +11161,39 @@ def demande_personnalisation_succes(request):
         request,
         "zendo/demande_personnalisation_succes.html",
     )
+
+
+
+def politique_confidentialite(request):
+    return render(
+        request,
+        "zendo/politique_confidentialite.html"
+    )
+
+
+def politique_remboursement(request):
+    return render(
+        request,
+        "zendo/politique_remboursement.html"
+    )
+
+
+def politique_retour(request):
+    return render(
+        request,
+        "zendo/politique_retour.html"
+    )
+
+
+def politique_livraison(request):
+    return render(
+        request,
+        "zendo/politique_livraison.html"
+    )
+
+
+def conditions_generales_vente(request):
+    return render(
+        request,
+        "zendo/conditions_generales_vente.html"
+    )

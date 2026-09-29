@@ -1,0 +1,338 @@
+{% extends "zendo/base.html" %}
+
+{% block title %}
+Politique de livraison — Zendo Afrique
+{% endblock %}
+
+{% block content %}
+
+<style>
+.policy-hero {
+    padding: 70px 20px;
+    text-align: center;
+    color: #ffffff;
+    background: linear-gradient(135deg, #071f19, #124c3b);
+}
+
+.policy-hero span {
+    display: inline-block;
+    margin-bottom: 12px;
+    color: #d6a84f;
+    font-size: 13px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.policy-hero h1 {
+    margin: 0 0 15px;
+    font-size: clamp(34px, 5vw, 52px);
+    font-weight: 800;
+}
+
+.policy-hero p {
+    max-width: 760px;
+    margin: auto;
+    color: rgba(255,255,255,.82);
+    font-size: 16px;
+    line-height: 1.7;
+}
+
+.policy-container {
+    width: min(900px, calc(100% - 32px));
+    margin: 55px auto 80px;
+}
+
+.policy-card {
+    padding: 45px;
+    background: #ffffff;
+    border: 1px solid #e2e8e4;
+    border-radius: 20px;
+    box-shadow: 0 12px 35px rgba(13,45,35,.08);
+}
+
+.policy-card h2 {
+    margin-top: 38px;
+    margin-bottom: 12px;
+    color: #071f19;
+    font-size: 22px;
+    font-weight: 800;
+}
+
+.policy-card h2:first-child {
+    margin-top: 0;
+}
+
+.policy-card p,
+.policy-card li {
+    color: #65716c;
+    font-size: 15px;
+    line-height: 1.85;
+}
+
+.policy-card ul {
+    margin: 15px 0;
+    padding-left: 22px;
+    list-style: disc;
+}
+
+.policy-notice {
+    margin-top: 30px;
+    padding: 20px;
+    background: #e7f3ee;
+    border-left: 4px solid #124c3b;
+    border-radius: 10px;
+}
+
+.policy-contact {
+    margin-top: 40px;
+    padding-top: 25px;
+    border-top: 1px solid #e2e8e4;
+}
+
+.policy-card a {
+    color: #124c3b;
+    font-weight: 700;
+}
+
+@media (max-width: 700px) {
+    .policy-card {
+        padding: 25px 20px;
+    }
+}
+</style>
+
+
+<section class="policy-hero">
+
+    <span>Expédition et suivi</span>
+
+    <h1>Politique de livraison</h1>
+
+    <p>
+        Retrouvez les principales informations concernant
+        la préparation, l’expédition et la livraison
+        des commandes Zendo Afrique.
+    </p>
+
+</section>
+
+
+<section class="policy-container">
+
+    <div class="policy-card">
+
+        <h2>1. Adresse de livraison</h2>
+
+        <p>
+            Les commandes sont expédiées à l’adresse communiquée
+            par le client lors de la commande.
+        </p>
+
+        <p>
+            Le client doit vérifier attentivement son adresse,
+            son code postal, son numéro de téléphone et toutes
+            les informations nécessaires avant de confirmer l’achat.
+        </p>
+
+
+        <h2>2. Préparation de la commande</h2>
+
+        <p>
+            Le délai de préparation peut varier selon :
+        </p>
+
+        <ul>
+            <li>la disponibilité des produits ;</li>
+            <li>la quantité commandée ;</li>
+            <li>la personnalisation demandée ;</li>
+            <li>la validation éventuelle d’une maquette ;</li>
+            <li>la période de l’année ;</li>
+            <li>le volume de commandes en cours.</li>
+        </ul>
+
+
+        <h2>3. Produits personnalisés</h2>
+
+        <p>
+            Les produits personnalisés peuvent nécessiter un délai
+            de préparation supplémentaire avant leur expédition.
+        </p>
+
+        <p>
+            Lorsqu’une validation du client est nécessaire avant
+            la production, le délai peut commencer ou être prolongé
+            jusqu’à la réception de cette validation.
+        </p>
+
+
+        <h2>4. Délais de livraison</h2>
+
+        <p>
+            Les délais de livraison indiqués sur le site ou communiqués
+            au client sont généralement des estimations, sauf lorsqu’un délai
+            est expressément indiqué comme garanti.
+        </p>
+
+        <p>
+            Ces délais peuvent varier notamment selon :
+        </p>
+
+        <ul>
+            <li>le transporteur ;</li>
+            <li>la destination ;</li>
+            <li>les conditions météorologiques ;</li>
+            <li>les périodes de forte activité ;</li>
+            <li>les contrôles douaniers ;</li>
+            <li>les événements indépendants de notre volonté.</li>
+        </ul>
+
+
+        <h2>5. Suivi de livraison</h2>
+
+        <p>
+            Lorsqu’un suivi est disponible, le numéro ou le lien
+            de suivi peut être communiqué au client après l’expédition.
+        </p>
+
+        <p>
+            Le client est invité à consulter régulièrement
+            les informations de suivi fournies par le transporteur.
+        </p>
+
+
+        <h2>6. Frais de livraison</h2>
+
+        <p>
+            Les frais de livraison applicables sont normalement
+            communiqués au client avant la confirmation définitive
+            de sa commande.
+        </p>
+
+        <p>
+            Ils peuvent varier selon la destination, le poids,
+            le volume du colis et le mode de livraison disponible.
+        </p>
+
+
+        <h2>7. Taxes, droits de douane et importation</h2>
+
+        <p>
+            Selon le pays ou la région de destination, des droits
+            de douane, taxes ou frais d’importation peuvent être exigés.
+        </p>
+
+        <p>
+            Lorsque ces frais ne sont pas inclus lors du paiement,
+            ils peuvent être réclamés directement au destinataire
+            par les autorités ou le transporteur.
+        </p>
+
+
+        <h2>8. Retard de livraison</h2>
+
+        <p>
+            Lorsqu’un colis subit un retard, le client peut communiquer
+            avec Zendo Afrique afin que les informations disponibles
+            puissent être vérifiées.
+        </p>
+
+        <p>
+            Certains retards dépendent directement du transporteur
+            et peuvent être indépendants de Zendo Afrique.
+        </p>
+
+
+        <h2>9. Colis indiqué comme livré</h2>
+
+        <p>
+            Si le suivi indique qu’un colis est livré mais que le client
+            ne le retrouve pas, il est recommandé de :
+        </p>
+
+        <ul>
+            <li>vérifier l’adresse indiquée sur la commande ;</li>
+            <li>vérifier autour du lieu de livraison ;</li>
+            <li>vérifier auprès des personnes présentes à l’adresse ;</li>
+            <li>communiquer avec le transporteur ;</li>
+            <li>communiquer avec Zendo Afrique si nécessaire.</li>
+        </ul>
+
+
+        <h2>10. Colis endommagé</h2>
+
+        <p>
+            Lorsque le colis arrive visiblement endommagé,
+            le client doit conserver l’emballage et prendre,
+            si possible, des photographies du colis et du produit.
+        </p>
+
+        <p>
+            Ces éléments pourront être demandés lors de l’examen
+            d’une réclamation.
+        </p>
+
+
+        <h2>11. Adresse incorrecte ou incomplète</h2>
+
+        <p>
+            Zendo Afrique n’est pas responsable d’une erreur dans
+            l’adresse communiquée par le client.
+        </p>
+
+        <p>
+            Lorsqu’un colis doit être réexpédié en raison d’une adresse
+            incorrecte, des frais supplémentaires peuvent être applicables.
+        </p>
+
+
+        <h2>12. Commande retournée à l’expéditeur</h2>
+
+        <p>
+            Lorsqu’un colis est retourné à Zendo Afrique par le transporteur,
+            notre équipe peut communiquer avec le client afin de déterminer
+            les prochaines étapes.
+        </p>
+
+        <p>
+            Selon la raison du retour, une nouvelle expédition
+            peut entraîner des frais supplémentaires.
+        </p>
+
+
+        <div class="policy-notice">
+
+            <strong>Conseil important</strong>
+
+            <p>
+                Vérifiez toujours votre adresse complète avant
+                de confirmer votre commande et conservez votre
+                numéro de suivi jusqu’à la réception du colis.
+            </p>
+
+        </div>
+
+
+        <div class="policy-contact">
+
+            <h2>13. Nous contacter</h2>
+
+            <p>
+                Pour toute question concernant la livraison :
+            </p>
+
+            <p>
+                <strong>Zendo Afrique</strong><br>
+                Courriel :
+                <a href="mailto:zendoafrique@gmail.com">
+                    zendoafrique@gmail.com
+                </a>
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

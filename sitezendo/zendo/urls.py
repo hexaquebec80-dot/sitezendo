@@ -249,4 +249,34 @@ path(
     name="demande_personnalisation_succes",
 ),
 
+path(
+    "politique-confidentialite/",
+    views.politique_confidentialite,
+    name="politique_confidentialite"
+),
+
+path(
+    "politique-remboursement/",
+    views.politique_remboursement,
+    name="politique_remboursement"
+),
+
+path(
+    "politique-retour/",
+    views.politique_retour,
+    name="politique_retour"
+),
+
+path(
+    "politique-livraison/",
+    views.politique_livraison,
+    name="politique_livraison"
+),
+
+path(
+    "conditions-generales-de-vente/",
+    views.conditions_generales_vente,
+    name="conditions_generales_vente"
+),
+
 ]

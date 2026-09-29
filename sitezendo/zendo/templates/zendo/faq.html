@@ -1,66 +1,481 @@
 {% extends "zendo/base.html" %}
 
 {% block title %}
-    Questions fréquentes — Zendo Afrique
+FAQ — Questions fréquentes | Zendo Afrique
 {% endblock %}
 
 {% block content %}
 
-<section class="page-banner">
-    <div class="page-banner-content">
-        <span class="section-label">
-            Besoin d’aide?
+<style>
+
+    .faq-hero {
+        background:
+            linear-gradient(
+                135deg,
+                rgba(18, 18, 18, 0.96),
+                rgba(45, 45, 45, 0.92)
+            );
+        color: white;
+        padding: 80px 20px;
+        text-align: center;
+    }
+
+    .faq-hero-content {
+        max-width: 850px;
+        margin: 0 auto;
+    }
+
+    .faq-badge {
+        display: inline-block;
+        padding: 8px 16px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.10);
+        font-size: 14px;
+        font-weight: 700;
+        margin-bottom: 20px;
+    }
+
+    .faq-hero h1 {
+        font-size: 48px;
+        line-height: 1.1;
+        margin-bottom: 18px;
+        font-weight: 800;
+    }
+
+    .faq-hero p {
+        max-width: 700px;
+        margin: 0 auto;
+        font-size: 18px;
+        line-height: 1.7;
+        opacity: 0.9;
+    }
+
+    .faq-wrapper {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 70px 20px 90px;
+    }
+
+    .faq-intro {
+        text-align: center;
+        margin-bottom: 45px;
+    }
+
+    .faq-intro h2 {
+        font-size: 32px;
+        margin-bottom: 12px;
+        color: #1d1d1f;
+    }
+
+    .faq-intro p {
+        color: #666;
+        max-width: 700px;
+        margin: 0 auto;
+        line-height: 1.7;
+    }
+
+    .faq-search {
+        max-width: 700px;
+        margin: 35px auto 50px;
+        position: relative;
+    }
+
+    .faq-search i {
+        position: absolute;
+        left: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #888;
+    }
+
+    .faq-search input {
+        width: 100%;
+        padding: 18px 20px 18px 52px;
+        border: 1px solid #ddd;
+        border-radius: 14px;
+        font-size: 16px;
+        outline: none;
+        background: white;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+        transition: 0.2s ease;
+    }
+
+    .faq-search input:focus {
+        border-color: #222;
+        box-shadow: 0 8px 35px rgba(0, 0, 0, 0.08);
+    }
+
+    .faq-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .faq-item {
+        border: 1px solid #e7e7e7;
+        border-radius: 16px;
+        background: #fff;
+        overflow: hidden;
+        transition: 0.2s ease;
+        box-shadow: 0 5px 18px rgba(0, 0, 0, 0.03);
+    }
+
+    .faq-item:hover {
+        border-color: #ccc;
+        transform: translateY(-1px);
+    }
+
+    .faq-item summary {
+        list-style: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 22px 24px;
+        font-size: 17px;
+        font-weight: 700;
+        color: #222;
+    }
+
+    .faq-item summary::-webkit-details-marker {
+        display: none;
+    }
+
+    .faq-item summary i {
+        min-width: 38px;
+        height: 38px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: #f4f4f4;
+        transition: 0.25s ease;
+    }
+
+    .faq-item[open] summary i {
+        transform: rotate(45deg);
+        background: #222;
+        color: white;
+    }
+
+    .faq-answer {
+        padding: 0 24px 24px;
+        color: #5f6368;
+        line-height: 1.8;
+        font-size: 15.5px;
+    }
+
+    .faq-support {
+        margin-top: 65px;
+        padding: 40px;
+        border-radius: 22px;
+        background: #f8f8f8;
+        text-align: center;
+    }
+
+    .faq-support-icon {
+        width: 64px;
+        height: 64px;
+        margin: 0 auto 18px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #111;
+        color: white;
+        font-size: 24px;
+    }
+
+    .faq-support h3 {
+        font-size: 26px;
+        margin-bottom: 10px;
+        color: #1d1d1f;
+    }
+
+    .faq-support p {
+        max-width: 620px;
+        margin: 0 auto 24px;
+        color: #666;
+        line-height: 1.7;
+    }
+
+    .faq-support-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: #111;
+        color: white;
+        text-decoration: none;
+        padding: 14px 24px;
+        border-radius: 10px;
+        font-weight: 700;
+        transition: 0.2s ease;
+    }
+
+    .faq-support-btn:hover {
+        opacity: 0.88;
+        color: white;
+        transform: translateY(-1px);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 70px 20px;
+        border: 1px dashed #d5d5d5;
+        border-radius: 20px;
+        background: #fafafa;
+    }
+
+    .empty-state i {
+        font-size: 42px;
+        margin-bottom: 20px;
+        color: #777;
+    }
+
+    .empty-state h2 {
+        margin-bottom: 10px;
+    }
+
+    .empty-state p {
+        color: #666;
+        margin-bottom: 25px;
+    }
+
+    @media (max-width: 768px) {
+
+        .faq-hero {
+            padding: 60px 20px;
+        }
+
+        .faq-hero h1 {
+            font-size: 36px;
+        }
+
+        .faq-hero p {
+            font-size: 16px;
+        }
+
+        .faq-wrapper {
+            padding: 50px 16px 70px;
+        }
+
+        .faq-item summary {
+            padding: 18px;
+            font-size: 16px;
+        }
+
+        .faq-answer {
+            padding: 0 18px 20px;
+        }
+
+        .faq-support {
+            padding: 30px 20px;
+        }
+    }
+
+</style>
+
+
+<section class="faq-hero">
+
+    <div class="faq-hero-content">
+
+        <span class="faq-badge">
+            Centre d’aide Zendo Afrique
         </span>
 
-        <h1>Questions fréquentes</h1>
+        <h1>
+            Comment pouvons-nous vous aider ?
+        </h1>
 
         <p>
-            Retrouvez les réponses aux questions concernant
-            les commandes, les paiements, la personnalisation
-            et la livraison.
+            Retrouvez rapidement les réponses aux questions
+            les plus fréquentes concernant vos commandes,
+            paiements, demandes de personnalisation,
+            fichiers, livraisons et services Zendo Afrique.
         </p>
+
     </div>
+
 </section>
 
 
-<section class="content-section faq-container">
+<section class="faq-wrapper">
 
-    {% for question in questions %}
-        <details class="faq-item">
-            <summary>
-                <span>
-                    {{ question.question }}
-                </span>
+    <div class="faq-intro">
 
-                <i class="fa-solid fa-plus"></i>
-            </summary>
+        <h2>
+            Questions fréquentes
+        </h2>
 
-            <div class="faq-answer">
-                {{ question.reponse|linebreaks }}
+        <p>
+            Consultez les réponses préparées par notre équipe.
+            Cliquez simplement sur une question pour afficher
+            les informations correspondantes.
+        </p>
+
+    </div>
+
+
+    <div class="faq-search">
+
+        <i class="fa-solid fa-magnifying-glass"></i>
+
+        <input
+            type="text"
+            id="faqSearch"
+            placeholder="Rechercher une question..."
+            autocomplete="off"
+        >
+
+    </div>
+
+
+    <div class="faq-grid" id="faqList">
+
+        {% for question in questions %}
+
+            <details
+                class="faq-item"
+                data-question="{{ question.question|lower }}"
+            >
+
+                <summary>
+
+                    <span>
+                        {{ question.question }}
+                    </span>
+
+                    <i class="fa-solid fa-plus"></i>
+
+                </summary>
+
+                <div class="faq-answer">
+
+                    {{ question.reponse|linebreaks }}
+
+                </div>
+
+            </details>
+
+        {% empty %}
+
+            <div class="empty-state">
+
+                <i class="fa-regular fa-circle-question"></i>
+
+                <h2>
+                    La FAQ sera bientôt disponible
+                </h2>
+
+                <p>
+                    Notre équipe prépare actuellement les réponses
+                    aux questions les plus fréquentes.
+                    Vous pouvez communiquer avec nous pour obtenir
+                    de l’aide.
+                </p>
+
+                {% if user.is_authenticated %}
+
+                    <a
+                        href="{% url 'zendo:support' %}"
+                        class="faq-support-btn"
+                    >
+                        <i class="fa-regular fa-message"></i>
+                        Contacter le support
+                    </a>
+
+                {% endif %}
+
             </div>
-        </details>
-    {% empty %}
-        <div class="empty-state">
-            <i class="fa-regular fa-circle-question"></i>
 
-            <h2>La FAQ sera bientôt disponible</h2>
+        {% endfor %}
 
-            <p>
-                Vous pouvez communiquer avec notre équipe
-                pour obtenir de l’aide.
-            </p>
+    </div>
 
-            {% if user.is_authenticated %}
-                <a
-                    href="{% url 'zendo:support' %}"
-                    class="primary-button"
-                >
-                    Contacter le support
-                </a>
-            {% endif %}
+
+    <div class="faq-support">
+
+        <div class="faq-support-icon">
+            <i class="fa-solid fa-headset"></i>
         </div>
-    {% endfor %}
+
+        <h3>
+            Vous n’avez pas trouvé votre réponse ?
+        </h3>
+
+        <p>
+            Notre équipe est disponible pour vous accompagner
+            concernant une commande, un paiement, une livraison,
+            une demande de personnalisation ou toute autre question.
+        </p>
+
+        {% if user.is_authenticated %}
+
+            <a
+                href="{% url 'zendo:support' %}"
+                class="faq-support-btn"
+            >
+                <i class="fa-regular fa-message"></i>
+                Contacter le support
+            </a>
+
+        {% else %}
+
+            <a
+                href="{% url 'zendo:connexion' %}"
+                class="faq-support-btn"
+            >
+                <i class="fa-solid fa-right-to-bracket"></i>
+                Se connecter pour contacter le support
+            </a>
+
+        {% endif %}
+
+    </div>
 
 </section>
+
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const searchInput = document.getElementById("faqSearch");
+    const faqItems = document.querySelectorAll(".faq-item");
+
+    if (!searchInput) {
+        return;
+    }
+
+    searchInput.addEventListener("input", function () {
+
+        const value = this.value
+            .toLowerCase()
+            .trim();
+
+        faqItems.forEach(function (item) {
+
+            const question = item.innerText
+                .toLowerCase();
+
+            if (question.includes(value)) {
+
+                item.style.display = "";
+
+            } else {
+
+                item.style.display = "none";
+
+            }
+
+        });
+
+    });
+
+});
+
+</script>
 
 {% endblock %}
