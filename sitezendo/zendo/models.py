@@ -361,17 +361,59 @@ class LigneCommande(models.Model):
     personnalisation = models.TextField(blank=True)
     @property
     def total(self): return self.prix_unitaire * self.quantite
-
 class Paiement(TimeStampedModel):
-    STATUTS = [("attente", "En attente"), ("autorise", "Autorisé"), ("paye", "Payé"), ("echoue", "Échoué"), ("rembourse", "Remboursé")]
-    METHODES = [("stripe", "Carte bancaire"), ("paypal", "PayPal"), ("interac", "Interac"), ("lien", "Lien de paiement"), ("manuel", "Paiement manuel")]
-    commande = models.ForeignKey(Commande, on_delete=models.PROTECT, related_name="paiements")
-    methode = models.CharField(max_length=20, choices=METHODES)
-    statut = models.CharField(max_length=20, choices=STATUTS, default="attente")
-    montant = models.DecimalField(max_digits=12, decimal_places=2)
-    reference_externe = models.CharField(max_length=150, blank=True)
-    lien_paiement = models.URLField(blank=True)
-    paye_le = models.DateTimeField(null=True, blank=True)
+    STATUTS = [
+        ("attente", "En attente"),
+        ("autorise", "Autorisé"),
+        ("paye", "Payé"),
+        ("echoue", "Échoué"),
+        ("rembourse", "Remboursé"),
+    ]
+
+    METHODES = [
+        ("stripe", "Carte bancaire"),
+        ("paypal", "PayPal"),
+        ("interac", "Interac"),
+        ("lien", "Lien de paiement"),
+        ("manuel", "Paiement manuel"),
+    ]
+
+    commande = models.ForeignKey(
+        Commande,
+        on_delete=models.PROTECT,
+        related_name="paiements"
+    )
+
+    methode = models.CharField(
+        max_length=20,
+        choices=METHODES
+    )
+
+    statut = models.CharField(
+        max_length=20,
+        choices=STATUTS,
+        default="attente"
+    )
+
+    montant = models.DecimalField(
+        max_digits=12,
+        decimal_places=2
+    )
+
+    reference_externe = models.CharField(
+        max_length=500,
+        blank=True
+    )
+
+    # Stripe Checkout peut générer une URL très longue
+    lien_paiement = models.TextField(
+        blank=True
+    )
+
+    paye_le = models.DateTimeField(
+        null=True,
+        blank=True
+    )
 
 class Facture(TimeStampedModel):
     numero = models.CharField(max_length=30, unique=True, editable=False)
