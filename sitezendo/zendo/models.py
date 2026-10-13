@@ -37,23 +37,27 @@ class Profil(TimeStampedModel):
 
 
 
+# ============================================================
+# CATEGORIES ET SOUS-CATEGORIES - ZENDO AFRIQUE
+# ============================================================
+
 class Categorie(TimeStampedModel):
 
     nom = models.CharField(
-        max_length=120
+        max_length=150
     )
 
     slug = models.SlugField(
-        max_length=140,
+        max_length=180,
         unique=True,
         blank=True
     )
 
     parent = models.ForeignKey(
         "self",
+        on_delete=models.PROTECT,
         null=True,
         blank=True,
-        on_delete=models.SET_NULL,
         related_name="sous_categories"
     )
 
@@ -61,100 +65,233 @@ class Categorie(TimeStampedModel):
         blank=True
     )
 
+    # Image facultative
     image = models.ImageField(
         upload_to="categories/",
-        blank=True
+        blank=True,
+        null=True
     )
 
     active = models.BooleanField(
         default=True
     )
 
+    ordre = models.PositiveIntegerField(
+        default=0
+    )
+
     class Meta:
-        ordering = ["nom"]
+        ordering = ["ordre", "nom"]
         verbose_name = "Catégorie"
         verbose_name_plural = "Catégories"
 
     def save(self, *args, **kwargs):
 
         if not self.slug:
-
-            base_slug = slugify(self.nom)
-
-            slug = base_slug
-
+            base = slugify(self.nom) or "categorie"
+            candidate = base
             numero = 2
 
             while Categorie.objects.exclude(
                 pk=self.pk
-            ).filter(
-                slug=slug
-            ).exists():
+            ).filter(slug=candidate).exists():
 
-                slug = f"{base_slug}-{numero}"
-
+                candidate = f"{base}-{numero}"
                 numero += 1
 
-            self.slug = slug
+            self.slug = candidate
 
         super().save(*args, **kwargs)
 
     def __str__(self):
-
         if self.parent:
-
             return f"{self.parent.nom} → {self.nom}"
-
         return self.nom
 
+
+# ============================================================
+# TAGS PRODUITS
+# ============================================================
+
 class Tag(models.Model):
-    nom = models.CharField(max_length=60, unique=True)
-    slug = models.SlugField(max_length=70, unique=True, blank=True)
+
+    nom = models.CharField(
+        max_length=60,
+        unique=True
+    )
+
+    slug = models.SlugField(
+        max_length=70,
+        unique=True,
+        blank=True
+    )
+
     def save(self, *args, **kwargs):
-        if not self.slug: self.slug = slugify(self.nom)
+        if not self.slug:
+            self.slug = slugify(self.nom)
+
         super().save(*args, **kwargs)
-    def __str__(self): return self.nom
+
+    def __str__(self):
+        return self.nom
+
 
 class Produit(TimeStampedModel):
+
     nom = models.CharField(max_length=180)
-    slug = models.SlugField(max_length=210, unique=True, blank=True)
-    sku = models.CharField(max_length=60, unique=True)
-    categorie = models.ForeignKey(Categorie, on_delete=models.PROTECT, related_name="produits")
-    tags = models.ManyToManyField(Tag, blank=True, related_name="produits")
-    description_courte = models.CharField(max_length=300, blank=True)
+
+    slug = models.SlugField(
+        max_length=210,
+        unique=True,
+        blank=True
+    )
+
+    sku = models.CharField(
+        max_length=60,
+        unique=True
+    )
+
+    categorie = models.ForeignKey(
+        Categorie,
+        on_delete=models.PROTECT,
+        related_name="produits"
+    )
+
+    tags = models.ManyToManyField(
+        Tag,
+        blank=True,
+        related_name="produits"
+    )
+
+    description_courte = models.CharField(
+        max_length=300,
+        blank=True
+    )
+
     description = models.TextField()
-    prix = models.DecimalField(max_digits=12, decimal_places=2, validators=[MinValueValidator(0)])
-    prix_promotionnel = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
-    cout = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+
+    prix = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        validators=[MinValueValidator(0)]
+    )
+
+    prix_promotionnel = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        null=True,
+        blank=True
+    )
+
+    cout = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        default=0
+    )
+
     actif = models.BooleanField(default=True)
     vedette = models.BooleanField(default=False)
     personnalisable = models.BooleanField(default=False)
-    delai_personnalisation = models.PositiveIntegerField(default=0, help_text="Nombre de jours")
-    poids_kg = models.DecimalField(max_digits=8, decimal_places=3, default=0)
-    class Meta: ordering = ["-cree_le"]
+
+    delai_personnalisation = models.PositiveIntegerField(
+        default=0,
+        help_text="Nombre de jours"
+    )
+
+    poids_kg = models.DecimalField(
+        max_digits=8,
+        decimal_places=3,
+        default=0
+    )
+
+    class Meta:
+        ordering = ["-cree_le"]
+        verbose_name = "Produit"
+        verbose_name_plural = "Produits"
+
     def save(self, *args, **kwargs):
         if not self.slug:
-            base = slugify(self.nom); candidate = base; n = 2
-            while Produit.objects.exclude(pk=self.pk).filter(slug=candidate).exists(): candidate, n = f"{base}-{n}", n + 1
+            base = slugify(self.nom) or "produit"
+            candidate = base
+            n = 2
+
+            while Produit.objects.exclude(
+                pk=self.pk
+            ).filter(slug=candidate).exists():
+                candidate = f"{base}-{n}"
+                n += 1
+
             self.slug = candidate
+
         super().save(*args, **kwargs)
+
     @property
     def prix_actuel(self):
-        return self.prix_promotionnel if self.prix_promotionnel is not None else self.prix
+        return (
+            self.prix_promotionnel
+            if self.prix_promotionnel is not None
+            else self.prix
+        )
+
     @property
-    def stock_total(self): return sum(v.stock for v in self.variantes.filter(active=True))
-    def get_absolute_url(self): return reverse("zendo:produit_detail", args=[self.slug])
-    def __str__(self): return self.nom
+    def stock_total(self):
+        return sum(
+            v.stock
+            for v in self.variantes.filter(active=True)
+        )
+
+    @property
+    def image_principale(self):
+        return (
+            self.images.filter(principale=True).first()
+            or self.images.first()
+        )
+
+    def get_absolute_url(self):
+        return reverse(
+            "zendo:produit_detail",
+            args=[self.slug]
+        )
+
+    def __str__(self):
+        return self.nom
+
 
 class ImageProduit(models.Model):
-    produit = models.ForeignKey(Produit, on_delete=models.CASCADE, related_name="images")
-    image = models.ImageField(upload_to="produits/%Y/%m/")
-    texte_alt = models.CharField(max_length=180, blank=True)
+
+    produit = models.ForeignKey(
+        Produit,
+        on_delete=models.CASCADE,
+        related_name="images"
+    )
+
+    image = models.ImageField(
+        upload_to="produits/%Y/%m/"
+    )
+
+    texte_alt = models.CharField(
+        max_length=180,
+        blank=True
+    )
+
     principale = models.BooleanField(default=False)
+
     ordre = models.PositiveIntegerField(default=0)
-    class Meta: ordering = ["ordre", "id"]
 
+    class Meta:
+        ordering = ["ordre", "id"]
+        verbose_name = "Image du produit"
+        verbose_name_plural = "Images des produits"
+        constraints = [
+            models.UniqueConstraint(
+                fields=["produit"],
+                condition=models.Q(principale=True),
+                name="unique_image_principale_par_produit"
+            )
+        ]
 
+    def __str__(self):
+        return f"Image de {self.produit.nom}"
 
 class VarianteProduit(TimeStampedModel):
     produit = models.ForeignKey(Produit, on_delete=models.CASCADE, related_name="variantes")
@@ -275,6 +412,9 @@ class Adresse(TimeStampedModel):
     pays = models.CharField(max_length=100)
     principale = models.BooleanField(default=False)
     def __str__(self): return f"{self.nom_complet}, {self.ville}"
+
+
+
 class Commande(TimeStampedModel):
 
     STATUTS = [

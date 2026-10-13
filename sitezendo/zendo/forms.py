@@ -128,8 +128,14 @@ from django.forms import inlineformset_factory
 
 from .models import Produit, ImageProduit, VarianteProduit
 
+from django import forms
+from django.utils.text import slugify
+
+from .models import Produit, Categorie
+
 
 class ProduitForm(forms.ModelForm):
+
     class Meta:
         model = Produit
 
@@ -148,86 +154,280 @@ class ProduitForm(forms.ModelForm):
         ]
 
         widgets = {
-            "nom": forms.TextInput(
-                attrs={
-                    "placeholder": "Exemple : Ensemble africain premium",
-                }
-            ),
-            "slug": forms.TextInput(
-                attrs={
-                    "placeholder": "ensemble-africain-premium",
-                }
-            ),
-            "sku": forms.TextInput(
-                attrs={
-                    "placeholder": "Exemple : ZEN-001",
-                }
-            ),
-            "description": forms.Textarea(
-                attrs={
-                    "rows": 6,
-                    "placeholder": (
-                        "Décrivez le produit, sa matière, son style "
-                        "et ses caractéristiques..."
-                    ),
-                }
-            ),
-            "prix": forms.NumberInput(
-                attrs={
-                    "min": "0",
-                    "step": "0.01",
-                    "placeholder": "0.00",
-                }
-            ),
-            "prix_promotionnel": forms.NumberInput(
-                attrs={
-                    "min": "0",
-                    "step": "0.01",
-                    "placeholder": "Prix promotionnel facultatif",
-                }
-            ),
-            "tags": forms.SelectMultiple(
-                attrs={
-                    "class": "multiple-select",
-                }
-            ),
+            "nom": forms.TextInput(attrs={
+                "class": "form-control",
+                "placeholder": "Exemple : Ensemble africain premium",
+            }),
+
+            "slug": forms.TextInput(attrs={
+                "class": "form-control",
+                "placeholder": "Généré automatiquement si vide",
+            }),
+
+            "sku": forms.TextInput(attrs={
+                "class": "form-control",
+                "placeholder": "Exemple : ZEN-001",
+            }),
+
+            "categorie": forms.Select(attrs={
+                "class": "form-select",
+            }),
+
+            "description": forms.Textarea(attrs={
+                "class": "form-control",
+                "rows": 6,
+                "placeholder": (
+                    "Décrivez le produit, sa matière, "
+                    "son style et ses caractéristiques..."
+                ),
+            }),
+
+            "prix": forms.NumberInput(attrs={
+                "class": "form-control",
+                "min": "0",
+                "step": "0.01",
+                "placeholder": "0.00",
+            }),
+
+            "prix_promotionnel": forms.NumberInput(attrs={
+                "class": "form-control",
+                "min": "0",
+                "step": "0.01",
+                "placeholder": "Prix promotionnel facultatif",
+            }),
+
+            "tags": forms.SelectMultiple(attrs={
+                "class": "form-select multiple-select",
+            }),
+
+            "actif": forms.CheckboxInput(attrs={
+                "class": "form-check-input",
+            }),
+
+            "vedette": forms.CheckboxInput(attrs={
+                "class": "form-check-input",
+            }),
+
+            "personnalisable": forms.CheckboxInput(attrs={
+                "class": "form-check-input",
+            }),
         }
+
+        labels = {
+            "nom": "Nom du produit",
+            "slug": "Lien du produit (facultatif)",
+            "sku": "Référence SKU",
+            "categorie": "Catégorie du produit",
+            "description": "Description du produit",
+            "prix": "Prix normal ($ CAD)",
+            "prix_promotionnel": "Prix promotionnel ($ CAD)",
+            "actif": "Produit actif",
+            "vedette": "Mettre en vedette",
+            "personnalisable": "Produit personnalisable",
+            "tags": "Étiquettes du produit",
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Catégorie obligatoire
+        self.fields["categorie"].required = True
+
+        # Catégories actives uniquement
+        self.fields["categorie"].queryset = (
+            Categorie.objects.filter(active=True)
+            .select_related("parent")
+            .order_by("ordre", "nom")
+        )
+
+        self.fields["categorie"].empty_label = (
+            "Sélectionnez une catégorie"
+        )
+
+        # Slug facultatif
+        self.fields["slug"].required = False
+
+        # Prix promotionnel facultatif
+        self.fields["prix_promotionnel"].required = False
+
+        # Tags facultatifs
+        self.fields["tags"].required = False
+
+    def clean_slug(self):
+        slug = self.cleaned_data.get("slug")
+
+        if slug:
+            return slugify(slug)
+
+        return ""
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        prix = cleaned_data.get("prix")
+        prix_promotionnel = cleaned_data.get(
+            "prix_promotionnel"
+        )
+
+        if (
+            prix is not None
+            and prix_promotionnel is not None
+            and prix_promotionnel >= prix
+        ):
+            self.add_error(
+                "prix_promotionnel",
+                "Le prix promotionnel doit être inférieur au prix normal."
+            )
+
+        return cleaned_data
+
 from django import forms
-from django.forms import inlineformset_factory
+from django.forms import (
+    BaseInlineFormSet,
+    inlineformset_factory,
+)
 
-from .models import Produit, ImageProduit, VarianteProduit
+from .models import (
+    Produit,
+    ImageProduit,
+    VarianteProduit,
+)
 
+
+# =====================================================
+# FORMULAIRE IMAGE PRODUIT
+# =====================================================
 
 class ImageProduitForm(forms.ModelForm):
+
     class Meta:
         model = ImageProduit
-        fields = "__all__"
+
+        fields = [
+            "image",
+            "texte_alt",
+            "principale",
+            "ordre",
+        ]
 
         widgets = {
             "image": forms.ClearableFileInput(
                 attrs={
                     "accept": "image/jpeg,image/png,image/webp",
+                    "class": "form-control",
+                }
+            ),
+
+            "texte_alt": forms.TextInput(
+                attrs={
+                    "class": "form-control",
+                    "placeholder": "Description facultative",
+                }
+            ),
+
+            "principale": forms.CheckboxInput(
+                attrs={
+                    "class": "form-check-input",
+                }
+            ),
+
+            "ordre": forms.NumberInput(
+                attrs={
+                    "class": "form-control",
+                    "min": "0",
                 }
             ),
         }
 
 
+# =====================================================
+# VALIDATION DES IMAGES
+# =====================================================
+
+class BaseImageProduitFormSet(BaseInlineFormSet):
+
+    def clean(self):
+        super().clean()
+
+        if any(self.errors):
+            return
+
+        images_valides = []
+        principales = []
+
+        for form in self.forms:
+
+            if not form.cleaned_data:
+                continue
+
+            if form.cleaned_data.get("DELETE"):
+                continue
+
+            image = form.cleaned_data.get("image")
+
+            # Image déjà enregistrée
+            if not image and form.instance.pk:
+                image = form.instance.image
+
+            if image:
+                images_valides.append(form)
+
+                if form.cleaned_data.get("principale"):
+                    principales.append(form)
+
+        if len(images_valides) < 1:
+            raise forms.ValidationError(
+                "Vous devez ajouter au moins une image principale."
+            )
+
+        if len(images_valides) > 4:
+            raise forms.ValidationError(
+                "Un produit ne peut pas contenir plus de 4 images."
+            )
+
+        if len(principales) > 1:
+            raise forms.ValidationError(
+                "Une seule image peut être définie comme principale."
+            )
+
+        # Si aucune image principale n'est sélectionnée,
+        # la première image sera automatiquement principale.
+        if not principales:
+            images_valides[0].cleaned_data["principale"] = True
+
+
+# =====================================================
+# FORMULAIRE VARIANTE PRODUIT
+# =====================================================
+
 class VarianteProduitForm(forms.ModelForm):
+
     class Meta:
         model = VarianteProduit
-        fields = "__all__"
+        exclude = ["produit"]
 
+
+# =====================================================
+# FORMSET IMAGES
+# =====================================================
 
 ImageProduitFormSet = inlineformset_factory(
     Produit,
     ImageProduit,
     form=ImageProduitForm,
-    extra=3,
+    formset=BaseImageProduitFormSet,
+    extra=4,
     can_delete=True,
     min_num=1,
+    max_num=4,
     validate_min=True,
+    validate_max=True,
 )
 
+
+# =====================================================
+# FORMSET VARIANTES
+# =====================================================
 
 VarianteProduitFormSet = inlineformset_factory(
     Produit,
@@ -236,7 +436,6 @@ VarianteProduitFormSet = inlineformset_factory(
     extra=3,
     can_delete=True,
 )
-
 
 from django import forms
 
