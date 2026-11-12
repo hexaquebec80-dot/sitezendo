@@ -2180,6 +2180,9 @@ def _staff(user):
     return user.is_authenticated and user.is_staff
 
 
+
+
+
 @user_passes_test(_staff)
 def produit_ajouter(request):
     """

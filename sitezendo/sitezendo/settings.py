@@ -139,6 +139,9 @@ MIDDLEWARE = [
 
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 
+    "zendo.middleware.ControleBoutiqueMiddleware",
+
+
 ]
 
 

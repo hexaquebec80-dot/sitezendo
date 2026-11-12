@@ -768,3 +768,67 @@ class DemandePersonnalisation(models.Model):
         verbose_name = "Demande de personnalisation"
         verbose_name_plural = "Demandes de personnalisation"
         ordering = ["-cree_le"]
+
+
+
+
+
+from datetime import timedelta
+from django.db import models
+from django.utils import timezone
+
+
+class ControleBoutique(models.Model):
+
+    STATUTS = [
+        ("active", "Boutique active"),
+        ("suspendue", "Suspendue temporairement"),
+        ("fermee", "Fermée définitivement"),
+    ]
+
+    statut = models.CharField(
+        max_length=20,
+        choices=STATUTS,
+        default="active"
+    )
+
+    paiement_recu = models.BooleanField(default=True)
+
+    date_notification = models.DateTimeField(
+        null=True,
+        blank=True
+    )
+
+    motif = models.TextField(
+        blank=True,
+        default="Facture de service impayée"
+    )
+
+    modifie_le = models.DateTimeField(auto_now=True)
+
+    @property
+    def date_limite(self):
+        if self.date_notification:
+            return self.date_notification + timedelta(days=10)
+        return None
+
+    @property
+    def est_suspendue(self):
+        if self.statut == "fermee":
+            return False
+
+        if self.statut == "suspendue":
+            return True
+
+        return (
+            not self.paiement_recu
+            and self.date_limite is not None
+            and timezone.now() >= self.date_limite
+        )
+
+    @property
+    def est_fermee(self):
+        return self.statut == "fermee"
+
+    def __str__(self):
+        return f"Contrôle boutique : {self.get_statut_display()}"

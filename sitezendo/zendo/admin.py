@@ -1319,3 +1319,39 @@ class DemandePersonnalisationAdmin(admin.ModelAdmin):
         "marquer_traitement",
         "marquer_terminees",
     )
+
+
+
+
+
+from django.contrib import admin
+from .models import ControleBoutique
+
+
+@admin.register(ControleBoutique)
+class ControleBoutiqueAdmin(admin.ModelAdmin):
+
+    list_display = (
+        "id",
+        "statut",
+        "paiement_recu",
+        "date_notification",
+        "date_limite_affichee",
+    )
+
+    readonly_fields = (
+        "date_limite_affichee",
+    )
+
+    def date_limite_affichee(self, obj):
+        return obj.date_limite or "Aucune"
+
+    date_limite_affichee.short_description = (
+        "Date limite de paiement"
+    )
+
+    def has_add_permission(self, request):
+        return (
+            super().has_add_permission(request)
+            and not ControleBoutique.objects.exists()
+        )
